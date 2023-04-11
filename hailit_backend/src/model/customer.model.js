@@ -20,8 +20,10 @@ const columnsForCreation = [
 const getAllCustomers = () => dbFunctions.getAll("customer");
 
 const getOneCustomer = async (customerID) => {
+  const columns = [...columnsForCreation]
   const columnName = columnsForCreation[0];
-  return await dbFunctions.getOne(tableName, columnName, customerID);
+  const tableDetails = [tableName, columns, columnName]
+  return await dbFunctions.getOne(tableDetails, customerID);
 };
 
 const oneCustomerQuery = async (customerEmail) => {
@@ -37,7 +39,7 @@ const oneCustomerQuery = async (customerEmail) => {
 //check if email exists
 const emailExists = async (email) => {
   const columnName = columnsForCreation[3];
-  return await dbFunctions.checkOneDetail(tableName, columnName, email);
+  return await dbFunctions.detailExists(tableName, columnName, email);
 };
 
 //add customer METHOD: POST
@@ -61,11 +63,11 @@ const addCustomer = async (passwordPlusId, ...args) => {
           console.log("User added");
           return "User added";
         } else {
-          console.log("error isnerting password");
+          console.log("error inserting password");
           const queryText = `delete from ${tableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
           const value = [passwordTableColumns[0]]
           await dbFunctions.deleteAccountWithoutPassword(queryText, value);
-          return "User not added to database";
+          return "Error: User not added to database";
         }
       }
     } else {
@@ -91,7 +93,7 @@ const updateCustomer = async (customerID, customerDetails) => {
     console.log('this is', email, emailColumn, customerID, customerDetails)
     // const queryText = `select ${columnsToBeUpdated[0]} from customer where customer_id = $1`
     // const idValidation = await DB.query(queryText, [customerID])
-    const idValidation = await dbFunctions.checkOneDetail(
+    const idValidation = await dbFunctions.detailExists(
       tableName,
       columnsForCreation[0],
       customerID
@@ -134,7 +136,7 @@ const updateCustomer = async (customerID, customerDetails) => {
 
 const deleteCustomer = async (customerID) => {
   const columnName = columnsForCreation[0];
-  const userExists = await dbFunctions.checkOneDetail(
+  const userExists = await dbFunctions.detailExists(
     tableName,
     columnName,
     customerID

@@ -12,33 +12,34 @@ const getAll = async (tablename) => {
 };
 
 //check if a detail exists
-const detailExists = async (tableName, columnName, entry) => {
+const checkOneDetail = async (tableName, columnName, entry) => {
   try {
     const queryText = `select * from ${tableName} where ${columnName} =$1`;
     const value = [entry];
     const result = await DB.query(queryText, value);
     return result;
   } catch (err) {
-    console.log("ERROR");
+    throw err;
   }
 };
 
 //check for only one detail and return boolean
 
-const checkOneDetail = async (tableName, columnName, entry) => {
+const detailExists = async (tableName, columnName, entry) => {
   try {
-    const result = await detailExists(tableName, columnName, entry);
+    const result = await checkOneDetail(tableName, columnName, entry);
     return result.rowCount > 0;
   } catch (err) {
-    console.log("ERROR");
+    return false;;
   }
 };
 
 //get one item from the table
-const getOne = async (tableName, columnName, customerID) => {
+const getOne = async (tableDetails, customerID) => {
+  const [tableName, columns, columnName] = tableDetails;
   try {
-    if (await checkOneDetail(tableName, columnName, customerID)) {
-      const queryText = `select customer_id, first_name, last_name, email, phone_number from ${tableName} where ${columnName} =$1`;
+    if (await detailExists(tableName, columnName, customerID)) {
+      const queryText = `select ${columns} from ${tableName} where ${columnName} =$1`;
       const value = [customerID];
       const result = await DB.query(queryText, value);
       return result.rows;
@@ -70,7 +71,7 @@ const hashPassword = async (passwordPlusId, passwordTable, columns) => {
   try {
     const [password, customerId] = passwordPlusId;
     const salt = await crypto.randomBytes(16).toString("hex");
-  
+
     //hash the password with salt using the PBKDF2 algorithm
     const hash = await crypto
       .pbkdf2Sync(password, salt, 1000, 64, "sha512")
@@ -110,12 +111,7 @@ const verifyPassword = async (enteredPassword, customer_id, tableDetails) => {
   }
 };
 
-const updateOne = async (
-  tableName,
-  columns,
-  id,
-  ...details
-) => {
+const updateOne = async (tableName, columns, id, ...details) => {
   try {
     for (let i = 0; i < details.length; i++) {
       const queryText =
@@ -133,27 +129,27 @@ const updateOne = async (
 
 const takenDetail = async (tableName, columnName, valueOne) => {
   try {
-  const result = await detailExists(tableName, columnName, valueOne);
-  if (result.rows.length > 0){
-  const [resultObject] = result.rows;
-  const resultValues = Object.values(resultObject)
-  
-  const valueExists = await resultValues.find((value) => {
-    value === valueOne ? true: false;
-  })
-  console.log('this is ', valueExists)
-  if (valueExists) {
-    return true;
-  } else {
-    return false;
+    const result = await checkOneDetail(tableName, columnName, valueOne);
+    if (result.rows.length > 0) {
+      const [resultObject] = result.rows;
+      const resultValues = Object.values(resultObject);
+
+      const valueExists = await resultValues.find((value) => {
+        value === valueOne ? true : false;
+      });
+      console.log("this is ", valueExists);
+      if (valueExists) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log("Error", err);
+    throw err;
   }
-} else {
-  return false
-}
-} catch(err) {
-  console.log('Error',err)
-  throw err;
-}
 };
 
 const deleteOne = async (tableName, columnName, customerID) => {
@@ -182,11 +178,11 @@ module.exports = {
   addOne,
   updateOne,
   deleteOne,
-  detailExists,
+  checkOneDetail,
   hashPassword,
   getOne,
   deleteAccountWithoutPassword,
-  checkOneDetail,
+  detailExists,
   takenDetail,
   verifyPassword,
 };
