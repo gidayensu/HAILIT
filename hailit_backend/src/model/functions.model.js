@@ -119,34 +119,20 @@ const updateOne = async (tableName, columns, id, ...details) => {
 };
 //check if the user email is same as old email
 
+
 const takenDetail = async (tableName, columnName, ...args) => {
-  try {
-    const result = await checkOneDetail(tableName, columnName, args[0]);
-    if (result.rows.length > 0) {
-      const [resultObject] = result.rows;
-      const resultValues = Object.values(resultObject);
-      let existingValues=[];
-      for (let i=0; i<resultValues.length; i++) {
-        const filteredResults = await resultValues.filter((value =>  value === args[i]));
-        if (filteredResults.length>0){
-        existingValues.push(filteredResults.toString())}
-      }
-      //const valueExists = await resultValues.filter((value =>  value === valueOne));
-
-      if (existingValues.length === 1) {
-        return true;
-      }
-
-      if (existingValues.length > 1) {
-        return existingValues
-      }
-    } else {
-      return false;
-    }
-  } catch (err) {
-    throw err;
-  }
+  const result = await checkOneDetail(tableName, columnName, args[0]);
+  const resultValues = Object.values(result.rows[0] || []);
+  const existingValues = resultValues.filter((value) =>
+    args.includes(value.toString())
+  );
+  return existingValues.length === 1
+    ? true
+    : existingValues.length > 1
+    ? existingValues
+    : false;
 };
+
 
 const deleteOne = async (tableName, columnName, id) => {
   try {
