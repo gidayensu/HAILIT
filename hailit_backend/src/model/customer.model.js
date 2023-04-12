@@ -15,14 +15,14 @@ const columnsForCreation = [
   "first_name",
   "last_name",
   "email",
-  "phone_number"
+  "phone_number",
 ];
 const getAllCustomers = () => dbFunctions.getAll("customer");
 
 const getOneCustomer = async (customerID) => {
-  const columns = [...columnsForCreation]
+  const columns = [...columnsForCreation, "date_created", "date_updated"];
   const columnName = columnsForCreation[0];
-  const tableDetails = [tableName, columns, columnName]
+  const tableDetails = [tableName, columns, columnName];
   return await dbFunctions.getOne(tableDetails, customerID);
 };
 
@@ -33,7 +33,7 @@ const oneCustomerQuery = async (customerEmail) => {
     columnName,
     customerEmail
   );
-  const customerID = {customer_id: customerDetails[0].customer_id}
+  const customerID = { customer_id: customerDetails[0].customer_id };
   return customerID;
 };
 //check if email exists
@@ -65,7 +65,7 @@ const addCustomer = async (passwordPlusId, ...args) => {
         } else {
           console.log("error inserting password");
           const queryText = `delete from ${tableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
-          const value = [passwordTableColumns[0]]
+          const value = [passwordTableColumns[0]];
           await dbFunctions.deleteAccountWithoutPassword(queryText, value);
           return "Error: User not added to database";
         }
@@ -80,17 +80,17 @@ const addCustomer = async (passwordPlusId, ...args) => {
   }
 };
 
-const verifyCustomer = async (password, customer_id)=> {
-  const tableDetails = [passwordTable, passwordTableColumns[0]]
-  return await dbFunctions.verifyPassword(password, customer_id, tableDetails)
-}
+const verifyCustomer = async (password, customer_id) => {
+  const tableDetails = [passwordTable, passwordTableColumns[0]];
+  return await dbFunctions.verifyPassword(password, customer_id, tableDetails);
+};
 
 //update customer
 const updateCustomer = async (customerID, customerDetails) => {
   try {
     const email = customerDetails[2];
-    const emailColumn = columnsToBeUpdated[2]
-    console.log('this is', email, emailColumn, customerID, customerDetails)
+    const emailColumn = columnsToBeUpdated[2];
+    console.log("this is", email, emailColumn, customerID, customerDetails);
     // const queryText = `select ${columnsToBeUpdated[0]} from customer where customer_id = $1`
     // const idValidation = await DB.query(queryText, [customerID])
     const idValidation = await dbFunctions.detailExists(
@@ -98,40 +98,44 @@ const updateCustomer = async (customerID, customerDetails) => {
       columnsForCreation[0],
       customerID
     );
-    const takenEmail = await dbFunctions.takenDetail(
-      tableName,
-      emailColumn,
-      email
-    );
-    console.log('this is taken Email', takenEmail)
-    console.log('this is idvalidation', idValidation)
+
+    console.log("this is idvalidation", idValidation);
     if (idValidation) {
-      
+      const takenEmail = await dbFunctions.takenDetail(
+        tableName,
+        emailColumn,
+        email,
+        customerID
+      );
+
       if (takenEmail === true) {
-      return "user email taken";
+        return "user email taken";
       } else {
-        
         const updateDate = "now()";
         customerDetails.push(updateDate);
-        
-        return await dbFunctions.updateOne(
+
+        const update = await dbFunctions.updateOne(
           tableName,
           columnsToBeUpdated,
           customerID,
           ...customerDetails
         );
+        if (takenEmail === false) {
+          return update;
+        } else {
+          return `Details updated but ${takenEmail[0]} was not updated because it is the current email of the user`;
+        }
       }
-  } 
-    else {
+    } else {
       console.log("error");
       return "User Does Not Exist";
     }
   } catch (err) {
     console.log("could not update user. server error", err);
-    return `Error, ${err}`
+    return `Error, ${err}`;
   }
 
- //dbFunctions.updateOne(tableName, columnsToBeUpdated, ...customerDetails);
+  //dbFunctions.updateOne(tableName, columnsToBeUpdated, ...customerDetails);
 };
 
 const deleteCustomer = async (customerID) => {
@@ -157,5 +161,5 @@ module.exports = {
   deleteCustomer,
   emailExists,
   oneCustomerQuery,
-  verifyCustomer
+  verifyCustomer,
 };

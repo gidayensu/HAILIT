@@ -33,14 +33,19 @@
 
 // console.log(sam)
 
-const opula = (a, b)=> {
-    let sum = 0
-    sum = a+b
-    a=a-3
-    console.log(sum)
-    if (a > b) {
-        opula()
-    }
-}
+// const opula = (a, b)=> {
+//     let sum = 0
+//     sum = a+b
+//     a=a-3
+//     console.log(sum)
+//     if (a > b) {
+//         opula()
+//     }
+// }
 
-console.log(opula(4, 2))
+// console.log(opula(4, 2))
+
+const array = [1,2,3,5,5]
+const newArray =  [1,2,5,3,7,4,8]
+
+console.log(array.filter(e=> e === newArray))

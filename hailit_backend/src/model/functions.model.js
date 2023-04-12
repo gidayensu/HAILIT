@@ -6,7 +6,6 @@ const getAll = async (tablename) => {
     const allJSON = allItems.rows;
     return allJSON;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 };
@@ -35,20 +34,18 @@ const detailExists = async (tableName, columnName, entry) => {
 };
 
 //get one item from the table
-const getOne = async (tableDetails, customerID) => {
+const getOne = async (tableDetails, id) => {
   const [tableName, columns, columnName] = tableDetails;
   try {
-    if (await detailExists(tableName, columnName, customerID)) {
+    if (await detailExists(tableName, columnName, id)) {
       const queryText = `select ${columns} from ${tableName} where ${columnName} =$1`;
-      const value = [customerID];
+      const value = [id];
       const result = await DB.query(queryText, value);
       return result.rows;
     } else {
-      console.log("User does not exist");
-      return "User does not exist";
+      return ({message: 'user does not exist'});
     }
   } catch (err) {
-    console.log("Error");
     throw err;
   }
 };
@@ -58,11 +55,9 @@ const addOne = async (tableName, columns, ...args) => {
   const queryText = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
   try {
     const result = await DB.query(queryText, args);
-    console.log(result.rowCount, "rows affected");
     return result.rowCount > 0;
   } catch (err) {
-    console.log(`Could not insert into table ${tableName}`, err);
-    return "could not add user to database";
+    throw err;
   }
 };
 
@@ -83,19 +78,19 @@ const hashPassword = async (passwordPlusId, passwordTable, columns) => {
     const result = await DB.query(queryText, values);
     return result.rowCount > 0;
   } catch (err) {
-    console.log(err);
-    return false;
+   
+    throw err;
   }
 };
 
-const verifyPassword = async (enteredPassword, customer_id, tableDetails) => {
-  const customerID = customer_id.toString();
+const verifyPassword = async (enteredPassword, id, tableDetails) => {
+  const stringedId = id.toString();
 
   //const customer_id = '56cce05e-5b4a-496e-991b-be1a66981bb6';
   //console.log(`${customerID}`===customer_id)
   const [passwordTable, tableColumn] = tableDetails;
   const queryText = `SELECT * from ${passwordTable} where ${tableColumn} = $1`;
-  const result = await DB.query(queryText, [`${customerID}`]);
+  const result = await DB.query(queryText, [`${stringedId}`]);
   const storedHash = await result.rows[0].ps_hash;
   const storedSalt = await result.rows[0].ps_salt;
 
@@ -103,10 +98,8 @@ const verifyPassword = async (enteredPassword, customer_id, tableDetails) => {
     .pbkdf2Sync(enteredPassword, storedSalt, 1000, 64, "sha512")
     .toString("hex");
   if (storedHash === hash) {
-    console.log("password correct");
     return true;
   } else {
-    console.log("pasword incorrect");
     return false;
   }
 };
@@ -121,44 +114,46 @@ const updateOne = async (tableName, columns, id, ...details) => {
     }
     return "user updated";
   } catch (err) {
-    console.log("Error in updating userDetails", err);
-    return "Error in updating user details";
+    throw err;
   }
 };
 //check if the user email is same as old email
 
-const takenDetail = async (tableName, columnName, valueOne) => {
+const takenDetail = async (tableName, columnName, ...args) => {
   try {
-    const result = await checkOneDetail(tableName, columnName, valueOne);
+    const result = await checkOneDetail(tableName, columnName, args[0]);
     if (result.rows.length > 0) {
       const [resultObject] = result.rows;
       const resultValues = Object.values(resultObject);
+      let existingValues=[];
+      for (let i=0; i<resultValues.length; i++) {
+        const filteredResults = await resultValues.filter((value =>  value === args[i]));
+        if (filteredResults.length>0){
+        existingValues.push(filteredResults.toString())}
+      }
+      //const valueExists = await resultValues.filter((value =>  value === valueOne));
 
-      const valueExists = await resultValues.find((value) => {
-        value === valueOne ? true : false;
-      });
-      console.log("this is ", valueExists);
-      if (valueExists) {
+      if (existingValues.length === 1) {
         return true;
-      } else {
-        return false;
+      }
+
+      if (existingValues.length > 1) {
+        return existingValues
       }
     } else {
       return false;
     }
   } catch (err) {
-    console.log("Error", err);
     throw err;
   }
 };
 
-const deleteOne = async (tableName, columnName, customerID) => {
+const deleteOne = async (tableName, columnName, id) => {
   try {
     const queryText = `delete from ${tableName} where ${columnName} = $1`;
-    const values = [customerID];
+    const values = [id];
     await DB.query(queryText, values);
   } catch (err) {
-    console.log("Error deleting user");
     throw err;
   }
 };
@@ -166,9 +161,8 @@ const deleteOne = async (tableName, columnName, customerID) => {
 const deleteAccountWithoutPassword = async (queryText, value) => {
   try {
     await DB.query(queryText, value);
-    console.log("no password users deleted");
   } catch (err) {
-    console.log(err);
+   
     throw err;
   }
 };

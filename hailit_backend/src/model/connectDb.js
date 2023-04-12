@@ -1,8 +1,3 @@
-
-const {v4: uuid} = require('uuid')
-
-
-
 require('dotenv').config({path: './../../.env'});
 const {Pool} = require('pg')
 
