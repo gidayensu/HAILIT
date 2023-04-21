@@ -1,21 +1,21 @@
 const { v4: uuid } = require("uuid");
-const customerDb = require("./../model/customer.model");
+const customerModel = require("./../model/customer.model");
 
 const getAllCustomers = async () => {
-  const customers = await customerDb.getAllCustomers();
+  const customers = await customerModel.getAllCustomers();
   return customers;
 };
 
 const getOneCustomer = async (customerID) => {
-  return await customerDb.getOneCustomer(customerID);
+  return await customerModel.getOneCustomer(customerID);
 };
 
 const oneCustomerQuery = async(customerEmail)=> {
-    return await customerDb.oneCustomerQuery(customerEmail)
+    return await customerModel.oneCustomerQuery(customerEmail)
 }
 
 const verifyCustomer = async (password, customer_id) => {
-    return await customerDb.verifyCustomer(password, customer_id)
+    return await customerModel.verifyCustomer(password, customer_id)
 }
 
 const addCustomer = async (password, customerDetails) => {
@@ -23,7 +23,7 @@ const addCustomer = async (password, customerDetails) => {
     const customerId = await uuid();
     const passwordPlusId = [password, customerId];
     customerDetails.unshift(customerId);
-    return customerDb.addCustomer(passwordPlusId, ...customerDetails);
+    return customerModel.addCustomer(passwordPlusId, ...customerDetails);
   } catch (err) {
     console.log("Details not added");
     return err;
@@ -33,7 +33,7 @@ const addCustomer = async (password, customerDetails) => {
 
 const updateCustomer = async (customerID, customerDetails) => {
   try {
-    return await customerDb.updateCustomer(customerID, customerDetails);
+    return await customerModel.updateCustomer(customerID, customerDetails);
   } catch (err) {
     console.log("ERROR", err);
     return "Error. User not updated";
@@ -41,7 +41,7 @@ const updateCustomer = async (customerID, customerDetails) => {
 };
 
 const deleteCustomer = async (customerID) => {
-  return await customerDb.deleteCustomer(customerID);
+  return await customerModel.deleteCustomer(customerID);
 };
 module.exports = {
   getAllCustomers,
