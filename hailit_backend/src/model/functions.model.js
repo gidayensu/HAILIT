@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { DB } = require("./connectDb");
+
 const getAll = async (tablename) => {
   try {
     const allItems = await DB.query(`SELECT * FROM ${tablename}`);
@@ -33,16 +34,14 @@ const detailExists = async (tableName, columnName, entry) => {
   }
 };
 
-//get one item from the table
-const getOne = async (tableDetails, id) => {
-  const [tableName, columns, columnName] = tableDetails;
+//get one item from the table. //consider using a better approach that does not repeat itself
+const getOne = async (tableName, columnName, entry) => {
   try {
-    if (await detailExists(tableName, columnName, id)) {
-      const queryText = `select ${columns} from ${tableName} where ${columnName} =$1`;
-      const value = [id];
-      const result = await DB.query(queryText, value);
+      const result = await checkOneDetail(tableName, columnName, entry)
+      if (result.rowCount > 0){
       return result.rows;
-    } else {
+    }
+     else {
       return ({message: 'user does not exist'});
     }
   } catch (err) {
@@ -121,16 +120,14 @@ const updateOne = async (tableName, columns, id, ...details) => {
 
 
 const takenDetail = async (tableName, columnName, ...args) => {
-  const result = await checkOneDetail(tableName, columnName, args[0]);
+  const id = args[0]
+  const customerDetailsWithoutId = args.filter(detail=>detail!=id)
+  const result = await checkOneDetail(tableName, columnName, id);
   const resultValues = Object.values(result.rows[0] || []);
   const existingValues = resultValues.filter((value) =>
-    args.includes(value.toString())
+    customerDetailsWithoutId.includes(value.toString())
   );
-  return existingValues.length === 1
-    ? true
-    : existingValues.length > 1
-    ? existingValues
-    : false;
+  return existingValues;
 };
 
 

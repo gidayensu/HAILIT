@@ -48,4 +48,5 @@
 const array = [1,2,3,5,5]
 const newArray =  [1,2,5,3,7,4,8]
 
-console.log(array.filter(e=> e === newArray))
+const filtering = array.filter((e=> e!=array[0]))
+console.log(filtering)

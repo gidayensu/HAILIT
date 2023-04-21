@@ -1,5 +1,4 @@
 const { v4: uuid } = require("uuid");
-const crypto = require("crypto");
 const customerDb = require("./../model/customer.model");
 
 const getAllCustomers = async () => {

@@ -47,17 +47,16 @@ const verifyCustomer = async (req, res) => {
     const checkCustomerId = await customerService.oneCustomerQuery(email);
     if (checkCustomerId.customer_id) {
       const {customer_id} = checkCustomerId;
-      //const passwordPlusId = [password, customer_id]
       const verifiedCustomer = await customerService.verifyCustomer(
         password,
         customer_id
       );
+      console.log(verifiedCustomer)
       if (verifiedCustomer) {
-      res.status(200).json({ message: checkCustomerId });
-    } else {
-      console.log('wrong email/password')
-      res.status(404).json({message: false})
-    }
+      res.status(200).json({ message: verifiedCustomer });
+      } else {
+        res.status(404).json({message: false})  
+      } 
     } else {
       console.log('wrong email/password')
       res.status(404).json({message: false})
@@ -84,7 +83,7 @@ const addCustomer = async (req, res) => {
 const updateCustomer = async (req, res) => {
   try {
     const { customerID } = req.params;
-    const { first_name, last_name, email, phone_number } = req.body;
+    const { first_name = '', last_name = '', email = '', phone_number = ''} = req.body;
     const customerDetails = [first_name, last_name, email, phone_number];
     const updateCustomer = await customerService.updateCustomer(
       customerID,

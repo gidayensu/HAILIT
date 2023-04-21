@@ -20,10 +20,8 @@ const columnsForCreation = [
 const getAllCustomers = () => dbFunctions.getAll("customer");
 
 const getOneCustomer = async (customerID) => {
-  const columns = [...columnsForCreation, "date_created", "date_updated"];
   const columnName = columnsForCreation[0];
-  const tableDetails = [tableName, columns, columnName];
-  return await dbFunctions.getOne(tableDetails, customerID);
+  return await dbFunctions.getOne(tableName, columnName, customerID);
 };
 
 const oneCustomerQuery = async (customerEmail) => {
@@ -33,8 +31,14 @@ const oneCustomerQuery = async (customerEmail) => {
     columnName,
     customerEmail
   );
+  
+  console.log(customerDetails)
+  if(customerDetails.message){
+    return customerDetails;
+  } else {
   const customerID = { customer_id: customerDetails[0].customer_id };
   return customerID;
+}
 };
 //check if email exists
 const emailExists = async (email) => {
@@ -89,8 +93,9 @@ const verifyCustomer = async (password, customer_id) => {
 const updateCustomer = async (customerID, customerDetails) => {
   try {
     const email = customerDetails[2];
-    const emailColumn = columnsToBeUpdated[2];
-    console.log("this is", email, emailColumn, customerID, customerDetails);
+    const idColumn = "customer_id";
+   
+
     // const queryText = `select ${columnsToBeUpdated[0]} from customer where customer_id = $1`
     // const idValidation = await DB.query(queryText, [customerID])
     const idValidation = await dbFunctions.detailExists(
@@ -99,17 +104,15 @@ const updateCustomer = async (customerID, customerDetails) => {
       customerID
     );
 
-    console.log("this is idvalidation", idValidation);
     if (idValidation) {
-      const takenEmail = await dbFunctions.takenDetail(
+      const existingDetails = await dbFunctions.takenDetail(
         tableName,
-        emailColumn,
-        email,
-        customerID
+        idColumn, customerID,
+        ...customerDetails
       );
 
-      if (takenEmail === true) {
-        return "user email taken";
+      if (existingDetails.length === 1 && existingDetails.some(e=>e===email)) {
+        return "user email taken. user not updated";
       } else {
         const updateDate = "now()";
         customerDetails.push(updateDate);
@@ -120,11 +123,13 @@ const updateCustomer = async (customerID, customerDetails) => {
           customerID,
           ...customerDetails
         );
-        if (takenEmail === false) {
-          return update;
-        } else {
-          return `Details updated but ${takenEmail[0]} was not updated because it is the current email of the user`;
-        }
+        console.log(existingDetails)
+        if (existingDetails.length > 0) {
+          return ({detailsNotUpdated: existingDetails,
+                  reason: 'same as current details'});
+                } else {
+                  return update;
+                }
       }
     } else {
       console.log("error");
