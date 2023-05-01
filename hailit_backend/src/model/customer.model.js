@@ -110,7 +110,7 @@ const updateCustomer = async (customerID, customerDetails) => {
         idColumn, customerID,
         ...customerDetails
       );
-
+console.log(existingDetails)
       if (existingDetails.length === 1 && existingDetails.some(e=>e===email)) {
         return "user email taken. user not updated";
       } else {
@@ -137,7 +137,7 @@ const updateCustomer = async (customerID, customerDetails) => {
     }
   } catch (err) {
     console.log("could not update user. server error", err);
-    return `Error, ${err}`;
+    return `Error occured, ${err}`;
   }
 
   //dbFunctions.updateOne(tableName, columnsToBeUpdated, ...customerDetails);
