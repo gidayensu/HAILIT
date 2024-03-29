@@ -23,11 +23,11 @@ const addCustomer = async (password, customerDetails) => {
   try {
     const customerId = await uuid();
     const passwordPlusId = [password, customerId];
-    console.log('this is customer details', customerDetails)
+    
     customerDetails.unshift(customerId);
     return customerModel.addCustomer(passwordPlusId, ...customerDetails);
   } catch (err) {
-    console.log("Details not added");
+    
     return err;
   }
 };

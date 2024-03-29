@@ -20,6 +20,8 @@ const getAllCustomers = async (req, res) => {
 
 const getOneCustomer = async (req, res) => {
   try {
+    req.session.isLoggedin = true;
+    console.log('req.session:',req.session)
     const { customerID = "" } = await req.params;
     if (res && res.status) {
       const oneCustomer = await customerService.getOneCustomer(customerID);
@@ -46,7 +48,11 @@ const oneCustomerQuery = async (req, res) => {
 
 const verifyCustomer = async (req, res) => {
   try {
+    
     const { password, email } = req.body;
+    if (!password || !email) {
+        res.status(400).json({message: "email or password can't be empty"})
+    } else {
     const checkCustomerId = await customerService.oneCustomerQuery(email);
     if (checkCustomerId.customer_id) {
       const {customer_id} = checkCustomerId;
@@ -54,8 +60,10 @@ const verifyCustomer = async (req, res) => {
         password,
         customer_id
       );
-      console.log(verifiedCustomer)
+      
       if (verifiedCustomer) {
+      res.setHeader('Set-Cookie', 'logged-out=true')
+      console.log('verified:', verifiedCustomer)
       res.status(200).json({ message: verifiedCustomer });
       } else {
         res.status(404).json({message: false})  
@@ -63,7 +71,7 @@ const verifyCustomer = async (req, res) => {
     } else {
       console.log('wrong email/password')
       res.status(404).json({message: false})
-    }
+    }}
   } catch (err) {
     console.log("error", err);
     res.status(500).json({ message: "server error" });
@@ -72,21 +80,23 @@ const verifyCustomer = async (req, res) => {
 const addCustomer = async (req, res) => {
   
   const { first_name, last_name, email, phone_number, password } = req.body;
-  console.log(req.body)
+  
   
   
   try {
     if (!first_name || !last_name || !email || !phone_number || !password) {
-      res.status(400).json({message: "all fields are required"})
+      res.status(200).json({message: "all fields are required"})
     } else if (!emailValidator(email)) {
-      res.status(400).json({message: "enter a correct email"})
+      res.status(200).json({message: "enter a correct email"})
     } else if (!phoneValidator(phone_number)) {
-      res.status(400).json({message: "enter a 10-digit phone number"})
+      res.status(200).json({message: "enter a 10-digit phone number"})
     }
 
     else {
     const customerDetails = [first_name, last_name, email, phone_number];
     const result = await customerService.addCustomer(password, customerDetails);
+    console.log('result:', result)
+    res.setHeader('Set-Cookie', 'logged-in=true')
     res.status(200).json({ message: result });}
   } catch (err) {
     console.log(err);

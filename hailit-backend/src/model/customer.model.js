@@ -72,7 +72,7 @@ const addCustomer = async (passwordPlusId, ...args) => {
         );
         if (insertPassword) {
           console.log("User added");
-          return "User added";
+          return {message: "User added"}
         } else {
           console.log("error inserting password");
           const queryText = `delete from ${tableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
@@ -82,8 +82,8 @@ const addCustomer = async (passwordPlusId, ...args) => {
         }
       }
     } else {
-      console.log("user email or number exists");
-      return "user email or number exists";
+      
+      return {message: "user email or number exists"};
     }
   } catch (err) {
     console.log(err);
