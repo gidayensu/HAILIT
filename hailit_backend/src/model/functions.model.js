@@ -1,9 +1,9 @@
 const crypto = require("crypto");
 const { DB } = require("./connectDb");
 
-const getAll = async (tablename) => {
+const getAll = async (tableName) => {
   try {
-    const allItems = await DB.query(`SELECT * FROM ${tablename}`);
+    const allItems = await DB.query(`SELECT * FROM ${tableName}`);
     const allJSON = allItems.rows;
     return allJSON;
   } catch (err) {
@@ -17,6 +17,7 @@ const checkOneDetail = async (tableName, columnName, entry) => {
     const queryText = `select * from ${tableName} where ${columnName} =$1`;
     const value = [entry];
     const result = await DB.query(queryText, value);
+    
     return result;
   } catch (err) {
     throw err;
@@ -38,6 +39,7 @@ const detailExists = async (tableName, columnName, entry) => {
 const getOne = async (tableName, columnName, entry) => {
   try {
       const result = await checkOneDetail(tableName, columnName, entry)
+      console.log('one checked')
       if (result.rowCount > 0){
       return result.rows;
     }
@@ -119,7 +121,7 @@ const updateOne = async (tableName, columns, id, ...details) => {
 //check if the user email is same as old email
 
 
-const takenDetail = async (tableName, columnName, ...args) => {
+/* const takenDetail = async (tableName, columnName, ...args) => {
   const id = args[0]
   const customerDetailsWithoutId = args.filter(detail=>detail!=id)
   const result = await checkOneDetail(tableName, columnName, id);
@@ -128,7 +130,7 @@ const takenDetail = async (tableName, columnName, ...args) => {
     customerDetailsWithoutId.includes(value.toString())
   );
   return existingValues;
-};
+}; */
 
 
 const deleteOne = async (tableName, columnName, id) => {
@@ -160,6 +162,5 @@ module.exports = {
   getOne,
   deleteAccountWithoutPassword,
   detailExists,
-  takenDetail,
   verifyPassword,
 };

@@ -17,7 +17,7 @@ const columnsForCreation = [
   "email",
   "phone_number",
 ];
-const getAllCustomers = () => dbFunctions.getAll("customer");
+const getAllCustomers = () => dbFunctions.getAll(tableName);
 
 const getOneCustomer = async (customerID) => {
   const columnName = columnsForCreation[0];
@@ -46,12 +46,19 @@ const emailExists = async (email) => {
   return await dbFunctions.detailExists(tableName, columnName, email);
 };
 
+//check if phone number exists
+const numberExists = async(phoneNumber) => {
+  const columnName = columnsForCreation[4];
+  return await dbFunctions.detailExists(tableName, columnName, phoneNumber)
+}
+
 //add customer METHOD: POST
 const addCustomer = async (passwordPlusId, ...args) => {
   const email = args[3];
+  const phoneNumber = args[4];
 
   try {
-    if (!(await emailExists(email))) {
+    if (!(await emailExists(email)) && !(await numberExists(phoneNumber))) {
       const insertCustomerOtherDetails = await dbFunctions.addOne(
         tableName,
         columnsForCreation,
@@ -75,8 +82,8 @@ const addCustomer = async (passwordPlusId, ...args) => {
         }
       }
     } else {
-      console.log("user email exists");
-      return "user email exists";
+      console.log("user email or number exists");
+      return "user email or number exists";
     }
   } catch (err) {
     console.log(err);
@@ -93,6 +100,7 @@ const verifyCustomer = async (password, customer_id) => {
 const updateCustomer = async (customerID, customerDetails) => {
   try {
     const email = customerDetails[2];
+    const phoneNumber = customerDetails[3]
     const idColumn = "customer_id";
    
 
@@ -105,16 +113,23 @@ const updateCustomer = async (customerID, customerDetails) => {
     );
 
     if (idValidation) {
-      const existingDetails = await dbFunctions.takenDetail(
-        tableName,
-        idColumn, customerID,
-        ...customerDetails
-      );
-console.log(existingDetails)
-      if (existingDetails.length === 1 && existingDetails.some(e=>e===email)) {
-        return "user email taken. user not updated";
-      } else {
-        const updateDate = "now()";
+      const result = await dbFunctions.getOne(tableName, idColumn, customerID);
+      const resultValues = Object.values(result[0] || []);
+      
+      if (await emailExists(email) && email!=resultValues[3]) {
+        return 'Email is taken. User not updated'
+      }
+
+      else if (await numberExists(phoneNumber) && phoneNumber != resultValues[4]) {
+        return 'phone number is taken user not updated'
+      }
+      else 
+      {
+        const existingDetails = resultValues.filter((value) =>
+        customerDetails.includes(value.toString())
+    );
+    console.log('This is result values', existingDetails)
+    const updateDate = "now()";
         customerDetails.push(updateDate);
 
         const update = await dbFunctions.updateOne(
@@ -123,14 +138,17 @@ console.log(existingDetails)
           customerID,
           ...customerDetails
         );
-        console.log(existingDetails)
         if (existingDetails.length > 0) {
+          update;
           return ({detailsNotUpdated: existingDetails,
                   reason: 'same as current details'});
                 } else {
                   return update;
                 }
-      }
+   
+  }
+    
+
     } else {
       console.log("error");
       return "User Does Not Exist";
