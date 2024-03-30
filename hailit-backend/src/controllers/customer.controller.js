@@ -2,7 +2,7 @@ const customerService = require("../services/customer.service");
 const { emailValidator, phoneValidator } = require( "../utils/util");
 
 const getAllCustomers = async (req, res) => {
-  console.log('this is reached');
+  
   try {
     const allCustomers = await customerService.getAllCustomers();
     if (res && res.status) {
@@ -11,9 +11,9 @@ const getAllCustomers = async (req, res) => {
       return;
     }
   } catch (error) {
-    console.log(error);
+    
     if (res && res.status) {
-      res.status(500).json({ status: "ERROR", data: "Server error" });
+      res.status(500).json({ message: "server error" });
     }
   }
 };
@@ -30,7 +30,7 @@ const getOneCustomer = async (req, res) => {
   } catch (err) {
     console.log(err);
     if (res && res.status) {
-      res.status(500).send({ message: "Server error" });
+      res.status(500).send({ message: "server error" });
     }
   }
 };
@@ -130,7 +130,7 @@ const deleteCustomer = async (req, res) => {
   } catch (err) {
     console.log("could not delete customer");
     console.log(err)
-    res.status(500).json({ message: "Server ERROR" });
+    res.status(500).json({ message: "server error" });
   }
 };
 //exporting functions
