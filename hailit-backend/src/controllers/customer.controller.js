@@ -57,19 +57,44 @@ const customerLogin = async (req, res) => {
   }
 };
 
+const authenticateToken = async (req, res, next)=> {
+  try {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({message: "Unauthorized"})
+  }
+
+  const token = authHeader.split(' ')[1];
+   jwt.verify(token, process.env.JWT_SECRET, (err, customer)=> {
+    if(err) {
+      return res.status(403).json({message: 'Authentication Error'})
+    }
+    req.customer = customer;
+    next();
+   });
+
+} catch (err) {
+  return res.status(400).json({message: "error occurred"});
+}
+
+}
+
 const getOneCustomer = async (req, res) => {
   try {
     const {customerId} = req.params;
-    const authHeader = req.headers.authorization;
-    console.log('authHeader:',authHeader)
-    if (!authHeader) {
-      return res.stats(401).json( {message: "Authorization header missing"})
-    }
-    const token = authHeader.split(' ')[1];
     
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('decodedToken:', decodedToken)
-    if (decodedToken.customer_id === customerId) {
+    // const authHeader = req.headers.authorization;
+    // console.log('authHeader:',authHeader)
+    // if (!authHeader) {
+    //   return res.stats(401).json( {message: "Authorization header missing"})
+    // }
+    // const token = authHeader.split(' ')[1];
+    
+    // const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    // console.log('decodedToken:', decodedToken)
+    const jwtCustomerId = req.customer.customer_id;
+    // if (decodedToken.customer_id === customerId) {
+      if (jwtCustomerId === customerId) {
       if (res && res.status) {
         const oneCustomer = await customerService.getOneCustomer(customerId);
         res.status(200).json(oneCustomer);
