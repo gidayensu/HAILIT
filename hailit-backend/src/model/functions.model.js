@@ -39,7 +39,7 @@ const detailExists = async (tableName, columnName, entry) => {
 const getOne = async (tableName, columnName, entry) => {
   try {
       const result = await checkOneDetail(tableName, columnName, entry)
-      console.log('one checked')
+      
       if (result.rowCount > 0){
       return result.rows;
     }
@@ -88,7 +88,7 @@ const verifyPassword = async (enteredPassword, id, tableDetails) => {
   const stringedId = id.toString();
 
   //const customer_id = '56cce05e-5b4a-496e-991b-be1a66981bb6';
-  //console.log(`${customerID}`===customer_id)
+  //console.log(`${customerId}`===customer_id)
   const [passwordTable, tableColumn] = tableDetails;
   const queryText = `SELECT * from ${passwordTable} where ${tableColumn} = $1`;
   const result = await DB.query(queryText, [`${stringedId}`]);

@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken')
 const morgan = require('morgan')
 const helmet = require('helmet');
 const bodyParser = require('body-parser')

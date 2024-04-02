@@ -7,7 +7,7 @@ const getAllDrivers = async (req, res)=> {
             res.status(200).send({status: 'OK', data: allDrivers})
         }
     } catch (error) {
-        console.log(error)
+        
         if (res && res.status) {
             res.status(500).send({status: 'ERROR', data: 'server error'})
         }

@@ -6,15 +6,15 @@ router.get('/', customerController.getAllCustomers)
 
 router.get('/find', customerController.oneCustomerQuery)
 
-router.post('/verify', customerController.verifyCustomer)
+router.post('/login', customerController.customerLogin)
 
-router.get('/:customerID', customerController.getOneCustomer)
+router.get('/:customerId', customerController.getOneCustomer)
 
 
-router.post('/', customerController.addCustomer)
+router.post('/register', customerController.addCustomer)
 
-router.put('/:customerID', customerController.updateCustomer)
+router.put('/:customerId', customerController.updateCustomer)
 
-router.delete('/:customerID', customerController.deleteCustomer)
+router.delete('/:customerId', customerController.deleteCustomer)
 
 module.exports = {router, }

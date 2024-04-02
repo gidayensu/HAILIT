@@ -19,9 +19,9 @@ const columnsForCreation = [
 ];
 const getAllCustomers = () => dbFunctions.getAll(tableName);
 
-const getOneCustomer = async (customerID) => {
+const getOneCustomer = async (customerId) => {
   const columnName = columnsForCreation[0];
-  return await dbFunctions.getOne(tableName, columnName, customerID);
+  return await dbFunctions.getOne(tableName, columnName, customerId);
 };
 
 const oneCustomerQuery = async (customerEmail) => {
@@ -32,12 +32,12 @@ const oneCustomerQuery = async (customerEmail) => {
     customerEmail
   );
   
-  console.log(customerDetails)
+  
   if(customerDetails.message){
     return customerDetails;
   } else {
-  const customerID = { customer_id: customerDetails[0].customer_id };
-  return customerID;
+  const customerId = { customer_id: customerDetails[0].customer_id };
+  return customerId;
 }
 };
 //check if email exists
@@ -71,10 +71,10 @@ const addCustomer = async (passwordPlusId, ...args) => {
           passwordTableColumns
         );
         if (insertPassword) {
-          console.log("User added");
+          
           return {message: "User added"}
         } else {
-          console.log("error inserting password");
+          
           const queryText = `delete from ${tableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
           const value = [passwordTableColumns[0]];
           await dbFunctions.deleteAccountWithoutPassword(queryText, value);
@@ -86,18 +86,31 @@ const addCustomer = async (passwordPlusId, ...args) => {
       return {message: "user email or number exists"};
     }
   } catch (err) {
-    console.log(err);
+    
     throw err;
   }
 };
 
-const verifyCustomer = async (password, customer_id) => {
+const customerLogin = async (password, customer_id) => {
   const tableDetails = [passwordTable, passwordTableColumns[0]];
-  return await dbFunctions.verifyPassword(password, customer_id, tableDetails);
+  const verifyPassword = await dbFunctions.verifyPassword(password, customer_id, tableDetails);
+  if(!verifyPassword) {
+    return {message: 'wrong email or password', verification_status: false}
+  } else {
+    const userData = await getOneCustomer(customer_id);
+    const exportUserData =  {
+      email: userData[0].email,
+      first_name: userData[0].first_name,
+      last_name: userData[0].last_name,
+      phone_number: userData[0].phone_number,
+      verification_status: true
+    }
+    return exportUserData;
+  }
 };
 
 //update customer
-const updateCustomer = async (customerID, customerDetails) => {
+const updateCustomer = async (customerId, customerDetails) => {
   try {
     const email = customerDetails[2];
     const phoneNumber = customerDetails[3]
@@ -105,15 +118,15 @@ const updateCustomer = async (customerID, customerDetails) => {
    
 
     // const queryText = `select ${columnsToBeUpdated[0]} from customer where customer_id = $1`
-    // const idValidation = await DB.query(queryText, [customerID])
+    // const idValidation = await DB.query(queryText, [customerId])
     const idValidation = await dbFunctions.detailExists(
       tableName,
       columnsForCreation[0],
-      customerID
+      customerId
     );
 
     if (idValidation) {
-      const result = await dbFunctions.getOne(tableName, idColumn, customerID);
+      const result = await dbFunctions.getOne(tableName, idColumn, customerId);
       const resultValues = Object.values(result[0] || []);
       
       if (await emailExists(email) && email!=resultValues[3]) {
@@ -128,14 +141,14 @@ const updateCustomer = async (customerID, customerDetails) => {
         const existingDetails = resultValues.filter((value) =>
         customerDetails.includes(value.toString())
     );
-    console.log('This is result values', existingDetails)
+    
     const updateDate = "now()";
         customerDetails.push(updateDate);
 
         const update = await dbFunctions.updateOne(
           tableName,
           columnsToBeUpdated,
-          customerID,
+          customerId,
           ...customerDetails
         );
         if (existingDetails.length > 0) {
@@ -150,30 +163,30 @@ const updateCustomer = async (customerID, customerDetails) => {
     
 
     } else {
-      console.log("error");
-      return "User Does Not Exist";
+      
+      return {message: "User Does Not Exist"};
     }
   } catch (err) {
-    console.log("could not update user. server error", err);
-    return `Error occured, ${err}`;
+    
+    return `Error occurred, ${err}`;
   }
 
   //dbFunctions.updateOne(tableName, columnsToBeUpdated, ...customerDetails);
 };
 
-const deleteCustomer = async (customerID) => {
+const deleteCustomer = async (customerId) => {
   const columnName = columnsForCreation[0];
   const userExists = await dbFunctions.detailExists(
     tableName,
     columnName,
-    customerID
+    customerId
   );
   if (userExists) {
-    await dbFunctions.deleteOne(tableName, columnName, customerID);
-    return "user deleted";
+    await dbFunctions.deleteOne(tableName, columnName, customerId);
+    return {message: "user deleted"};
   } else {
-    console.log("user does not exist");
-    return "user does not exist";
+    
+    return {message: "user does not exist"};
   }
 };
 module.exports = {
@@ -184,5 +197,5 @@ module.exports = {
   deleteCustomer,
   emailExists,
   oneCustomerQuery,
-  verifyCustomer,
+  customerLogin,
 };

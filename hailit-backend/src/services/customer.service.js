@@ -2,21 +2,21 @@ const { v4: uuid } = require("uuid");
 const customerModel = require("./../model/customer.model");
 
 const getAllCustomers = async () => {
-  console.log('this is logged')
+  
   const customers = await customerModel.getAllCustomers();
   return customers;
 };
 
-const getOneCustomer = async (customerID) => {
-  return await customerModel.getOneCustomer(customerID);
+const getOneCustomer = async (customerId) => {
+  return await customerModel.getOneCustomer(customerId);
 };
 
 const oneCustomerQuery = async(customerEmail)=> {
     return await customerModel.oneCustomerQuery(customerEmail)
 }
 
-const verifyCustomer = async (password, customer_id) => {
-    return await customerModel.verifyCustomer(password, customer_id)
+const customerLogin = async (password, customer_id) => {
+    return await customerModel.customerLogin(password, customer_id)
 }
 
 const addCustomer = async (password, customerDetails) => {
@@ -33,17 +33,17 @@ const addCustomer = async (password, customerDetails) => {
 };
 
 
-const updateCustomer = async (customerID, customerDetails) => {
+const updateCustomer = async (customerId, customerDetails) => {
   try {
-    return await customerModel.updateCustomer(customerID, customerDetails);
+    return await customerModel.updateCustomer(customerId, customerDetails);
   } catch (err) {
-    console.log("ERROR", err);
+    
     return "Error. User not updated";
   }
 };
 
-const deleteCustomer = async (customerID) => {
-  return await customerModel.deleteCustomer(customerID);
+const deleteCustomer = async (customerId) => {
+  return await customerModel.deleteCustomer(customerId);
 };
 module.exports = {
   getAllCustomers,
@@ -52,5 +52,5 @@ module.exports = {
   deleteCustomer,
   getOneCustomer,
   oneCustomerQuery,
-  verifyCustomer
+  customerLogin
 };
