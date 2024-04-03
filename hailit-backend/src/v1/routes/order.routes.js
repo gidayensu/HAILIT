@@ -12,4 +12,4 @@ router.put('/:orderID', updateOrder)
 
 router.delete('/:orderID')
 
-module.exports = {router, deleteOrder}
+module.exports = {router, }

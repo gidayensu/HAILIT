@@ -44,7 +44,7 @@ const getOne = async (tableName, columnName, entry) => {
       return result.rows;
     }
      else {
-      return ({message: 'user does not exist'});
+      return ({message: 'detail does not exist'});
     }
   } catch (err) {
     throw err;
@@ -65,7 +65,7 @@ const addOne = async (tableName, columns, ...args) => {
 const hashPassword = async (passwordPlusId, passwordTable, columns) => {
   //generate a random salt
   try {
-    const [password, customerId] = passwordPlusId;
+    const [password, userId] = passwordPlusId;
     const salt = await crypto.randomBytes(16).toString("hex");
 
     //hash the password with salt using the PBKDF2 algorithm
@@ -73,7 +73,7 @@ const hashPassword = async (passwordPlusId, passwordTable, columns) => {
       .pbkdf2Sync(password, salt, 1000, 64, "sha512")
       .toString("hex");
 
-    const values = [customerId, salt, hash];
+    const values = [userId, salt, hash];
 
     const queryText = `INSERT INTO ${passwordTable} (${columns}) values ($1, $2, $3) RETURNING *`;
     const result = await DB.query(queryText, values);
@@ -87,8 +87,6 @@ const hashPassword = async (passwordPlusId, passwordTable, columns) => {
 const verifyPassword = async (enteredPassword, id, tableDetails) => {
   const stringedId = id.toString();
 
-  //const customer_id = '56cce05e-5b4a-496e-991b-be1a66981bb6';
-  //console.log(`${customerId}`===customer_id)
   const [passwordTable, tableColumn] = tableDetails;
   const queryText = `SELECT * from ${passwordTable} where ${tableColumn} = $1`;
   const result = await DB.query(queryText, [`${stringedId}`]);
@@ -109,11 +107,11 @@ const updateOne = async (tableName, columns, id, ...details) => {
   try {
     for (let i = 0; i < details.length; i++) {
       const queryText =
-        await `UPDATE ${tableName} SET ${columns[i]} = $1 WHERE customer_id = $2`;
+        await `UPDATE ${tableName} SET ${columns[i]} = $1 WHERE user_id = $2`;
       const values = [details[i], id];
       await DB.query(queryText, values);
     }
-    return "user updated";
+    return "detail updated";
   } catch (err) {
     throw err;
   }
@@ -123,11 +121,11 @@ const updateOne = async (tableName, columns, id, ...details) => {
 
 /* const takenDetail = async (tableName, columnName, ...args) => {
   const id = args[0]
-  const customerDetailsWithoutId = args.filter(detail=>detail!=id)
+  const userDetailsWithoutId = args.filter(detail=>detail!=id)
   const result = await checkOneDetail(tableName, columnName, id);
   const resultValues = Object.values(result.rows[0] || []);
   const existingValues = resultValues.filter((value) =>
-    customerDetailsWithoutId.includes(value.toString())
+    userDetailsWithoutId.includes(value.toString())
   );
   return existingValues;
 }; */

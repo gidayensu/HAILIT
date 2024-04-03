@@ -30,14 +30,13 @@ type Login = boolean;
 export default function Home() {
   const router = useRouter(); 
 
-  const [isLoggedIn, setisLoggedIn] = useState<Login>(false);
-
-  let returnedUserData: ReturnedData = {
-    email: 'hjgjh',
-    first_name: '65',
-    last_name: '564',
-    phone_number: '564'
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState<Login>(false);
+  const [returnedUserData, setReturnedUserData] = useState<ReturnedData> ({
+    email: '',
+    first_name: '',
+    last_name: '',
+    phone_number: ''
+  })
   
 
   const [signUpData, setSignUpData] = useState<SignUpState>({
@@ -53,7 +52,7 @@ export default function Home() {
     password: ''
   })
 
-  const [login, setLogin] = useState<Login>(false);
+  const [login, setLogin] = useState<Login>(true);
 
   const handleLogin=()=> setLogin(()=>!login)
 
@@ -78,35 +77,13 @@ export default function Home() {
     e.preventDefault();
     
     let url = '';
-    let method = null;
-
-    if (userData.hasOwnProperty('phone_number')) {
-      url = 'http://localhost:5000/api/v1/customer/'
-      method = 'POST';
-    } else {
-      url = 'http://localhost:5000/api/v1/customer/verify'
-      method = 'POST';
-    }
-
+    userData.hasOwnProperty('phone_number') ? url = 'http://localhost:5000/api/v1/user/': url = 'http://localhost:5000/api/v1/user/login'
     const data = await fetchPost(url, userData)
-    // const response = await fetch(url, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-        
-    //   },
-    //   body: JSON.stringify(userData)
-    // })
 
-    // if (!response.ok) {
-    // const data = await response.json();
-    //   throw new Error(data.message || 'Unknown Error Occurred');
-    // } 
-
-    // const data = await response.json();
     // data.message === true ? router.push('/profile') : console.log('authentication failed')
-    data.message ? setisLoggedIn(true) : console.log('authentication failed');
-    returnedUserData = await data.message;
+    typeof(data.message) === 'object' ? setIsLoggedIn(true) : console.log('authentication failed');
+    console.log('data message:', data.message)
+    setReturnedUserData (data.message);
     
     
     return data;
@@ -179,90 +156,20 @@ export default function Home() {
         </div>}
         <button
           type="submit"
-          className="rounded-lg h-12 w-40 bg-black text-white"
+          className=" rounded-lg h-12 w-40 bg-black text-white"
         >
           
           {login? "login" :  "sign up"}
           
         </button>
-        <p onClick={handleLogin}>{login? "Don't have an account? sign up" :  "Have an account? login"} </p>
+        <p onClick={handleLogin} className="cursor-pointer">{login? "Don't have an account? sign up" :  "Have an account? login"} </p>
       </form>
 }    
 { isLoggedIn && 
-  <div className="text-red-500 font-bold text-4xl bg-red w-96 h-96">
-      
-      <form onSubmit={!login? ()=>handleSubmit(event, signUpData) : ()=>handleSubmit(event, loginData)} className="border-2 h-96 w-80 rounded-xl flex flex-col items-center justify-center border-black border-opacity-30">
-        {!login && <div className="grid grid-cols-2 justify-center items-center mb-4 gap-8">
-          <div className="flex flex-row justify-start items-center ">
-            <label className="absolute text-black z-10 text-sm ml-4">**</label>
-            <input
-              onChange={handleSignUpChange}
-              type="text"
-              className="relative border border-black h-10 w-32 rounded-xl text-sm pl-9"
-              placeholder="First Name"
-              name="first_name"
-              value={signUpData.first_name}
-            />
-          </div>
-          <div className="flex flex-row justify-start items-center">
-            <label className="absolute text-black z-10 text-sm ml-4">**</label>
-            <input
-              onChange={handleSignUpChange}
-              type="text"
-              className="relative border border-black h-10 w-32 rounded-xl text-sm pl-9"
-              name="last_name"
-              value={signUpData.last_name}
-              placeholder="Last Name"
-            />
-          </div>
-        </div>}
-        <div className="flex flex-row justify-start items-center mb-4">
-          <label className="absolute text-black z-10 text-sm ml-4">**</label>
-          <input
-            onChange={!login ? handleSignUpChange : handleLoginChange}
-            type="text"
-            className="relative border border-black h-10 w-72 rounded-xl text-sm pl-9"
-            placeholder="Email"
-            name="email"
-            value={!login ? signUpData.email : loginData.email}
-          />
-        </div>
-        <div className="flex flex-row justify-start items-center mb-4">
-          <label className="absolute text-black z-10 text-sm ml-4">**</label>
-          <input
-            onChange={!login ? handleSignUpChange: handleLoginChange}
-            type="password"
-            className="relative border border-black h-10 w-72 rounded-xl text-sm pl-9"
-            placeholder="Password"
-            name="password"
-            value={!login ? signUpData.password : loginData.password}
-          />
-        </div>
-
-        {!login && <div className="flex flex-row justify-start items-center mb-4">
-          <label className="absolute text-black z-10 text-sm ml-4">**</label>
-          <input
-            onChange={handleSignUpChange}
-            type="text"
-            className="relative border border-black h-10 w-72 rounded-xl text-sm pl-9"
-            placeholder="Phone Number"
-            name="phone_number"
-            value={signUpData.phone_number}
-          />
-        </div>}
-        <button
-          type="submit"
-          className="rounded-lg h-12 w-40 bg-black text-white"
-        >
-          
-          {login? `${returnedUserData.email}` :  "sign up"}
-          
-        </button>
-        
-        <p onClick={handleLogin}>{login? "Don't have an account? sign up" :  "Have an account? login"} </p>
-      </form>
-      
-      </div>
+  <div>    
+    <p className="text-black">This is logged in {returnedUserData.first_name}</p>
+    <p className="text-black">Isaac's Email {returnedUserData.email}</p>
+  </div>
 }
     
 

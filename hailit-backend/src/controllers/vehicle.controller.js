@@ -9,8 +9,11 @@ const getOneVehicle = ()=> {
 
 }
 
-const addVehicle = ()=> {
-
+const addVehicle = (req, res)=> {
+    const {vehicle_name, vehicle_model, plate_number, vehicle_type} = req.body;
+    if (!vehicle_name || vehicle_model || plate_number || vehicle_type) {
+        
+    }
 }
 
 const updateVehicle = ()=> {

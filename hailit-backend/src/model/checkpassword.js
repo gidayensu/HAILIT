@@ -1,3 +1,3 @@
-const data = {customer_id: 'sgsgsgweetwetwetweasgd'}
-if(data.customer_id){
-(data.customer_id)}
+const data = {user_id: 'sgsgsgweetwetwetweasgd'}
+if(data.user_id){
+(data.user_id)}
