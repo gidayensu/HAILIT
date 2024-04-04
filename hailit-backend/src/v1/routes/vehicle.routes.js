@@ -4,12 +4,12 @@ const router = express.Router()
 
 router.get('/', getAllVehicles)
 
-router.get('/:vehicleID', getOneVehicle)
+router.get('/:vehicle_id', getOneVehicle)
 
-router.post('/', addVehicle)
+router.post('/add', addVehicle)
 
-router.put('/:vehicleID', updateVehicle)
+router.put('/:vehicle_id', updateVehicle)
 
-router.delete('/:vehicleID')
+router.delete('/:vehicle_id', deleteVehicle)
 
 module.exports = {router}

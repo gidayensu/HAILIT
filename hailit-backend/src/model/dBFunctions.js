@@ -3,6 +3,7 @@ const { DB } = require("./connectDb");
 
 const getAll = async (tableName) => {
   try {
+    
     const allItems = await DB.query(`SELECT * FROM ${tableName}`);
     const allJSON = allItems.rows;
     return allJSON;
@@ -26,9 +27,9 @@ const checkOneDetail = async (tableName, columnName, entry) => {
 
 //check for only one detail and return boolean
 
-const detailExists = async (tableName, columnName, entry) => {
+const detailExists = async (tableName, columnName, detail) => {
   try {
-    const result = await checkOneDetail(tableName, columnName, entry);
+    const result = await checkOneDetail(tableName, columnName, detail);
     return result.rowCount > 0;
   } catch (err) {
     return false;;
@@ -37,6 +38,7 @@ const detailExists = async (tableName, columnName, entry) => {
 
 //get one item from the table. //consider using a better approach that does not repeat itself
 const getOne = async (tableName, columnName, entry) => {
+  console.log('tableName, columnName, entry:', tableName, columnName, entry)
   try {
       const result = await checkOneDetail(tableName, columnName, entry)
       
@@ -44,7 +46,7 @@ const getOne = async (tableName, columnName, entry) => {
       return result.rows;
     }
      else {
-      return ({message: 'detail does not exist'});
+      return {message: 'detail does not exist'};
     }
   } catch (err) {
     throw err;
@@ -135,7 +137,9 @@ const deleteOne = async (tableName, columnName, id) => {
   try {
     const queryText = `delete from ${tableName} where ${columnName} = $1`;
     const values = [id];
-    await DB.query(queryText, values);
+    const deletion = await DB.query(queryText, values);
+    console.log('deletion:', deletion)
+    return deletion.rowCount ? true : false
   } catch (err) {
     throw err;
   }

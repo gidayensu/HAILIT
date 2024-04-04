@@ -1,16 +1,16 @@
-const dbFunctions = require("./functions.model");
+const dbFunctions = require("./dBFunctions");
 const tableName = "users";
 const passwordTable = "password_info";
 const passwordTableColumns = ["user_id", "ps_salt", "ps_hash"];
 
-const columnsToBeUpdated = [
+const columnsForUpdate = [
   "first_name",
   "last_name",
   "email",
   "phone_number",
   "date_updated",
 ];
-const columnsForCreation = [
+const columnsForAdding = [
   "user_id",
   "first_name",
   "last_name",
@@ -20,12 +20,12 @@ const columnsForCreation = [
 const getAllUsers = () => dbFunctions.getAll(tableName);
 
 const getOneUser = async (userId) => {
-  const columnName = columnsForCreation[0];
+  const columnName = columnsForAdding[0];
   return await dbFunctions.getOne(tableName, columnName, userId);
 };
 
 const oneUserQuery = async (userEmail) => {
-  const columnName = columnsForCreation[3];
+  const columnName = columnsForAdding[3];
   const userDetails = await dbFunctions.getOne(
     tableName,
     columnName,
@@ -42,13 +42,13 @@ const oneUserQuery = async (userEmail) => {
 };
 //check if email exists
 const emailExists = async (email) => {
-  const columnName = columnsForCreation[3];
+  const columnName = columnsForAdding[3];
   return await dbFunctions.detailExists(tableName, columnName, email);
 };
 
 //check if phone number exists
 const numberExists = async(phoneNumber) => {
-  const columnName = columnsForCreation[4];
+  const columnName = columnsForAdding[4];
   return await dbFunctions.detailExists(tableName, columnName, phoneNumber)
 }
 
@@ -63,7 +63,7 @@ const addUser = async (passwordPlusId, ...args) => {
     if (!emailExist && !numberExist) {
       const insertUserOtherDetails = await dbFunctions.addOne(
         tableName,
-        columnsForCreation,
+        columnsForAdding,
         ...args
       );
       if (insertUserOtherDetails) {
@@ -122,7 +122,7 @@ const updateUser = async (userId, userDetails) => {
    
     const idValidation = await dbFunctions.detailExists(
       tableName,
-      columnsForCreation[0],
+      columnsForAdding[0],
       userId
     );
 
@@ -150,7 +150,7 @@ const updateUser = async (userId, userDetails) => {
 
         const update = await dbFunctions.updateOne(
           tableName,
-          columnsToBeUpdated,
+          columnsForUpdate,
           userId,
           ...userDetails
         );
@@ -178,7 +178,7 @@ const updateUser = async (userId, userDetails) => {
 };
 
 const deleteUser = async (userId) => {
-  const columnName = columnsForCreation[0];
+  const columnName = columnsForAdding[0];
   const userExists = await dbFunctions.detailExists(
     tableName,
     columnName,

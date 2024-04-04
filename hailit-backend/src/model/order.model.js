@@ -1,6 +1,6 @@
 const {v4: uuid} = require('uuid');
 const { DB } = require('./connectDb');
-const dbFunctions = require('./functions.model')
+const dbFunctions = require('./dBFunctions')
 
 const getAllOrders = ()=> dbFunctions.getAll('orders')
 
