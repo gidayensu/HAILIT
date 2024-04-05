@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+ 
 
 const authenticateToken = async (req, res, next)=> {
     try {
@@ -25,7 +26,16 @@ const generateTokens = (payload)=> {
     return {accessToken, refreshToken}
 }
 
-module.exports = {generateTokens, generateTokens};
+//the role of the user can be passed as part of the payload that is to be decoded by the isAdmin function below.
+//however a more robust approach is used to query for admin details each time before allowing any admin role to be performed.
+//this ensures that except if the database is compromised, changing user role by having access to the secret key will still not
+//allow access as an admin;
+const isAdmin = async(req, res, next)=> {
+    const {user_id} = req.user;
+
+}
+
+module.exports = {authenticateToken, generateTokens};
 
 
 

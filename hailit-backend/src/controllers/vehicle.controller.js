@@ -38,20 +38,17 @@ const addVehicle = async (req, res)=> {
 const updateVehicle = async (req, res)=> {
     
     try {
-    const {vehicle_id, vehicle_name, vehicle_model, plate_number, vehicle_type} = req.body;
+        const {vehicle_id} = req.params;
+    const {vehicle_name, vehicle_model, plate_number, vehicle_type} = req.body;
 
     if (!vehicle_name && !vehicle_model && !plate_number && !vehicle_type) {
         return res.status(StatusCodes.BAD_REQUEST).json({message: "Require at least one input"})
     }
 
-    if (!vehicle_id) {
-        return res.status(StatusCodes.BAD_REQUEST).json({message: "Vehicle ID needed"})
-    }
+    const updatingVehicle = await vehicleService.updateVehicle(vehicle_id, req.body);
 
-    const updatingVehicle = await vehicleService.updateVehicle(req.body);
-
-    if (updatingVehicle.message === "updated") {
-        res.status(StatusCodes.OK).json(updatingVehicle)
+    if (updatingVehicle.message === true) {
+        res.status(StatusCodes.OK).json({message: "vehicle updated"})
     } else {
         res.status(StatusCodes.BAD_REQUEST).json({message: "Error occurred: vehicle not udpated"})
     }

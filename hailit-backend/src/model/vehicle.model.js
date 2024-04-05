@@ -53,8 +53,24 @@ const addVehicle = async (completeVehicleDetails)=> {
     }
 }
 
-const updateVehicle = async (vehicleUpdateDetails)=> {
-    const {vehicle_id, vehicle_name, vehicle_model, plate_number, vehicle_type} = vehicleUpdateDetails;
+const updateVehicle = async (vehicle_id, vehicleUpdateDetails)=> {
+    const validColumnsForUpdate =  Object.keys(vehicleUpdateDetails);
+    const vehicleDetails = Object.values(vehicleUpdateDetails);
+    const vehicleIdColumn = columnsForAdding[0];
+    console.log('vehicleUpdate:', vehicleDetails);
+
+
+    try {
+      const vehicleUpdate = await dbFunctions.updateOne(tableName, validColumnsForUpdate, vehicle_id, vehicleIdColumn,  ...vehicleDetails); 
+      
+      if (vehicleUpdate === "detail updated") {
+      return true;}
+    } catch (err) {
+        return {error: err, message: "Server error, vehicle not updated"}
+    }
+
+
+    
 
 }
 

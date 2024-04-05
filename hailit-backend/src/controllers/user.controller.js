@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
-
+const StatusCodes = require('http-status-codes');
 const userService = require("../services/user.service");
-const { emailValidator, phoneValidator } = require( "../utils/util");
+const { emailValidator, phoneValidator, allowedPropertiesOnly } = require( "../utils/util");
 require('dotenv').config({path: './../../.env'});
 
 
@@ -89,39 +89,42 @@ const oneUserQuery = async (req, res) => {
   }
 };
 
-const addUser = async (req, res) => {
-  
-  const { first_name, last_name, email, phone_number, password } = req.body;
-  
-  
-  
+const addUser = async (req, res) => { 
   try {
+    const { first_name, last_name, email, phone_number, password } = req.body;
     if (!first_name || !last_name || !email || !phone_number || !password) {
-      res.status(200).json({message: "all fields are required"})
-    } else if (!emailValidator(email)) {
-      res.status(200).json({message: "enter a correct email"})
-    } else if (!phoneValidator(phone_number)) {
-      res.status(200).json({message: "enter a 10-digit phone number"})
+      return res.status(200).json({message: "all fields are required"})
+    } 
+    if (!emailValidator(email)) {
+      return  res.status(200).json({message: "enter a correct email"})
+    }  
+    
+    if (!phoneValidator(phone_number)) {
+     return res.status(200).json({message: "enter a 10-digit phone number"})
     }
 
-    else {
-    const userDetails = [first_name, last_name, email, phone_number];
-    const result = await userService.addUser(password, userDetails);
+    
+    const userDetails = req.body;
+    const addingUser = await userService.addUser(userDetails);
     
     // res.setHeader('Set-Cookie', 'logged-in=true')
-    res.status(200).json({ message: result });}
+    res.status(200).json({ message: addingUser });
   } catch (err) {
-    
-    res.status(400).json({ message: "Error occurred" });
+    console.log(err)
+    res.status(400).json({ message: "Error occurred in adding user" });
   }
 };
 //updating user
 const updateUser = async (req, res) => {
-
   try {
     const { userId } = req.params;
     const { first_name = '', last_name = '', email = '', phone_number = ''} = req.body;
-    const userDetails = [first_name, last_name, email, phone_number];
+    if(!first_name && !last_name && !email && !phone_number) {
+      return res.status(StatusCodes.BAD_REQUEST).json({message: "no information provided"});
+    }
+
+    const userDetails = req.body;
+    
     const updateUser = await userService.updateUser(
       userId,
       userDetails

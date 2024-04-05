@@ -1,33 +1,31 @@
 const dbFunctions = require("./dBFunctions");
-const tableName = "users";
+const {excludeNonMatchingElements} = require('../utils/util');
+const motorRiderModel = require('./motorRider.model');
+const carDriverModel = require('./carDriver.model');
+
+const userTableName = "users";
 const passwordTable = "password_info";
 const passwordTableColumns = ["user_id", "ps_salt", "ps_hash"];
 
-const columnsForUpdate = [
-  "first_name",
-  "last_name",
-  "email",
-  "phone_number",
-  "date_updated",
-];
-const columnsForAdding = [
+
+const userColumnsForAdding = [
   "user_id",
   "first_name",
   "last_name",
   "email",
   "phone_number",
 ];
-const getAllUsers = () => dbFunctions.getAll(tableName);
+const getAllUsers = () => dbFunctions.getAll(userTableName);
 
 const getOneUser = async (userId) => {
-  const columnName = columnsForAdding[0];
-  return await dbFunctions.getOne(tableName, columnName, userId);
+  const columnName = userColumnsForAdding[0];
+  return await dbFunctions.getOne(userTableName, columnName, userId);
 };
 
 const oneUserQuery = async (userEmail) => {
-  const columnName = columnsForAdding[3];
+  const columnName = userColumnsForAdding[3];
   const userDetails = await dbFunctions.getOne(
-    tableName,
+    userTableName,
     columnName,
     userEmail
   );
@@ -42,42 +40,59 @@ const oneUserQuery = async (userEmail) => {
 };
 //check if email exists
 const emailExists = async (email) => {
-  const columnName = columnsForAdding[3];
-  return await dbFunctions.detailExists(tableName, columnName, email);
+  const columnName = userColumnsForAdding[3];
+  return await dbFunctions.detailExists(userTableName, columnName, email);
 };
 
 //check if phone number exists
 const numberExists = async(phoneNumber) => {
-  const columnName = columnsForAdding[4];
-  return await dbFunctions.detailExists(tableName, columnName, phoneNumber)
+  const phoneNumberColumn = userColumnsForAdding[4];
+  return await dbFunctions.detailExists(userTableName, phoneNumberColumn, phoneNumber)
 }
 
 //add user METHOD: POST
-const addUser = async (passwordPlusId, ...args) => {
-  const email = args[3];
-  const phoneNumber = args[4];
+const addUser = async (userDetails, password) => {
+  const {email} = userDetails;
+  const {phone_number} = userDetails;
+  const {user_id} = userDetails;
+  const {user_role} = userDetails;
+
+  const columnsForAdding = Object.keys(userDetails);
+  const userDetailsArray = Object.values(userDetails);
 
   try {
     const emailExist = await emailExists(email);
-    const numberExist = await numberExists(phoneNumber);
+    const numberExist = await numberExists(phone_number);
     if (!emailExist && !numberExist) {
       const insertUserOtherDetails = await dbFunctions.addOne(
-        tableName,
+        userTableName,
         columnsForAdding,
-        ...args
+        ...userDetailsArray
       );
       if (insertUserOtherDetails) {
         const insertPassword = await dbFunctions.hashPassword(
-          passwordPlusId,
+          user_id,
+          password,
           passwordTable,
           passwordTableColumns
         );
         if (insertPassword) {
-          
+          //adding rider if rider role set
+          if (user_role === "motor_rider") {
+            const addMotorRider = await motorRiderModel.addMotorRider(user_id);
+            addMotorRider ? {message: "motor rider added"} : {message: "error occurred in adding motor rider"};
+
+          }
+          //adding driver if driver role set
+          if (user_role === "car_driver") {
+            const addCarDriver = await carDriverModel.addDriver(user_id);
+            addCarDriver ? {message: "driver added"} : {message: "error occurred in adding driver"};
+          }
+
           return {message: "User added"}
         } else {
           
-          const queryText = `delete from ${tableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
+          const queryText = `delete from ${userTableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
           const value = [passwordTableColumns[0]];
           await dbFunctions.deleteAccountWithoutPassword(queryText, value);
           return {message: "Error: User not added to database"};
@@ -115,44 +130,58 @@ const userLogin = async (password, user_id) => {
 const updateUser = async (userId, userDetails) => {
   
   try {
-    const [, , email, phone_number] = userDetails;
-    console.log('email:', email)  
+    
+    const {email = '', phone_number = ''} = userDetails;
+    const validColumnsForUpdate =  Object.keys(userDetails);
+    // const validColumnsForUpdate = excludeNonMatchingElements(columnsForUpdate, columnsFromUserDetails);
 
-    const idColumn = "user_id";
+    const userDetailsArray = Object.values(userDetails);
+    const idColumn = userColumnsForAdding[0];
    
     const idValidation = await dbFunctions.detailExists(
-      tableName,
-      columnsForAdding[0],
+      userTableName,
+      idColumn,
       userId
     );
 
     if (idValidation) {
-      const result = await dbFunctions.getOne(tableName, idColumn, userId);
+      const result = await dbFunctions.getOne(userTableName, idColumn, userId);
       const resultValues = Object.values(result[0] || []);
-
-      const emailExist = await emailExists(email);
-      const numberExist = await numberExists(phone_number);
-      if (emailExist && email!=resultValues[3]) {
-        return {message: 'Email is taken. User not updated'}
+      
+      if(email!=='') {
+        const resultEmail = resultValues[3];
+        const emailExist = await emailExists(email);
+        if (emailExist && email!==resultEmail) {
+          return {message: 'Email is taken. User email not updated'}
+        }
+      } 
+      
+      if(phone_number!=='') {
+        const resultPhoneNumber = resultValues[4];
+        const numberExist = await numberExists(phone_number);
+        if (numberExist && phone_number !== resultPhoneNumber) {
+          return {message:'phone number is taken user not updated'}
+        }
       }
-
-      else if (numberExist && phone_number != resultValues[4]) {
-        return {message:'phone number is taken user not updated'}
-      }
-      else 
-      {
+      
         const existingDetails = resultValues.filter((value) =>
-        userDetails.includes(value.toString())
+        userDetailsArray.includes(value.toString())
+        
     );
+
     
     const updateDate = "now()";
-        userDetails.push(updateDate);
-
+    userDetailsArray.splice(userDetailsArray.length-1, 0, updateDate);
+    
+    validColumnsForUpdate.splice(validColumnsForUpdate.length-1, 0, 'date_updated')
+    
+    //change later. Existing details should not added to the elements to be updated;
         const update = await dbFunctions.updateOne(
-          tableName,
-          columnsForUpdate,
+          userTableName,
+          validColumnsForUpdate,
           userId,
-          ...userDetails
+          idColumn,
+          ...userDetailsArray
         );
         if (existingDetails.length > 0) {
           update;
@@ -162,7 +191,7 @@ const updateUser = async (userId, userDetails) => {
                   return update;
                 }
    
-  }
+  
     
 
     } else {
@@ -178,14 +207,14 @@ const updateUser = async (userId, userDetails) => {
 };
 
 const deleteUser = async (userId) => {
-  const columnName = columnsForAdding[0];
+  const columnName = userColumnsForAdding[0];
   const userExists = await dbFunctions.detailExists(
-    tableName,
+    userTableName,
     columnName,
     userId
   );
   if (userExists) {
-    await dbFunctions.deleteOne(tableName, columnName, userId);
+    await dbFunctions.deleteOne(userTableName, columnName, userId);
     return {message: "user deleted"};
     
   } else {

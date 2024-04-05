@@ -5,8 +5,22 @@ const PHONE_REGEX =  /^\d{10}$/;
         
  const phoneValidator = (phone)=> !PHONE_REGEX.test(phone) ? false: true;
 
+ const excludeNonMatchingElements = (firstArray, secondArray)=> {
+   return secondArray.filter(element => firstArray.includes(element))
+ }
+
+ const allowedPropertiesOnly = (data, allowedProperties)=> {
+   return Object.keys(data)
+   .filter(key => allowedProperties.includes(key))
+   .reduce((obj, key) => {
+     obj[key] = data[key];
+     
+     return obj;
+   }, {});
+ }
+
  
 
  module.exports = {
-    emailValidator, phoneValidator
+    emailValidator, phoneValidator, excludeNonMatchingElements, allowedPropertiesOnly
  }

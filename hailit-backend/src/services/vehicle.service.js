@@ -48,11 +48,12 @@ const addVehicle = async (vehicleDetails)=> {
 
 }
 
-const updateVehicle = async (vehicleUpdateDetails)=> {
+const updateVehicle = async (vehicle_id, vehicleUpdateDetails)=> {
     try {
-        const vehicleUpdated = await vehicleModel.updateVehicle(vehicleUpdateDetails);
-        if (vehicleUpdated === true) {
-            return {message: "updated"}
+        
+        const updateVehicle = await vehicleModel.updateVehicle(vehicle_id, vehicleUpdateDetails);
+        if (updateVehicle) {
+            return {message: updateVehicle}
         } else {
             return {message: "not updated"}
         }
