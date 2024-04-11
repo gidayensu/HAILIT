@@ -22,10 +22,10 @@ app.use(session({
 }))
 
 const v1Routes = [
-    { path: '/api/v1/carDriver', route: require('./src/v1/routes/carDriver.routes').router },
+    { path: '/api/v1/driver', route: require('./src/v1/routes/carDriver.routes').router },
     { path: '/api/v1/user', route: require('./src/v1/routes/user.routes').router },
-    { path: '/api/v1/motorRider', route: require('./src/v1/routes/motorRider.routes').router },
-    { path: '/api/v1/order', route: require('./src/v1/routes/order.routes').router },
+    { path: '/api/v1/rider', route: require('./src/v1/routes/motorRider.routes').router },
+    { path: '/api/v1/trip', route: require('./src/v1/routes/trip.routes').router },
     { path: '/api/v1/vehicle', route: require('./src/v1/routes/vehicle.routes').router }
   ];
   

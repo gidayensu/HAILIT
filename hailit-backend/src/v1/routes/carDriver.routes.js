@@ -1,16 +1,16 @@
-const express = require('express')
-const {getAllDrivers, getOneDriver, addDriver, updateDriver, deleteDriver} = require('../../controllers/carDriver.controller')
+const express = require('express');
+const carDriverController = require('../../controllers/carDriver.controller')
 
 const router = express.Router()
 
-router.get('/', getAllDrivers)
+router.get('/', carDriverController.getAllDrivers)
 
-router.get('/:driverID', getOneDriver)
+router.get('/:driver_id', carDriverController.getOneDriver)
 
-router.post('/', addDriver)
+router.post('/', carDriverController.addDriver)
 
-router.put('/:driverID', updateDriver)
+router.put('/:driver_id', carDriverController.updateDriver)
 
-router.delete('/:driverID', deleteDriver)
+router.delete('/:driver_id', carDriverController.deleteDriver)
 
 module.exports = {router, }

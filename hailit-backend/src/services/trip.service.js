@@ -1,3 +1,4 @@
+const allowedOrderStatus = ['in progress', 'completed', 'cancelled'];
 const getAllOrders = ()=> {
 
 }

@@ -14,8 +14,8 @@ const getOneUser = async (userId) => {
   return await userModel.getOneUser(userId);
 };
 
-const oneUserQuery = async(userEmail)=> {
-    return await userModel.oneUserQuery(userEmail)
+const getUserIdUsingEmail = async(userEmail)=> {
+    return await userModel.getUserIdUsingEmail(userEmail)
 }
 
 const userLogin = async (password, user_id) => {
@@ -59,6 +59,6 @@ module.exports = {
   updateUser,
   deleteUser,
   getOneUser,
-  oneUserQuery,
+  getUserIdUsingEmail,
   userLogin
 };

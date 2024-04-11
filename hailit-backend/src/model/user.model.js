@@ -17,12 +17,14 @@ const userColumnsForAdding = [
 ];
 const getAllUsers = () => dbFunctions.getAll(userTableName);
 
+//CLEAN
 const getOneUser = async (userId) => {
   const columnName = userColumnsForAdding[0];
   return await dbFunctions.getOne(userTableName, columnName, userId);
 };
 
-const oneUserQuery = async (userEmail) => {
+
+const getUserIdUsingEmail = async (userEmail) => {
   const columnName = userColumnsForAdding[3];
   const userDetails = await dbFunctions.getOne(
     userTableName,
@@ -229,6 +231,6 @@ module.exports = {
   updateUser,
   deleteUser,
   emailExists,
-  oneUserQuery,
+  getUserIdUsingEmail,
   userLogin,
 };

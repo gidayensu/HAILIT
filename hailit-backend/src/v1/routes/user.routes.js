@@ -9,12 +9,11 @@ const router = express.Router()
 
 router.get('/', userController.getAllUsers)
 
-router.get('/find', userController.oneUserQuery)
+router.get('/find', userController.getUserIdUsingEmail)
 
 router.post('/login', userController.userLogin)
 
 router.get('/:userId', authenticateToken, userController.getOneUser)
-
 
 router.post('/register', userController.addUser)
 

@@ -29,7 +29,7 @@ const userLogin = async (req, res) => {
     if (!password || !email) {
         return res.status(400).json({message: "email or password can't be empty"})
     } 
-    const checkUserId = await userService.oneUserQuery(email);
+    const checkUserId = await userService.getUserIdUsingEmail(email);
     if (checkUserId.user_id) {
       const {user_id} = checkUserId;
       
@@ -78,10 +78,10 @@ const getOneUser = async (req, res) => {
   }
 };
 
-const oneUserQuery = async (req, res) => {
+const getUserIdUsingEmail = async (req, res) => {
   try {
     const {email } = req.query;
-    const userDetails = await userService.oneUserQuery(email)
+    const userDetails = await userService.getUserIdUsingEmail(email)
     res.status(200).json(userDetails)
   } catch (err) {
     
@@ -155,6 +155,6 @@ module.exports = {
   addUser,
   updateUser,
   deleteUser,
-  oneUserQuery,
+  getUserIdUsingEmail,
   userLogin
 };

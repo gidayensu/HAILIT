@@ -1,7 +1,7 @@
-const orderService = require('../services/order.service')
+const tripService = require('../services/trip.service')
 
 const getAllOrders = (req, res)=> {
-    const allOrders = orderService.getAllOrders
+    const allOrders = tripService.getAllOrders
     res.status(200).json({status: 'OK', data: allOrders})
 }
 

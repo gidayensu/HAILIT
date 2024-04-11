@@ -1,15 +1,15 @@
 const express = require('express')
-const {getAllMotorRiders, getOneMotorRider, addMotorRider, updateMotorRider, deleteMotorRider} = require('../../controllers/motorRider.controller')
+const riderController = require('../../controllers/motorRider.controller')
 const router = express.Router()
 
-router.get('/', getAllMotorRiders)
+router.get('/', riderController.getAllRiders)
 
-router.get('/:motorRiderID', getOneMotorRider)
+router.get('/:rider_id', riderController.getOneRider)
 
-router.post('/', addMotorRider)
+router.post('/', riderController.addRider)
 
-router.put('/:motorRiderID', updateMotorRider)
+router.put('/:rider_id', riderController.updateRider)
 
-router.delete('/:motorRiderID', deleteMotorRider)
+router.delete('/:rider_id', riderController.deleteRider)
 
 module.exports = {router, }
