@@ -2,7 +2,7 @@ const {v4: uuid} = require('uuid')
 const { DB } = require('./connectDb');
 const dbFunctions = require('./dBFunctions');
 
-const driverTableName = "car_driver";
+const driverTableName = "driver";
 const driverTableColumns = [
     "driver_id",
     "user_id",
@@ -27,13 +27,23 @@ const getOneDriver = async (driver_id)=> {
     }
 }
 
+
+const getSpecificDrivers = async (specificColumn, condition)=> {
+    try {
+    const specificDrivers = await dbFunctions.getSpecificDetails(driverTableName, specificColumn, condition);
+    return specificDrivers;
+    } catch (err) {
+        return `Error occurred in retrieving drivers: ${err}`;
+    }
+}
+
 const addDriver = async (user_id, vehicle_id)=>  {
     const driver_id = uuid();
-    let driverVehicle = '';
-    vehicle_id ? driverVehicle = vehicle_id : driverVehicle = defaultVehicleId;
-    const driverDetails = [driver_id, user_id, driverVehicle];
+    let driverVehicleId = '';
+    vehicle_id ? driverVehicleId = vehicle_id : driverVehicleId = defaultVehicleId;
+    const driverDetails = [driver_id, user_id, driverVehicleId];
     try {
-    const addingDriver = await dbFunctions.addOne(driverTableName, driverTableColumns, ...driverDetails);
+    const addingDriver = await dbFunctions.addOne(driverTableName, driverTableColumns, driverDetails);
     if (addingDriver) {
         return true;
     }
@@ -71,4 +81,4 @@ const deleteDriver = async (driver_id) => {
     
 }
 
-module.exports= {getAllDrivers, addDriver, updateDriver, getOneDriver, deleteDriver}
+module.exports= {getAllDrivers, addDriver, updateDriver, getOneDriver, deleteDriver, getSpecificDrivers}

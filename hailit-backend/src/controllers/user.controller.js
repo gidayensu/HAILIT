@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const StatusCodes = require('http-status-codes');
 const userService = require("../services/user.service");
+
+
 const { emailValidator, phoneValidator, allowedPropertiesOnly } = require( "../utils/util");
 require('dotenv').config({path: './../../.env'});
 
@@ -11,7 +13,7 @@ const getAllUsers = async (req, res) => {
     const allUsers = await userService.getAllUsers();
     if (res && res.status) {
       
-      res.status(200).json({ message: allUsers });
+      res.status(200).json({ data: allUsers });
       return;
     }
   } catch (error) {
@@ -39,11 +41,12 @@ const userLogin = async (req, res) => {
       );
       
       if (verifyUser.verification_status) {
-        const token = jwt.sign({user_id}, process.env.JWT_SECRET)
+        const user_role = verifyUser.user_role;
+        const token = jwt.sign({user_id, user_role}, process.env.JWT_SECRET)
       
-      res.status(200).json({ message: verifyUser, token });
+      res.status(200).json({ data: verifyUser, token });
       } else {
-        res.status(404).json({message: verifyUser})  
+        res.status(404).json({data: verifyUser})  
       } 
     } else {
       res.status(404).json({message: 'wrong email or password'})
@@ -59,12 +62,13 @@ const userLogin = async (req, res) => {
 const getOneUser = async (req, res) => {
   try {
     const {userId} = req.params;
+    console.log('req user role:', req.user.user_role)
     const jwtUserId = req.user.user_id;
 
       if (jwtUserId === userId) {
       if (res && res.status) {
         const oneUser = await userService.getOneUser(userId);
-        res.status(200).json(oneUser);
+        res.status(200).json({data: oneUser});
       }
     } else {
       res.status(401).json({message: 'Access denied'});
@@ -82,7 +86,7 @@ const getUserIdUsingEmail = async (req, res) => {
   try {
     const {email } = req.query;
     const userDetails = await userService.getUserIdUsingEmail(email)
-    res.status(200).json(userDetails)
+    res.status(200).json({data: userDetails})
   } catch (err) {
     
     return {message: "Wrong email/Password"};

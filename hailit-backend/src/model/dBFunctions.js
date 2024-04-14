@@ -53,12 +53,13 @@ const getOne = async (tableName, columnName, entry) => {
   } 
 };
 
-const addOne = async (tableName, columns, ...args) => {
-  const placeholders = args.map((_, index) => "$" + (index + 1)).join(", ");
+//...args changed to args
+const addOne = async (tableName, columns, values) => {
+  const placeholders = values.map((_, index) => "$" + (index + 1)).join(", ");
   const queryText = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
   try {
     await DB.query('BEGIN')
-    const result = await DB.query(queryText, args);
+    const result = await DB.query(queryText, values);
     await DB.query('COMMIT')
     return result.rowCount > 0;
   } catch (err) {
@@ -131,7 +132,34 @@ const updateOne = async (tableName, columns, id, idColumn, ...details ) => {
   } 
 };
 
+const getSpecificDetails = async (tableName, specificColumn, condition) => {
+  try  {
+    await DB.query('BEGIN');
+    const queryText = `SELECT * FROM ${tableName} WHERE ${specificColumn} = $1`;
+    const value = [condition];
+    const {rows} = await DB.query(queryText, value);
+    await DB.query('COMMIT');
+    return rows;
+  } catch (err) {
+    await DB.query('ROLLBACK')
+    return 'Server Error occurred, data not retrieved';
+  }
+}
 
+const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
+  try {
+    await DB.query('BEGIN');
+      const columnsString = columns.join(', ');
+      const queryText = await `SELECT ${columnsString} FROM ${tableName} WHERE ${idColumn} = $1`;
+      const value = [id];
+      const {rows} = await DB.query(queryText, value);
+    await DB.query('COMMIT');
+    return rows;
+  } catch (err) {
+    await DB.query('ROLLBACK')
+    return 'Server Error occurred, data not retrieved';
+  }
+}
 
 const deleteOne = async (tableName, columnName, id) => {
   try {
@@ -154,6 +182,8 @@ const deleteAccountWithoutPassword = async (queryText, value) => {
   }
 };
 
+
+
 module.exports = {
   getAll,
   addOne,
@@ -165,4 +195,6 @@ module.exports = {
   deleteAccountWithoutPassword,
   detailExists,
   verifyPassword,
+  getSpecificDetails,
+  getSpecificDetailsUsingId,
 };

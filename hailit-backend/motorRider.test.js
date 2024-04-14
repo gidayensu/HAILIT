@@ -1,4 +1,4 @@
-const { getAllRiders, getOneRider, addMotorRider, updateRider, deleteRider } = require('./src/model/motorRider.model'); // replace 'yourFileName' with the actual file name
+const { getAllRiders, getOneRider, addMotorRider, updateRider, deleteRider } = require('./src/model/rider.model'); // replace 'yourFileName' with the actual file name
 const dbFunctions = require('./src/model/dBFunctions');
 
 jest.mock('./dBFunctions');

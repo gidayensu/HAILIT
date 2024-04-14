@@ -1,7 +1,6 @@
 const dbFunctions = require("./dBFunctions");
-const {excludeNonMatchingElements} = require('../utils/util');
-const motorRiderModel = require('./motorRider.model');
-const carDriverModel = require('./carDriver.model');
+const riderModel = require('./rider.model');
+const driverModel = require('./driver.model');
 
 const userTableName = "users";
 const passwordTable = "password_info";
@@ -19,16 +18,27 @@ const getAllUsers = () => dbFunctions.getAll(userTableName);
 
 //CLEAN
 const getOneUser = async (userId) => {
-  const columnName = userColumnsForAdding[0];
-  return await dbFunctions.getOne(userTableName, columnName, userId);
+  const userColumnName = userColumnsForAdding[0];
+  const data = await dbFunctions.getOne(userTableName, userColumnName, userId);
+  
+  return data;
 };
 
+const isAdmin = async (userId) => {
+  const adminData = await getOneUser(userId);
+  console.log('adminData:', adminData)
+  if(adminData[0].user_role === 'Admin') {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 const getUserIdUsingEmail = async (userEmail) => {
-  const columnName = userColumnsForAdding[3];
+  const emailColumnName = userColumnsForAdding[3];
   const userDetails = await dbFunctions.getOne(
     userTableName,
-    columnName,
+    emailColumnName,
     userEmail
   );
   
@@ -81,13 +91,13 @@ const addUser = async (userDetails, password) => {
         if (insertPassword) {
           //adding rider if rider role set
           if (user_role === "motor_rider") {
-            const addMotorRider = await motorRiderModel.addMotorRider(user_id);
+            const addMotorRider = await riderModel.addMotorRider(user_id);
             addMotorRider ? {message: "motor rider added"} : {message: "error occurred in adding motor rider"};
 
           }
           //adding driver if driver role set
           if (user_role === "car_driver") {
-            const addCarDriver = await carDriverModel.addDriver(user_id);
+            const addCarDriver = await driverModel.addDriver(user_id);
             addCarDriver ? {message: "driver added"} : {message: "error occurred in adding driver"};
           }
 
@@ -117,14 +127,8 @@ const userLogin = async (password, user_id) => {
     return {message: 'wrong email or password', verification_status: false}
   } else {
     const userData = await getOneUser(user_id);
-    const exportUserData =  {
-      email: userData[0].email,
-      first_name: userData[0].first_name,
-      last_name: userData[0].last_name,
-      phone_number: userData[0].phone_number,
-      verification_status: true
-    }
-    return exportUserData;
+    
+    return userData;
   }
 };
 
@@ -147,11 +151,13 @@ const updateUser = async (userId, userDetails) => {
     );
 
     if (idValidation) {
-      const result = await dbFunctions.getOne(userTableName, idColumn, userId);
-      const resultValues = Object.values(result[0] || []);
+      const userData = await dbFunctions.getOne(userTableName, idColumn, userId);
+      
+      const userDataValues = Object.values(userData[0] || []);
       
       if(email!=='') {
-        const resultEmail = resultValues[3];
+        const resultEmail = userData[0].email;
+      
         const emailExist = await emailExists(email);
         if (emailExist && email!==resultEmail) {
           return {message: 'Email is taken. User email not updated'}
@@ -159,14 +165,15 @@ const updateUser = async (userId, userDetails) => {
       } 
       
       if(phone_number!=='') {
-        const resultPhoneNumber = resultValues[4];
+        const resultPhoneNumber = userData[0].phone_number;
+        
         const numberExist = await numberExists(phone_number);
         if (numberExist && phone_number !== resultPhoneNumber) {
           return {message:'phone number is taken user not updated'}
         }
       }
       
-        const existingDetails = resultValues.filter((value) =>
+        const existingDetails = userDataValues.filter((value) =>
         userDetailsArray.includes(value.toString())
         
     );
@@ -192,9 +199,6 @@ const updateUser = async (userId, userDetails) => {
                 } else {
                   return update;
                 }
-   
-  
-    
 
     } else {
       
@@ -233,4 +237,5 @@ module.exports = {
   emailExists,
   getUserIdUsingEmail,
   userLogin,
+  isAdmin
 };

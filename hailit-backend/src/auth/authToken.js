@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const userModel = require('../model/user.model')
  
 
 const authenticateToken = async (req, res, next)=> {
@@ -11,6 +12,7 @@ const authenticateToken = async (req, res, next)=> {
     const token =   authHeader.split(' ')[1];
     const user = jwt.verify(token, process.env.JWT_SECRET);
     req.user = user;
+    console.log('user:',user)
     next();
     } catch (err) {
         console.log(err)
@@ -30,12 +32,21 @@ const generateTokens = (payload)=> {
 //however a more robust approach is used to query for admin details each time before allowing any admin role to be performed.
 //this ensures that except if the database is compromised, changing user role by having access to the secret key will still not
 //allow access as an admin;
+
 const isAdmin = async(req, res, next)=> {
     const {user_id} = req.user;
+    try {const adminStatus = await userModel.isAdmin(user_id);
+    if (!adminStatus) {
+        res.status(403).json({message: "Access denied"})
+    }
 
+    next();
+    } catch (err) {
+        return {message: `Authorization error occurred: ${err}`}
+    }
 }
 
-module.exports = {authenticateToken, generateTokens};
+module.exports = authenticateToken
 
 
 

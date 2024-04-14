@@ -2,14 +2,17 @@ const express = require('express')
 const {getAllVehicles, getOneVehicle, addVehicle, updateVehicle, deleteVehicle} = require('../../controllers/vehicle.controller')
 const router = express.Router()
 
-router.get('/', getAllVehicles)
+const authenticateToken = require('../../auth/authToken');
+const isAdmin = require('../../auth/isAdmin');
 
-router.get('/:vehicle_id', getOneVehicle)
+router.get('/', authenticateToken, isAdmin, getAllVehicles)
 
-router.post('/add', addVehicle)
+router.get('/:vehicle_id', authenticateToken, isAdmin, getOneVehicle)
 
-router.put('/:vehicle_id', updateVehicle)
+router.post('/add', authenticateToken, isAdmin, addVehicle)
 
-router.delete('/:vehicle_id', deleteVehicle)
+router.put('/:vehicle_id', authenticateToken, isAdmin, updateVehicle)
+
+router.delete('/:vehicle_id', authenticateToken, isAdmin, deleteVehicle)
 
 module.exports = {router}

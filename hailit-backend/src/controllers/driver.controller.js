@@ -1,8 +1,8 @@
-const carDriverService = require('../services/carDriver.service')
+const driverService = require('../services/driver.service')
 
 const getAllDrivers = async (req, res)=> {
     try  {
-        const allDrivers = await carDriverService.getAllDrivers();
+        const allDrivers = await driverService.getAllDrivers();
         if (res && res.status) {
             res.status(200).json({message: 'OK', data: allDrivers})
         }
@@ -17,7 +17,7 @@ const getAllDrivers = async (req, res)=> {
 const getOneDriver = async (req, res)=> {
     const {driver_id} = req.params;
     try {
-        const data = await carDriverService.getOneDriver(driver_id);
+        const data = await driverService.getOneDriver(driver_id);
         if (!data.message) {
             res.status(200).json({data: data})
         } else {
@@ -30,7 +30,7 @@ const getOneDriver = async (req, res)=> {
 
 const addDriver = async (req, res)=> {
     const {user_id, vehicle_id} = req.body;
-    const driverAdd = await carDriverService.addDriver(user_id, vehicle_id);
+    const driverAdd = await driverService.addDriver(user_id, vehicle_id);
     if(driverAdd) {
         res.status(200).json({message: "driver added"});
     } else {
@@ -50,7 +50,7 @@ const updateDriver = async(req, res)=> {
     }
 
     try {
-        const driverUpdate = await carDriverService.updateDriver(driverDetails);
+        const driverUpdate = await driverService.updateDriver(driverDetails);
         if (!driverUpdate.message) {
             res.status(200).json({message: driverUpdate})
         } else {
@@ -64,7 +64,7 @@ const updateDriver = async(req, res)=> {
 
 const deleteDriver = async(req, res)=> {
     const {driver_id} = req.params;
-    const driverDelete = await carDriverService.deleteDriver(driver_id);
+    const driverDelete = await driverService.deleteDriver(driver_id);
     if (driverDelete) {
         res.status(200).json({message: "driver deleted"});
     } else {

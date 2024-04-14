@@ -1,8 +1,8 @@
-const motorRiderService = require('../services/motorRider.service')
+const riderService = require('../services/rider.service')
 
 const getAllRiders = async (req, res)=> {
     try  {
-        const allRiders = await motorRiderService.getAllRiders();
+        const allRiders = await riderService.getAllRiders();
         if (res && res.status) {
             res.status(200).json({message: 'OK', data: allRiders})
         }
@@ -17,7 +17,7 @@ const getAllRiders = async (req, res)=> {
 const getOneRider = async (req, res)=> {
     const {rider_id} = req.params;
     try {
-        const data = await motorRiderService.getOneRider(rider_id);
+        const data = await riderService.getOneRider(rider_id);
         console.log('data:', data)
         if (!data.message) {
             res.status(200).json({data: data})
@@ -31,7 +31,7 @@ const getOneRider = async (req, res)=> {
 
 const addRider = async (req, res)=> {
     const {user_id, vehicle_id} = req.body;
-    const riderAdd = await motorRiderService.addRider(user_id, vehicle_id);
+    const riderAdd = await riderService.addRider(user_id, vehicle_id);
     if(riderAdd) {
         res.status(200).json({message: "rider added"});
     } else {
@@ -51,7 +51,7 @@ const updateRider = async(req, res)=> {
     }
 
     try {
-        const riderUpdate = await motorRiderService.updateRider(riderDetails);
+        const riderUpdate = await riderService.updateRider(riderDetails);
         if (!riderUpdate.message) {
             res.status(200).json({message: riderUpdate})
         } else {
@@ -65,7 +65,7 @@ const updateRider = async(req, res)=> {
 
 const deleteRider = async(req, res)=> {
     const {rider_id} = req.params;
-    const riderDelete = await motorRiderService.deleteRider(rider_id);
+    const riderDelete = await riderService.deleteRider(rider_id);
     if (riderDelete) {
         res.status(200).json({message: "rider deleted"});
     } else {

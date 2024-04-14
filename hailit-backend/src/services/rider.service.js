@@ -1,15 +1,15 @@
-const motorRiderModel = require('../model/motorRider.model');
+const riderModel = require('../model/rider.model');
 const { allowedPropertiesOnly } = require( "../utils/util");
 
 const getAllRiders = async ()=> {
-    const riders = await motorRiderModel.getAllRiders();
+    const riders = await riderModel.getAllRiders();
     return riders;
 }
 
 
 const getOneRider = async (rider_id)=> {
     try {
-    const data = await motorRiderModel.getOneRider(rider_id);
+    const data = await riderModel.getOneRider(rider_id);
     if(data) {
         return data;
     } else {
@@ -21,7 +21,7 @@ const getOneRider = async (rider_id)=> {
 }
 
 const addRider = async (user_id, vehicle_id)=>  {
-    const riderAdd = await motorRiderModel.addRider(user_id, vehicle_id);
+    const riderAdd = await riderModel.addRider(user_id, vehicle_id);
     if(riderAdd) {
         return riderAdd
     } else {
@@ -33,7 +33,7 @@ const updateRider = async(riderDetails)=> {
     const allowedProperties = ['rider_id, vehicle_id'];
     try {
     const validRiderDetails = await allowedPropertiesOnly(riderDetails, allowedProperties);
-    const riderUpdate = await motorRiderModel.updateRider(validRiderDetails);
+    const riderUpdate = await riderModel.updateRider(validRiderDetails);
     if(riderUpdate) {
         
         return riderUpdate
@@ -47,7 +47,7 @@ const updateRider = async(riderDetails)=> {
 }
 
 const deleteRider = async (rider_id) => {
-    const riderDelete = await motorRiderModel.deleteRider(rider_id);
+    const riderDelete = await riderModel.deleteRider(rider_id);
     if (riderDelete) {
         return riderDelete;
     } else {

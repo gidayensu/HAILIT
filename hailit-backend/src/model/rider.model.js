@@ -2,7 +2,7 @@ const {v4: uuid} = require('uuid')
 
 const dbFunctions = require('./dBFunctions');
 
-const riderTableName = "motor_rider";
+const riderTableName = "rider";
 const riderColumnsForAdding = [
     "rider_id",
     "vehicle_id",

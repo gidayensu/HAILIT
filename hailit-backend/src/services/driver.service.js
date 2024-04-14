@@ -1,15 +1,15 @@
-const carDriverModel = require('../model/carDriver.model');
+const driverModel = require('../model/driver.model');
 const { allowedPropertiesOnly } = require( "../utils/util");
 
 const getAllDrivers = async ()=> {
-    const drivers = await carDriverModel.getAllDrivers();
+    const drivers = await driverModel.getAllDrivers();
     return drivers;
 }
 
 
 const getOneDriver = async (driver_id)=> {
     try {
-    const data = await carDriverModel.getOneDriver(driver_id);
+    const data = await driverModel.getOneDriver(driver_id);
     if(data) {
         return data;
     } else {
@@ -21,7 +21,7 @@ const getOneDriver = async (driver_id)=> {
 }
 
 const addDriver = async (user_id, vehicle_id)=>  {
-    const driverAdd = await carDriverModel.addDriver(user_id, vehicle_id);
+    const driverAdd = await driverModel.addDriver(user_id, vehicle_id);
     if(driverAdd) {
         return driverAdd
     } else {
@@ -33,7 +33,7 @@ const updateDriver = async(driverDetails)=> {
     const allowedProperties = ['driver_id, vehicle_id'];
     try {
     const validDriverDetails = await allowedPropertiesOnly(driverDetails, allowedProperties);
-    const driverUpdate = await carDriverModel.updateDriver(validDriverDetails);
+    const driverUpdate = await driverModel.updateDriver(validDriverDetails);
     if(driverUpdate) {
         
         return driverUpdate
@@ -47,7 +47,7 @@ const updateDriver = async(driverDetails)=> {
 }
 
 const deleteDriver = async (driver_id) => {
-    const driverDelete = await carDriverModel.deleteDriver(driver_id);
+    const driverDelete = await driverModel.deleteDriver(driver_id);
     if (driverDelete) {
         return driverDelete;
     } else {

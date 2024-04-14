@@ -1,15 +1,20 @@
 const express = require('express')
-const {getAllOrders, getOneOrder, addOrder, updateOrder, deleteOrder} = require('../../controllers/trip.controller')
+const tripController = require('../../controllers/trip.controller')
+const authenticateToken = require('../../auth/authToken');
+const isAdmin = require('../../auth/isAdmin');
+
 const router = express.Router()
 
-router.get('/', getAllOrders)
+router.get('/', authenticateToken, isAdmin, tripController.getAllTrips);
 
-router.get('/:tripID', getOneOrder)
+router.get('/:trip_id', authenticateToken, tripController.getOneTrip);
 
-router.post('/', addOrder)
+router.get('/user-trips/:user_id', authenticateToken, tripController.getUserTrips)
 
-router.put('/:tripID', updateOrder)
+router.post('/add', authenticateToken, tripController.addTrip)
 
-router.delete('/:tripID')
+router.put('/:trip_id', authenticateToken, tripController.updateTrip)
+
+router.delete('/:trip_id', authenticateToken, isAdmin, tripController.deleteTrip)
 
 module.exports = {router, }
