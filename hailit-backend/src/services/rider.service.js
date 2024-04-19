@@ -47,12 +47,15 @@ const updateRider = async(riderDetails)=> {
 }
 
 const deleteRider = async (rider_id) => {
-    const riderDelete = await riderModel.deleteRider(rider_id);
+    try {
+        const riderDelete = await riderModel.deleteRider(rider_id);
     if (riderDelete) {
         return riderDelete;
     } else {
         return {message: "rider not deleted"}
     }
-    
-}
+    }catch (err) {
+        return {message: "Error occurred deleting rider"}
+    }
+} 
 module.exports={getAllRiders, getOneRider, addRider, updateRider, deleteRider}

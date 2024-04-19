@@ -69,7 +69,7 @@ const getDriverDetailOnCondition = async (columnName, condition)=> {
     try {
     
     const driverDetails = await dbFunctions.checkOneDetail(driverTableName, columnName, condition);
-    console.log(condition)
+    
     return driverDetails.rows;
     } catch (err) {
         console.log(condition)

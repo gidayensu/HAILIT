@@ -82,7 +82,7 @@ const getOneUser = async (req, res) => {
       }
     // } 
     else {
-      res.status(401).json({message: 'Access denied'});
+      res.status(401).json({message: 'user not found'});
     }
     
   } catch (err) {

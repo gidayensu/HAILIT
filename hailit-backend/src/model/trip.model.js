@@ -22,15 +22,16 @@ const getOneTrip = async (trip_id, tripIdColumn)=> {
     }
 }
 
-const getUserTrips = async (user_id, tripColumns)=> {
+const getUserTrips = async (id, idColumn, tripColumns)=> {
     try {
-        //console.log('tripColumns:', tripColumns)
-    const user_id_column = 'user_id';
-    const userTrips = await dbFunctions.getSpecificDetailsUsingId(tripTableName, user_id, user_id_column, tripColumns);
+        // console.log('tripColumns:', tripColumns)
+    
+    const userTrips = await dbFunctions.getSpecificDetailsUsingId(tripTableName, id, idColumn, tripColumns);
+    console.log('userTrips:', userTrips)
     return userTrips;
 
     } catch (err) {
-        
+      console.log(err)
         return "Server Error Occurred while getting user trips";
     }
 }
@@ -60,20 +61,68 @@ try {
 }
 }
 
-const updateTrip = async ()=> {
+const updateTrip = async (tripDetails)=> {
     try {
-
+        const { trip_id } = tripDetails;
+        const tripIdColumn = 'trip_id';
+        const tableColumns = Object.keys(tripDetails);
+        const tripDetailsArray = Object.values(tripDetails);
+      
+        try {
+          const tripUpdate = await dbFunctions.updateOne(
+            tripTableName,
+            tableColumns,
+            trip_id,
+            tripIdColumn,
+            ...tripDetailsArray
+          );
+          console.log("tripUpdate:", tripUpdate);
+          if (tripUpdate) {
+            return tripUpdate;
+          } else {
+            return { message: "Rider details not updated" };
+          }
+        } catch (err) {
+          return { err: `Error occurred in updating rider details ${err}` };
+        }
     } catch (err) {
         return "Server Error Occurred";
     }
 }
 
-const deleteTrip = async () => {
+const deleteTrip = async (trip_id) => {
     try {
+        const tripDelete = await dbFunctions.deleteOne(
+            tripTableName,
+          tripColumnsForAdding[0],
+          trip_id
+        );
+        if (tripDelete) {
+          return tripDelete;
+        } else {
+          return { message: "trip not deleted" };
+        }
+      } catch (err) {
+        return "Error Occurred Deleting Rider";
+      }
+}
 
-    } catch (err) {
-        return "Server Error Occurred";
-    }
+const driverRateCouIntIncrease = async (driver_id, tripType)=> {
+  
+    let idColumn = 'driver_id';
+    let columnToBeIncreased = 'driver_rating_count'
+    if (tripType === 'motor') {
+      idColumn = 'rider_id'
+      columnToBeIncreased = 'rider_rating_count'
+    }  
+   const increaseDriverRateCount = await dbFunctions.increaseByValue(tripTableName, driver_id, idColumn, columnToBeIncreased )
+   if(increaseDriverRateCount === true) {
+    return increaseDriverRateCount
+  } else {
+    return false;
+   
+  } 
+  
 }
 
 const associatedWithTrip = async (trip_id, roleIdColumn) => {
@@ -101,4 +150,4 @@ const associatedWithTrip = async (trip_id, roleIdColumn) => {
     
   }
 
-module.exports = {getAllTrips, getOneTrip, addTrip, updateTrip, deleteTrip, getUserTrips, getSpecificDetailsUsingId, associatedWithTrip}
+module.exports = {getAllTrips, getOneTrip, addTrip, updateTrip, deleteTrip, getUserTrips, getSpecificDetailsUsingId, associatedWithTrip, driverRateCouIntIncrease}
