@@ -24,10 +24,10 @@ const getOneUser = async (userId) => {
   return data;
 };
 
-const isAdmin = async (userId) => {
-  const adminData = await getOneUser(userId);
-  console.log('adminData:', adminData)
-  if(adminData[0].user_role === 'Admin') {
+const isUserRole = async (userId, user_role) => {
+  const data = await getOneUser(userId);
+  console.log()
+  if(data[0].user_role === user_role) {
     return true;
   } else {
     return false;
@@ -71,6 +71,7 @@ const addUser = async (userDetails, password) => {
 
   const columnsForAdding = Object.keys(userDetails);
   const userDetailsArray = Object.values(userDetails);
+  console.log('userDetailsArray:', columnsForAdding)
 
   try {
     const emailExist = await emailExists(email);
@@ -79,7 +80,7 @@ const addUser = async (userDetails, password) => {
       const insertUserOtherDetails = await dbFunctions.addOne(
         userTableName,
         columnsForAdding,
-        ...userDetailsArray
+        userDetailsArray
       );
       if (insertUserOtherDetails) {
         const insertPassword = await dbFunctions.hashPassword(
@@ -90,13 +91,13 @@ const addUser = async (userDetails, password) => {
         );
         if (insertPassword) {
           //adding rider if rider role set
-          if (user_role === "motor_rider") {
+          if (user_role === "rider") {
             const addMotorRider = await riderModel.addMotorRider(user_id);
             addMotorRider ? {message: "motor rider added"} : {message: "error occurred in adding motor rider"};
 
           }
           //adding driver if driver role set
-          if (user_role === "car_driver") {
+          if (user_role === "driver") {
             const addCarDriver = await driverModel.addDriver(user_id);
             addCarDriver ? {message: "driver added"} : {message: "error occurred in adding driver"};
           }
@@ -160,7 +161,7 @@ const updateUser = async (userId, userDetails) => {
       
         const emailExist = await emailExists(email);
         if (emailExist && email!==resultEmail) {
-          return {message: 'Email is taken. User email not updated'}
+          return {message: 'User not updated, use a different email'}
         }
       } 
       
@@ -237,5 +238,5 @@ module.exports = {
   emailExists,
   getUserIdUsingEmail,
   userLogin,
-  isAdmin
+  isUserRole
 };

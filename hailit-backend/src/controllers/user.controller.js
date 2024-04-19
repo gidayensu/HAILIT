@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const StatusCodes = require('http-status-codes');
 const userService = require("../services/user.service");
+const {userIsUserRole} = require ('../utils/util')
 
 
-const { emailValidator, phoneValidator, allowedPropertiesOnly } = require( "../utils/util");
+const { emailValidator, phoneValidator } = require( "../utils/util");
 require('dotenv').config({path: './../../.env'});
 
 
@@ -35,18 +36,26 @@ const userLogin = async (req, res) => {
     if (checkUserId.user_id) {
       const {user_id} = checkUserId;
       
-      const verifyUser = await userService.userLogin(
+      const verifiedUser = await userService.userLogin(
         password,
         user_id
       );
       
-      if (verifyUser.verification_status) {
-        const user_role = verifyUser.user_role;
-        const token = jwt.sign({user_id, user_role}, process.env.JWT_SECRET)
+      if (verifiedUser.verification_status) {
+        const {user_role} = verifiedUser;
+        console.log('user_role:', user_role)
+        let token = jwt.sign({user_id, user_role}, process.env.JWT_SECRET)
+        if (user_role === 'driver' || user_role === 'rider') {
+          const {driver_id} = verifiedUser[0]
+          console.log('driver_id:', driver_id)
+          token = jwt.sign({user_id, user_role, driver_id }, process.env.JWT_SECRET)
+        }
+
+        
       
-      res.status(200).json({ data: verifyUser, token });
+      res.status(200).json({ data: verifiedUser, token });
       } else {
-        res.status(404).json({data: verifyUser})  
+        res.status(404).json({data: verifiedUser})  
       } 
     } else {
       res.status(404).json({message: 'wrong email or password'})
@@ -62,15 +71,17 @@ const userLogin = async (req, res) => {
 const getOneUser = async (req, res) => {
   try {
     const {userId} = req.params;
-    console.log('req user role:', req.user.user_role)
-    const jwtUserId = req.user.user_id;
+    
+    // const jwtUserId = req.user.user_id;
+    // const isAdmin = await userIsUserRole(jwtUserId, 'admin');
 
-      if (jwtUserId === userId) {
+      // if (jwtUserId === userId || isAdmin) {
       if (res && res.status) {
         const oneUser = await userService.getOneUser(userId);
         res.status(200).json({data: oneUser});
       }
-    } else {
+    // } 
+    else {
       res.status(401).json({message: 'Access denied'});
     }
     
@@ -121,22 +132,32 @@ const addUser = async (req, res) => {
 //updating user
 const updateUser = async (req, res) => {
   try {
-    const { userId } = req.params;
+    
+    
     const { first_name = '', last_name = '', email = '', phone_number = ''} = req.body;
     if(!first_name && !last_name && !email && !phone_number) {
       return res.status(StatusCodes.BAD_REQUEST).json({message: "no information provided"});
     }
+    const { userId } = req.params;
+    // const jwtUserId = req.user.user_id;
+    // const isAdmin = await userIsUserRole(jwtUserId, 'admin');
 
-    const userDetails = req.body;
+    // if (userId === jwtUserId || isAdmin) {
     
+     const userDetails = req.body;
+    //   if (userDetails.user_role === 'admin' && !isAdmin) {
+    //     return res.status(StatusCodes.BAD_REQUEST).json({message: "unauthorized"});
+    //   }
     const updateUser = await userService.updateUser(
       userId,
       userDetails
     );
     res.status(200).json({ message: updateUser });
-  } catch (err) {
+    // }
     
-    res.status(500).json({ message: "server error" });
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Server error: user not updated" });
   }
 };
 //deleting user detail

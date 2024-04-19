@@ -30,7 +30,7 @@ const addDriver = async (user_id, vehicle_id)=>  {
 }
 
 const updateDriver = async(driverDetails)=> {
-    const allowedProperties = ['driver_id, vehicle_id'];
+    const allowedProperties = ['driver_id', 'vehicle_id', 'driver_license_back', 'driver_license_front', 'driver_availability'];
     try {
     const validDriverDetails = await allowedPropertiesOnly(driverDetails, allowedProperties);
     const driverUpdate = await driverModel.updateDriver(validDriverDetails);

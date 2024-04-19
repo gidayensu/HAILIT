@@ -13,10 +13,10 @@ const getAll = async (tableName) => {
 };
 
 //check if a detail exists
-const checkOneDetail = async (tableName, columnName, entry) => {
+const checkOneDetail = async (tableName, columnName, condition) => {
   try {
-    const queryText = `select * from ${tableName} where ${columnName} =$1`;
-    const value = [entry];
+    const queryText = `SELECT * FROM ${tableName} WHERE ${columnName} =$1`;
+    const value = [condition];
     const result = await DB.query(queryText, value);
     
     return result;
@@ -55,6 +55,7 @@ const getOne = async (tableName, columnName, entry) => {
 
 //...args changed to args
 const addOne = async (tableName, columns, values) => {
+  console.log('values:', values)
   const placeholders = values.map((_, index) => "$" + (index + 1)).join(", ");
   const queryText = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
   try {
@@ -149,13 +150,15 @@ const getSpecificDetails = async (tableName, specificColumn, condition) => {
 const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
   try {
     await DB.query('BEGIN');
-      const columnsString = columns.join(', ');
-      const queryText = await `SELECT ${columnsString} FROM ${tableName} WHERE ${idColumn} = $1`;
+      // const columnsString = columns.join(', ');
+      const queryText = await `SELECT ${columns} FROM ${tableName} WHERE ${idColumn} = $1`;
       const value = [id];
       const {rows} = await DB.query(queryText, value);
     await DB.query('COMMIT');
+    
     return rows;
   } catch (err) {
+    
     await DB.query('ROLLBACK')
     return 'Server Error occurred, data not retrieved';
   }

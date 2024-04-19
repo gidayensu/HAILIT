@@ -9,6 +9,44 @@ const driverTableColumns = [
     "vehicle_id"
   ];
 
+
+//CREATE TRIGGER TO DELETE FROM DATABASE WHEN SOMETHIG CHANGES
+
+//   const db = require('./db');
+
+// // Function to create trigger
+// async function createTrigger() {
+//   const createTriggerQuery = `
+//     CREATE OR REPLACE FUNCTION delete_driver_data()
+//     RETURNS TRIGGER AS
+//     $$
+//     BEGIN
+//         IF OLD.user_role = 'driver' AND NEW.user_role = 'motor_driver' THEN
+//             DELETE FROM driver WHERE user_id = OLD.user_id;
+//         END IF;
+//         RETURN NEW;
+//     END;
+//     $$
+//     LANGUAGE plpgsql;
+    
+//     CREATE TRIGGER after_update_user_role
+//     AFTER UPDATE OF user_role ON user_table
+//     FOR EACH ROW
+//     EXECUTE FUNCTION delete_driver_data();
+//   `;
+
+//   try {
+//     await db.query(createTriggerQuery);
+//     console.log('Trigger created successfully');
+//   } catch (error) {
+//     console.error('Error creating trigger:', error);
+//   }
+// }
+
+// // Call the function to create the trigger
+// createTrigger();
+
+
 const defaultVehicleId = "04daa784-1dab-4b04-842c-a9a3ff8ae016";
 
 const getAllDrivers = async ()=> dbFunctions.getAll(driverTableName);
@@ -27,7 +65,18 @@ const getOneDriver = async (driver_id)=> {
     }
 }
 
-
+const getDriverDetailOnCondition = async (columnName, condition)=> {
+    try {
+    
+    const driverDetails = await dbFunctions.checkOneDetail(driverTableName, columnName, condition);
+    console.log(condition)
+    return driverDetails.rows;
+    } catch (err) {
+        console.log(condition)
+        console.log(err)
+        return "No Driver Details Found"
+    }
+}
 const getSpecificDrivers = async (specificColumn, condition)=> {
     try {
     const specificDrivers = await dbFunctions.getSpecificDetails(driverTableName, specificColumn, condition);
@@ -81,4 +130,4 @@ const deleteDriver = async (driver_id) => {
     
 }
 
-module.exports= {getAllDrivers, addDriver, updateDriver, getOneDriver, deleteDriver, getSpecificDrivers}
+module.exports= {getAllDrivers, addDriver, updateDriver, getOneDriver, deleteDriver, getSpecificDrivers, getDriverDetailOnCondition}

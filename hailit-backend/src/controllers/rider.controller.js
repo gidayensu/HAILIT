@@ -40,7 +40,7 @@ const addRider = async (req, res)=> {
 }
 
 const updateRider = async(req, res)=> {
-    console.log('this is running')
+    
     const {rider_id} = req.params || riderId;
     const {vehicle_id} = req.body || vehicleId;
 

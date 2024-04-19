@@ -1,5 +1,5 @@
 const tripService = require('../services/trip.service');
-const {userIsAdmin} = require('../utils/util');
+const {userIsUserRole} = require('../utils/util');
 
 const getAllTrips = async (req, res)=> {
     try {
@@ -9,9 +9,10 @@ const getAllTrips = async (req, res)=> {
         return res.status(500).json({message: "Server error"})
     }
 }
-
+//FIX GETONETRIP AND make driver/rider be able to access it as well as the user
 const getOneTrip = async (req, res)=> {
     try {
+        console.log('this is running')
         const requesterId = req.user.user_id;
         const {trip_id} = req.params;
         const oneTrip = await tripService.getOneTrip(trip_id, requesterId);
@@ -24,10 +25,13 @@ const getOneTrip = async (req, res)=> {
 
 const getUserTrips = async (req, res) => {
     try {
-        const {user_id} = req.params;
-        const {user_role} = req.user.user_role;
-        const isAdmin = await userIsAdmin (user_id);
-        if (!user_id  || !isAdmin) {
+        
+        const {user_id} = req.user;
+        console.log('user_id:', user_id)
+        const {user_role} = req.user;
+        const isAdmin = await userIsUserRole (user_id, 'admin');
+        
+        if (!user_id && !isAdmin) {
             return res.status(403).json({message: "access denied"})
         }
         const userTrips = await tripService.getUserTrips(user_id, user_role);
@@ -68,11 +72,35 @@ const addTrip = async (req, res)=> {
 }
 
 const updateTrip = async (req, res)=> {
+    try {
+        const {trip_id} = req.params;
+        const tripDetails = {trip_id, ...req.body};
+        const tripUpdate = tripService.updateTrip(tripDetails);
+        if (tripUpdate.message === 'trip updated') {
+            res.status(200).json({message: tripUpdate.message})
+        }
+    } catch (err) {
+        return res.status(500).json({message: "Server Error Occurred Updating User Trip"})
+    }
 
 }
 
-const deleteTrip = async (req, res)=> {
+const rateTrip = async (req, res)=> {
+    try {
+    const ratingDetails = req.body;
+    const {trip_id} = req.body;
+    const {user_id} = req.user;
+    
 
+    } catch (err) {
+
+    }
+    
+    
+}
+
+const deleteTrip = async (req, res)=> {
+    
 }
 module.exports={getAllTrips, getOneTrip, addTrip, updateTrip, deleteTrip, getUserTrips}
 

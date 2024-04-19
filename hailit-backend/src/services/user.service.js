@@ -1,8 +1,11 @@
 const { v4: uuid } = require("uuid");
 const userModel = require("../model/user.model");
-const { allowedPropertiesOnly } = require( "../utils/util");
+const driverModel = require("../model/driver.model");
+const riderModel = require("../model/rider.model");
+const { allowedPropertiesOnly, userIsUserRole } = require( "../utils/util");
 
 let allowedProperties = ['user_id','first_name', 'last_name', 'email', 'phone_number', 'user_role'];
+
 
 const getAllUsers = async () => {
   try {
@@ -16,6 +19,16 @@ const getAllUsers = async () => {
 const getOneUser = async (userId) => {
   try {
   const user = await userModel.getOneUser(userId);
+  console.log(user.user_role)
+  if(user.user_role === 'driver') {
+    const driverDetails = await driverModel.getDriverDetailOnCondition('user_id', userId);
+    
+    return {...user, ...driverDetails}
+  }
+  if(user.user_role === 'rider') {
+    const riderDetails = await riderModel.getRiderOnCondition('user_id', userId);
+    return {...user, ...riderDetails}
+  }
   return user;
   } catch (err){
     console.log(err)
@@ -44,8 +57,20 @@ const userLogin = async (password, user_id) => {
       user_role: userLogin[0].user_role,
       verification_status: true
     }
+
+    
+  if(userLogin[0].user_role === 'driver') {
+    const driverDetails = await driverModel.getDriverDetailOnCondition('user_id', user_id);
+    console.log('this:', driverDetails)
+    return {...exportUserData, ...driverDetails}
+  }
+  if(userLogin[0].user_role === 'rider') {
+    const riderDetails = await riderModel.getRiderOnCondition('user_id', user_id);
+    return {...exportUserData, ...riderDetails}
+  }
     return exportUserData;
   } catch (err) {
+    console.log(err)
     return "Error occurred in logging in user"
   }
 }
@@ -57,9 +82,10 @@ const addUser = async (userDetails) => {
   try {
     const user_id = await uuid();
     const {password} = userDetails;
-    
+
     const userDetailsWithId = { user_id, ...userDetails};
     const validUserDetailsWithId =  allowedPropertiesOnly(userDetailsWithId, allowedProperties);
+    
     return userModel.addUser(validUserDetailsWithId, password);
   } catch (err) {
     
@@ -71,11 +97,11 @@ const addUser = async (userDetails) => {
 const updateUser = async (userId, userDetails) => {
   try {
     
-    
+
     const validUserDetails = allowedPropertiesOnly(userDetails, allowedProperties)
     return await userModel.updateUser(userId, validUserDetails);
   } catch (err) {
-    
+    console.log(err)
     return "Error. User not updated";
   }
 };

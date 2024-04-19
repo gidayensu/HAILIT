@@ -39,11 +39,11 @@ const addDriver = async (req, res)=> {
 }
 
 const updateDriver = async(req, res)=> {
-    console.log('this is running')
-    const {driver_id} = req.params || driverId;
-    const {vehicle_id} = req.body || vehicleId;
+    
+    const {driver_id} = req.params;
+    const {vehicle_id} = req.body;
 
-    const driverDetails = {driver_id, vehicle_id}
+    const driverDetails = {driver_id, ...req.body}
 
     if (!driver_id && !vehicle_id ) {
         return res.status(401).json({message: "driver id or vehicle id missing"});

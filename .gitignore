@@ -1,3 +1,4 @@
 node_modules
 some_files
 ./hailit-backend/.env
+./hailit-backend/src/model/CRONJOBSBATCH.js

@@ -1,15 +1,18 @@
-const {userIsAdmin} = require('../utils/util')
+const {userIsUserRole} = require('../utils/util')
 
 const isAdmin = async(req, res, next)=> {
     
     const {user_id} = req.user;
+    console.log(user_id)
     
-    if (!user_id) {
-        return res.status(400).json({ message: "User ID not provided in request" });
-    }
+    
 
     try {
-        const adminStatus = await userIsAdmin(user_id);
+        if (!user_id) {
+            return res.status(400).json({ message: "User ID not provided in request" });
+        }
+        const adminStatus = await userIsUserRole(user_id, 'admin');
+        console.log(adminStatus)
     if (!adminStatus) {
         return res.status(403).json({message: "Access denied"})
     }

@@ -8,11 +8,10 @@ const authenticateToken = async (req, res, next)=> {
     if (!authHeader) {
         return res.status(401).json({message: "unauthorized"})
     }
-    console.log('authHeader:',authHeader)
+
     const token =   authHeader.split(' ')[1];
     const user = jwt.verify(token, process.env.JWT_SECRET);
     req.user = user;
-    console.log('user:',user)
     next();
     } catch (err) {
         console.log(err)

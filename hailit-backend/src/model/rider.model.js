@@ -28,6 +28,25 @@ const getOneRider = async (rider_id)=> {
     }
 }
 
+const getRiderOnCondition = async () => {
+    try {
+        const riderDetails = await dbFunctions.checkOneDetail(columnName, condition);
+        return riderDetails;
+        } catch (err) {
+            return "No Driver Details Found"
+        }
+}
+
+const getSpecificRiders = async (specificColumn, condition)=> {
+    try {
+    const specificRiders = await dbFunctions.getSpecificDetails(riderTableName, specificColumn, condition);
+    return specificRiders;
+    } catch (err) {
+        return `Error occurred in retrieving drivers: ${err}`;
+    }
+}
+
+
 const addMotorRider = async (user_id)=>  {
     const rider_id = uuid();
     const riderDetails = [rider_id, defaultVehicleId, user_id ];
@@ -65,4 +84,4 @@ const deleteRider = async (rider_id) => {
     }
     
 }
-module.exports= {getAllRiders, getOneRider, addMotorRider, updateRider, deleteRider}
+module.exports= {getAllRiders, getOneRider, addMotorRider, updateRider, deleteRider, getSpecificRiders, getRiderOnCondition}
