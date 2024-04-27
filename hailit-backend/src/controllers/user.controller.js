@@ -43,7 +43,7 @@ const userLogin = async (req, res) => {
       
       if (verifiedUser.verification_status) {
         const {user_role} = verifiedUser;
-        console.log('user_role:', user_role)
+        
         let token = jwt.sign({user_id, user_role}, process.env.JWT_SECRET)
         if (user_role === 'driver' || user_role === 'rider') {
           const {driver_id} = verifiedUser[0]

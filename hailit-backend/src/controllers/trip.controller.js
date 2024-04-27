@@ -1,5 +1,5 @@
 const tripService = require("../services/trip.service");
-const { userIsUserRole } = require("../utils/util");
+// const { userIsUserRole } = require("../utils/util");
 
 const getAllTrips = async (req, res) => {
   try {
@@ -12,7 +12,7 @@ const getAllTrips = async (req, res) => {
 //FIX GETONETRIP AND make driver/rider be able to access it as well as the user
 const getOneTrip = async (req, res) => {
   try {
-    console.log("this is running");
+    
     const requesterId = req.user.user_id;
     const { trip_id } = req.params;
     const oneTrip = await tripService.getOneTrip(trip_id, requesterId);
