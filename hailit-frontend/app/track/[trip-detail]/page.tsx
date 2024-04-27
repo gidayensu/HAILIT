@@ -10,7 +10,7 @@ import { LuPhone } from "react-icons/lu";
 
 export default function TrackDelivery () {
     return (
-        <main className="flex  flex-col items-center gap-10 ">
+        <main className="flex flex-col items-center gap-10 ">
         <div className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
         <span className="text-5xl font-bold ">Package</span>
         <p className="text-3xl">#235-ASF5</p>
