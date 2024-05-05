@@ -100,9 +100,11 @@ const verifyPassword = async (enteredPassword, id, tableDetails) => {
     const storedHash = await result.rows[0].ps_hash;
     const storedSalt = await result.rows[0].ps_salt;
 
-    const hash = await crypto
-      .pbkdf2Sync(enteredPassword, storedSalt, 1000, 64, "sha512")
-      .toString("hex");
+    const iterations = 100000;
+    const keylen = 64;
+    const derivedKey = await crypto
+      .pbkdf2(enteredPassword, storedSalt, iterations, keylen, "sha512")
+    const hash = derivedKey.toString("hex");
     if (storedHash === hash) {
       return true;
     } else {

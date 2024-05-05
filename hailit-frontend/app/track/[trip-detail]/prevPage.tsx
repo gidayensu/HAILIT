@@ -1,6 +1,8 @@
 import { Separator } from "@/components/ui/separator";
 import { UserAvatar } from "@/components/common/user-avatar";
-import { FiCheck } from "react-icons/fi";
+import { PiPackageThin } from "react-icons/pi";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { RiMessage3Line } from "react-icons/ri";
 import { LuPhone } from "react-icons/lu";
 
@@ -13,61 +15,58 @@ export default function TrackDelivery() {
   return (
     <main className="flex min-h-screen flex-col items-center gap-10 mb-5">
       <TopContent className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
-        <span className="text-5xl font-bold ">#235-ASF5</span>
-        <p className="text-lg font-bold"> Package Description</p>
+        <span className="text-5xl font-bold ">Package</span>
+        <p className="text-3xl">#235-ASF5</p>
       </TopContent>
 
-      <MidContent className="gap-1">
-        <div className="flex flex-col gap-2 mt-10">
-        <h3 className="font-bold text-sm">Updates</h3>
-        <div className="w-[330px] rounded-xl border border-slate-800 border-opacity-30 h-24 dark:border-none dark:bg-[#2c2c29] p-4 flex justify-between items-center ">
+      <MidContent className="">
+        <div className="flex text-sm w-[300px] items-center justify-center mt-10 ">
         <div className="flex flex-col gap-2 w-full items-start ">
-          <div className="flex gap-2 items-center justify-start w-[82px]   ">
-            <div className="bg-green-600 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
-                  <FiCheck className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
+          <div className="flex gap-2 items-center justify-start w-[82px] ">
+            <div className="bg-slate-800 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
+                  <PiPackageThin className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
             </div>
                 <Separator className="w-1/3 bg-slate-800 dark:bg-slate-50"/>
           </div>
           
-            <p className="-ml-1 text-sm">Booked</p>
+            <p className="-ml-1">Booked</p>
             
           </div>
           <div className="flex flex-col gap-2 w-full items-start ">
           <div className="flex gap-2 items-center justify-start w-[82px] ">
-            <div className="bg-green-600 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
-                  <FiCheck className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
+            <div className="bg-slate-800 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
+                  <PiPackageThin className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
             </div>
                 <Separator className="w-1/3 bg-slate-800 dark:bg-slate-50"/>
           </div>
           
-            <p className="-ml-2 text-sm">Picked Up</p>
+            <p className="-ml-1">Booked</p>
             
           </div>
           <div className="flex flex-col gap-2 w-full items-start ">
           <div className="flex gap-2 items-center justify-start w-[82px] ">
-            <div className="bg-green-600 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
-                  <FiCheck className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
+            <div className="bg-slate-800 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
+                  <PiPackageThin className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
             </div>
                 <Separator className="w-1/3 bg-slate-800 dark:bg-slate-50"/>
           </div>
           
-            <p className="-ml-2 text-sm">Delivering</p>
+            <p className="-ml-1">Booked</p>
             
           </div>
           
           <div className="flex flex-col gap-2 w-full items-start ">
           <div className="flex gap-2 items-center justify-start w-[82px] ">
-            <div className="bg-green-600 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
-                  <FiCheck className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
+            <div className="bg-slate-800 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
+                  <PiPackageThin className="text-[20px] text-slate-50 dark:text-[#1e1e1e]" />
             </div>
                 
           </div>
           
-            <p className="-ml-1 text-sm">Delivered</p>
+            <p className="-ml-1">Booked</p>
             
           </div>
 
-        </div>
           
         
 
@@ -77,8 +76,8 @@ export default function TrackDelivery() {
         
 
         <div className="flex flex-col gap-2">
-        <h3 className="font-bold text-sm">Courier</h3>
-        <div className="w-[330px] rounded-xl border border-slate-800 border-opacity-30 h-24 dark:border-none dark:bg-[#2c2c29] p-4 flex justify-between items-center">
+        <h3 className="font-bold">Courier Details</h3>
+        <div className="w-[330px] rounded-xl border-2 border-slate-300 h-24 dark:border-none dark:bg-[#2c2c29] p-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <span>
               <UserAvatar />

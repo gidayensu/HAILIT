@@ -45,27 +45,30 @@ export default function Profile() {
         </TopContent>
 
         <MidContent className="flex flex-col justify-center items-center gap-6 bg-white w-full -mt-20 rounded-tr-[50px] p-5 text-sm">
-          <div className="flex justify-between items-center w-full h-16 bg-[#e6eaec] dark:bg-[#121212] rounded-2xl p-2 gap-3">
-            <span className={`flex items-center justify-center ${currentDeliveries ? 'bg-white dark:bg-[#292929]' : 'bg-[#f4f7fd8a] dark:bg-[#141414] dark:opacity-50'}  text-slate-800 dark:text-slate-100 w-1/2 h-10 text-center rounded-xl`}
+          <div className="flex justify-between items-center w-full h-12 bg-[#e6eaec] dark:bg-[#121212] rounded-full p-2 gap-3">
+            <span className={`flex items-center justify-center ${currentDeliveries ? 'bg-white dark:bg-[#292929]' : ' dark:bg-[#141414] dark:opacity-50'}  text-slate-800 dark:text-slate-100 w-1/2 h-10 -ml-1 text-center rounded-full`}
             onClick={()=>handleSelectedDeliveries(true)}
             >
               Current Deliveries
             </span>
-            <span className={`flex items-center justify-center ${currentDeliveries ?  'bg-[#f4f7fd8a] dark:bg-[#141414] dark:opacity-50' : 'bg-white dark:bg-[#292929]'}  text-slate-800 dark:text-slate-100 w-1/2 h-10 text-center rounded-xl`}
+            <span className={`flex items-center justify-center ${currentDeliveries ?  ' dark:bg-[#141414] dark:opacity-50' : 'bg-white dark:bg-[#292929]'}  text-slate-800 dark:text-slate-100 w-1/2 h-10 -mr-1 text-center rounded-full`}
             onClick={()=>handleSelectedDeliveries(false)}>
               Previous Deliveries
             </span>
           </div>
             {currentDeliveries && 
             <div className="flex flex-col w-full gap-4">
-            <OrderSummaryCard/>       
-            <OrderSummaryCard/>       
-            <OrderSummaryCard/>       
+            <OrderSummaryCard deliveryStatus="Delivering"/>
+            <OrderSummaryCard deliveryStatus="Delivered"/>       
+            <OrderSummaryCard deliveryStatus="Picked up"/>       
+            <OrderSummaryCard deliveryStatus="Cancelled"/> 
+            
             </div>}
 
             {!currentDeliveries && 
             <div className="flex flex-col w-full gap-4">
-            <OrderSummaryCard/>       
+            <OrderSummaryCard deliveryStatus="Delivered"/>
+            <OrderSummaryCard deliveryStatus="Cancelled"/>        
                   
             </div>}
             
