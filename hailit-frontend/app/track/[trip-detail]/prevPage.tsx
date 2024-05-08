@@ -19,7 +19,7 @@ export default function TrackDelivery() {
         <p className="text-3xl">#235-ASF5</p>
       </TopContent>
 
-      <MidContent className="">
+      <MidContent className="flex flex-col justify-start items-center">
         <div className="flex text-sm w-[300px] items-center justify-center mt-10 ">
         <div className="flex flex-col gap-2 w-full items-start ">
           <div className="flex gap-2 items-center justify-start w-[82px] ">

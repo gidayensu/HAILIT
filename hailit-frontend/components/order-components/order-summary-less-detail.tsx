@@ -1,6 +1,9 @@
 "use client";
+
 import Link from "next/link";
 import { MdOutlineLocationOn } from "react-icons/md";
+
+import Container from "../ui/container";
 
 type DeliveryStatus =
   | "Delivered"
@@ -17,10 +20,13 @@ export default function OrderSummaryLessDetail({
   return (
     <Link href="/track/s" className="w-full">
       {/* <div className="flex flex-col gap-3 bg-gradient-to-tl from-[#9da9ac25] from-1% via-white via-50% to-white border border-slate-300 h-56 rounded-2xl p-4 dark:bg-transparent"> */}
-      <div className="flex flex-col gap-1 bg-white border border-slate-300 dark:border-opacity-20 h-16 rounded-xl p-2 dark:bg-[#1e1e1e]">
-        <div className="flex justify-between items-center">
-          <span>
-          <h3 className="ml-2 font-bold text-s">Bag of rice</h3>
+      <Container className="flex flex-col gap-1  h-16 rounded-xl p-2">
+        <div className="flex justify-between items-start">
+          <span className="space-y-1">
+            <span className="flex items-center gap-2">
+                <h3 className="ml-2 font-bold text-s">Bag of rice</h3>
+                <h3 className="opacity-50 text-[12px] mt-1">- 12th May, 2024</h3>
+            </span>
           <p className="ml-2 text-[12px]">Ama Saman Station</p>
           </span>
           <span
@@ -41,7 +47,7 @@ export default function OrderSummaryLessDetail({
         </div>
 
         
-      </div>
+      </Container>
     </Link>
   );
 }

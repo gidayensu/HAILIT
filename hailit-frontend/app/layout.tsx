@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { BottomBar } from "@/components/bottom-bar";
-import { ThemeToggle } from "@/components/theme-toggle";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
         <ThemeProvider
         attribute="class"
         defaultTheme="system" >
-        <ThemeToggle/>
+
         {children}
         <BottomBar/>
         </ThemeProvider>

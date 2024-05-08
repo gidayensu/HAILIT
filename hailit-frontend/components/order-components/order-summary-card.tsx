@@ -1,43 +1,59 @@
 "use client";
-import { Badge } from "../ui/badge";
-import Link from "next/link";
+
 import { TbCurrentLocation } from "react-icons/tb";
 import { MdOutlineLocationOn } from "react-icons/md";
-
+import Container from "@/components/ui/container";
 
 import { Separator } from "@/components/ui/separator";
 
-type DeliveryStatus =  'Delivered' | 'Cancelled' | 'Picked up' | 'Delivering' | 'Booked'
+type DeliveryStatus =  'INTERCITY' | 'SCHEDULED' | 'NEXT DAY' | 'SAME DAY' | 'GHS 40'
 
 export default function OrderSummaryCard ({deliveryStatus}:{deliveryStatus : DeliveryStatus}) {
   
 
     return(
-    <Link href='/track/s' className="w-full">
+    <>
         {/* <div className="flex flex-col gap-3 bg-gradient-to-tl from-[#9da9ac25] from-1% via-white via-50% to-white border border-slate-300 h-56 rounded-2xl p-4 dark:bg-transparent"> */}
-        <div className="flex flex-col gap-3 bg-white border border-slate-300 dark:border-opacity-20 h-36 rounded-2xl p-6 dark:bg-[#1e1e1e]">
-        <div className="flex justify-between">
-          <h3 className="font-bold">#ASD-593</h3>
-          <span className={`flex justify-center items-center text-[11px] font-bold  ${deliveryStatus === 'Delivered' ? 'bg-green-700  text-green-400' : deliveryStatus === 'Picked up' ? 'bg-sky-700  text-sky-300' : deliveryStatus === 'Delivering'?  'bg-amber-600 text-amber-200 ': deliveryStatus === 'Booked' ? 'bg-slate-600 text-slate-200 dark:bg-white dark:text-[#1e1e1e]': 'bg-red-600 text-red-200'}  h-6 w-20 rounded-full   `}>
+        <Container className="w-full flex flex-col gap-3 h-36 rounded-xl p-4 ">
+        <div className="flex justify-between -mt-1">
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold -ml-1">#ASD-593</h3>
+            <h3 className="opacity-50 text-[12px]">- 12th May, 2024</h3>
+          </div>
+          
+          <span className={`flex justify-center items-center text-[11px] font-bold  ${deliveryStatus === 'INTERCITY' ? '  text-blue-500' : deliveryStatus === 'NEXT DAY' ? '  text-sky-500' : deliveryStatus === 'SAME DAY'?  ' text-amber-500 ': deliveryStatus === 'GHS 40' ? ' text-slate-800  dark:text-slate-50': ' text-red-500'}  h-6 w-20 rounded-full   `}>
             
             <p>{deliveryStatus}</p>
             
           </span>
         </div>
 
-        <div className="flex flex-col items-start h-full gap-1">
-          <span className="flex items-center  gap-2 -ml-2">
+        <div className="flex flex-col justify-center h-full">
+          <span className="flex items-start  gap-2 -ml-2">
             <TbCurrentLocation className="text-lg" />
-            <p className="text-sm">Adriganor High Street</p>
+            <span className="flex gap-2">
+              <span className="space-y-1">
+                <p className="text-[13px]">Accra, Teiman</p>
+                <p className="text-[13px] opacity-50">0587468974115</p>
+              </span>
+              <h3 className="opacity-50 text-[12px]">- 12/05/2024 (1:24 PM)</h3>
+            </span>
           </span>
 
           <Separator
             orientation="vertical"
-            className="bg-slate-800 h-1/6 dark:bg-slate-100"
+            className="bg-slate-800 h-1/3 dark:bg-slate-100 -mt-4 mb-1"
           />
-          <span className="flex items-center gap-2 -ml-[9px]">
+          <span className="flex items-start gap-2 -ml-[9px]">
             <MdOutlineLocationOn className="text-xl" />
-            <p className="font-bold text-sm">Ama Saman Station</p>
+            <span className="flex gap-2">
+              <span>
+                  <p className="font-bold text-[13px]">Amakom, Kumasi</p>
+                  <p className="text-[13px] opacity-50">024987944645</p>
+              </span>
+                  <h3 className="opacity-50 text-[12px]">- 12/05/2024 (5:54 PM)</h3>
+              </span>
+              
           </span>
         </div>
           {/* <Separator  className="bg-slate-800 w-full opacity-65"/> */}
@@ -50,11 +66,11 @@ export default function OrderSummaryCard ({deliveryStatus}:{deliveryStatus : Del
 
             <Separator orientation="vertical" className="bg-slate-800 h-full" />
             <p className="mr-3">
-              <strong>Charge</strong>: GHS 50
+              <strong>Charge</strong>: INTERCITY
             </p>
           </div>
         </div> */}
-      </div>
-      </Link>
+      </Container>
+      </>
     )
 }

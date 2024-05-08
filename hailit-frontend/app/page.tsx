@@ -1,24 +1,42 @@
+'use client'
+//next + react
 import Link from "next/link";
+import { useState } from "react";
+import { useTheme } from "next-themes";
+
+//ui components + icons
 import { Button } from "@/components/ui/button";
-import { AccountAccess } from "@/components/common/account-access";
+import Container from "@/components/ui/container";
 import { FcGoogle } from "react-icons/fc";
 import { FaChevronDown } from "react-icons/fa6";
-import OrderSummaryLessDetail from "@/components/order-components/order-summary-less-detail";
+
 import { RiTimerFlashFill, RiTimer2Fill, RiCalendarScheduleFill } from "react-icons/ri";
-import TopContent from "@/components/common/top-content";
-import MidContent from "@/components/common/mid-content";
+
+//main components
+import OrderSummaryLessDetail from "@/components/order-components/order-summary-less-detail";
+import { AccountAccess } from "@/components/common/account-access";
+
 
 import Image from "next/image";
 
-type UserRole = 'vendor' | 'admin' | 'client' | 'dispatcher'
+type UserRole = 'vendor' | 'admin' | 'client' | 'dispatcher';
+type Deliveries = boolean;
+
 export default function Home() {
+  
+  
+  const [currentDeliveries, setCurrentDeliveries] = useState<Deliveries>(true);
+
+    const handleSelectedDeliveries = (status: boolean)=> {
+        setCurrentDeliveries(status)
+    }
   const userRole:UserRole = 'vendor';
   return (
     <main className="flex flex-col items-center gap-3 justify-center bg-slate-50 dark:bg-[#121212] relative mb-20 ">
       {
         userRole==='vendor' && 
         <>
-        
+      {/* Location */}
         
           <div className=" flex flex-col items-center justify-center w-5/6 h-24 bg-gradient-to-r from-blue-700 to-blue-500 mt-10 rounded-lg text-white gap-1">
             <p className="flex items-center justify-center text-[14px] w-44 h-7 text-center">Pickup Location</p>
@@ -33,13 +51,13 @@ export default function Home() {
             </div>
           </div>
           
+          {/* Send a package */}
           
-          <div className="mt-5 flex flex-col w-full items-center justify-center  rounded-2xl gap-2">
-            
-  
-              
+          <div className="mt-5 flex flex-col w-full rounded-2xl gap-2">
+          <h2 className="font-bold text-xl ml-8"> Send a Package</h2>
+             <div className="flex flex-col w-full items-center justify-center gap-2">
             <Link href="/order/new">
-            <div className="flex justify-start items-center gap-3 border border-slate-300 w-[320px] h-32  rounded-xl bg-white hover:bg-[#baffed] dark:border-slate-100 dark:border-opacity-20 dark:bg-[rgb(30,30,30)] dark:hover:border-[#baffed] dark:text-slate-100  cursor-pointer">
+            <Container className="flex justify-start items-center gap-3 w-[320px] h-32  rounded-xl  cursor-pointer">
                     <Image
                       src='https://i.ibb.co/0rQk9tY/parcel-Image.png'
                       width={90}
@@ -58,46 +76,67 @@ export default function Home() {
                         </p>
                     </span>
                     
-               </div>
+               </Container>
                </Link>
+                      </div>          
           </div>
           <div className="flex items-center justify-center gap-1 w-full">
-              <div className="flex flex-col justify-center items-center gap-2 bg-white  dark:bg-[#1e1e1e]">
-              <div className="flex flex-col items-center justify-center w-[102px] h-[90px] border  dark:border-slate-50 rounded-lg p-3 dark:border-opacity-20">
+              <div className="flex flex-col justify-center items-center gap-2 ">
+              <Container className="flex flex-col items-center justify-center w-[102px] h-[90px]  rounded-lg p-3">
                 <RiTimerFlashFill className="text-xl mb-2  text-blue-600"/>
                 <p className="font-bold text-[9px] ">Deliver Today</p>
                 <p className="text-[12px]">from <strong>GHS 30</strong></p>
-                </div>
+                </Container>
                 
               </div>
-              <div className="flex flex-col justify-center items-center gap-2 bg-white dark:bg-[#1e1e1e]">
-              <div className="flex flex-col items-center justify-center w-[102px] h-[90px] border dark:border-slate-50 dark:border-opacity-20 rounded-lg p-3">
+              <div className="flex flex-col justify-center items-center gap-2 ">
+              <Container className="flex flex-col items-center justify-center w-[102px] h-[90px]  rounded-lg p-3">
                 <RiTimer2Fill className="text-xl mb-2 text-blue-600"/>
                 <p className="font-bold text-[9px]">Deliver Morro</p>
                 <p className="text-[12px]">from <strong>GHS 20</strong></p>
-                </div>
+                </Container>
                 
               </div>
-              <div className="flex flex-col justify-center items-center gap-2 bg-white dark:bg-[#1e1e1e]">
-              <div className="flex flex-col items-center justify-center w-[102px] h-[90px] border dark:border-slate-50  dark:border-opacity-20 rounded-lg p-3">
+              <div className="flex flex-col justify-center items-center gap-2 ">
+              <Container className="flex flex-col items-center justify-center w-[102px] h-[90px]  rounded-lg p-3">
                 <RiCalendarScheduleFill className="text-xl mb-2 text-blue-600"/>
                 <p className="font-bold text-[9px]">Schedule</p>
                 <p className="text-[12px]">from <strong>GHS 20</strong></p>
-                </div>
+                </Container>
                 
               </div>
               
             </div>
+          {/* Previous Orders  */}
+          <div className="flex flex-col w-full p-7 rounded-2xl gap-2">
+          <h2 className="font-bold text-xl"> Your Deliveries</h2>
+          <div className="flex justify-between items-center w-full h-10 bg-white dark:bg-[#1e1e1e] border border-blue-500   rounded-xl p-2 gap-3 text-[13px] mb-4">
+            <span className={`flex items-center justify-center ${currentDeliveries ? 'bg-blue-500 text-white' : ' dark:bg-[#1e1e1e] dark:opacity-50'}  text-blue-500 dark:text-slate-100 w-1/2 h-8 -ml-1 text-center rounded-lg`}
+            onClick={()=>handleSelectedDeliveries(true)}
+            >
+              Current 
+            </span>
+            <span className={`flex items-center justify-center ${currentDeliveries ?  ' dark:bg-[#1e1e1e] dark:opacity-50' : 'text-white bg-blue-500'} text-blue-500 dark:text-slate-100 w-1/2 h-8 -mr-1 text-center rounded-lg`}
+            onClick={()=>handleSelectedDeliveries(false)}>
+              Previous
+            </span>
+          </div>
           
-          <div className="flex flex-col w-full p-5 rounded-2xl gap-2">
-            <p className="font-bold text-xl"> TODAY</p>
+            
+            { currentDeliveries &&(
+              <>
+            
           <OrderSummaryLessDetail deliveryStatus="Booked"/>
             <OrderSummaryLessDetail deliveryStatus="Picked up"/>
-            <p className="font-bold mt-4 text-xl "> THIS WEEK</p>
+            
             <OrderSummaryLessDetail deliveryStatus="Delivering"/>
-            <p className="font-bold mt-4 text-xl"> LONG TIME AGO</p>
+            </>
+            )}
+            {!currentDeliveries && (
+              <>
             <OrderSummaryLessDetail deliveryStatus="Delivered"/>
             <OrderSummaryLessDetail deliveryStatus="Cancelled"/>
+            </>)}
           </div>
           
         </>

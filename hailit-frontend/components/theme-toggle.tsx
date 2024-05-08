@@ -1,39 +1,56 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MoonIcon, SunIcon } from "@radix-ui/react-icons"
+import { useEffect, useState } from "react";
 
-import { useTheme } from "next-themes"
-
-import { Button } from "@/components/ui/button"
+import { useTheme } from "next-themes";
 
 
-type Theme = 'system' | 'light' | 'dark';
+
+import {
+  MdDarkMode,
+  MdOutlineDarkMode,
+  MdLightMode,
+  MdOutlineLightMode,
+} from "react-icons/md";
 
 export function ThemeToggle() {
-  const [currentTheme, setCurrentTheme] = useState<Theme>('system');
-  const { setTheme } = useTheme();
-  const theme = ()=> {
-      if (currentTheme === 'system' || currentTheme === 'dark') {
-        setTheme("light")
-        setCurrentTheme("light")
-      }
+  const { setTheme, systemTheme, theme: mainTheme } = useTheme();
+  const [currentTheme, setCurrentTheme] = useState<any>(null);
+  useEffect(()=>{
+    
+    const preferredTheme = localStorage.getItem('theme') || systemTheme;
+      setCurrentTheme(preferredTheme)
+  }, [])
+  const iconOutlineClass = "text-2xl group-hover:opacity-0";
+  const iconFillClass =
+    "text-2xl opacity-0 absolute top-0 left-0  group-hover:opacity-100";
 
-      if(currentTheme === 'light') {
-        setTheme("dark")
-        setCurrentTheme("dark")
-      }
-       
-  }
+
+  const userTheme = () => {
+    if (currentTheme === "dark") {
+      setTheme("light");
+    }
+
+    if (currentTheme === "light") {
+      setTheme("dark");
+    }
+  };
 
   return (
+    <span onClick={userTheme}>
+      {currentTheme !== "dark" && (
+        <>
+          <MdOutlineDarkMode className={iconOutlineClass} />
+          <MdDarkMode className={iconFillClass} />
+        </>
+      )}
 
-       
-        <Button size="icon" variant='empty' onClick={theme} className="flex justify-center items-center absolute border-none  bg-inherit w-full ">
-          <SunIcon className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-white" />
-          <MoonIcon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-        </Button>
-        
-
-  )
+      {currentTheme === "dark" && (
+        <>
+          <MdOutlineLightMode className={iconOutlineClass} />
+          <MdLightMode className={iconFillClass} />
+        </>
+      )}
+    </span>
+  );
 }

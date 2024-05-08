@@ -16,7 +16,7 @@ export default function Order () {
         
       </TopContent>
            
-           <MidContent className="min-h-screen" >
+           <MidContent className="flex flex-col justify-start items-center min-h-screen" >
             <div className="flex gap-6 mt-10">
                <Link href='/order/new'>
                <div className="flex flex-col justify-center items-center border border-slate-300  w-40 h-32 mt-10 rounded-xl bg-[#f7e7a1] hover:bg-[#f7e490] dark:bg-transparent dark:border-[#f7e7a1] dark:hover:border-2 dark:hover:border-[#f7e490] dark:text-[#f7e7a1] dark:hover:text-[#f7e490] cursor-pointer">

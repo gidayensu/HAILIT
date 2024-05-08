@@ -132,17 +132,17 @@ if (typeof window !== 'undefined') {
           </div>
         )}
       </div>
+        {/* // onClick={({ event, latLng, pixel }) => {
+        //   // console.log("event:", event, "latLng:", latLng, "pixel:", pixel);
+        //   setSelectedLocation(latLng);
+        // }} */}
 
       <div className="relative w-full h-full">
         {userLocation && selectedLocation && (
           <>
             <Map
-              // onClick={({ event, latLng, pixel }) => {
-              //   // console.log("event:", event, "latLng:", latLng, "pixel:", pixel);
-              //   setSelectedLocation(latLng);
-              // }}
 
-              height={windowHeight}
+              height={800}
               center={selectedLocation}
               minZoom={1}
               maxZoom={18}
