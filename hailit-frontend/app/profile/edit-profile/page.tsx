@@ -8,10 +8,7 @@ import CustomerProfile from "@/components/forms/customer-profile";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-
-
 export default function EditProfile() {
-
   return (
     <>
       <main className="flex min-h-screen flex-col items-center gap-10 ">
@@ -21,15 +18,13 @@ export default function EditProfile() {
         </TopContent>
 
         <MidContent className="flex flex-col justify-center items-center gap-6 bg-white w-full -mt-20 rounded-tr-[50px] p-10 mb-20">
-          
-            <form className="w-full space-y-6">
-                <CustomerProfile/>
+          <form className="w-full space-y-6">
+            <CustomerProfile />
 
-              <Button type="submit" className="w-full h-14">
-                Save
-              </Button>
-            </form>
-          
+            <Button type="submit" className="w-full h-14">
+              Save
+            </Button>
+          </form>
         </MidContent>
       </main>
     </>

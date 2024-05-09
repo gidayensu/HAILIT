@@ -12,7 +12,6 @@ const getAllTrips = async (req, res) => {
 //FIX GETONETRIP AND make driver/rider be able to access it as well as the user
 const getOneTrip = async (req, res) => {
   try {
-    
     const requesterId = req.user.user_id;
     const { trip_id } = req.params;
     const oneTrip = await tripService.getOneTrip(trip_id, requesterId);
@@ -27,9 +26,8 @@ const getOneTrip = async (req, res) => {
 
 const getUserTrips = async (req, res) => {
   try {
-    
     const { user_id } = req.params;
-    console.log("user_id:", user_id);
+    
     //  const { user_role } = req.user;
     // const isAdmin = await userIsUserRole(user_id, "admin");
 
@@ -52,12 +50,10 @@ const addTrip = async (req, res) => {
     const { trip_type, delivery_item, delivery_address, pickup_location } =
       req.body;
     if (!trip_type || !delivery_item || !delivery_address || !pickup_location) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Provide all details: trip type, delivery item, and delivery address",
-        });
+      return res.status(400).json({
+        message:
+          "Provide all details: trip type, delivery item, and delivery address",
+      });
     }
 
     if (trip_type) {
@@ -97,39 +93,37 @@ const updateTrip = async (req, res) => {
 
 const rateTrip = async (req, res) => {
   try {
-    console.log('this runs')
+    console.log("this runs");
     const ratingDetails = req.body;
     const { trip_id } = req.params;
-    const detailsWithId = {trip_id, ...ratingDetails};
-    const {driver_rating} = req.body;
-    if (!driver_rating)  {
-      return res.status(403).json({message: "Driver/rider details missing"})
+    const detailsWithId = { trip_id, ...ratingDetails };
+    const { driver_rating } = req.body;
+    if (!driver_rating) {
+      return res.status(403).json({ message: "Driver/rider details missing" });
     }
 
-
     const tripRating = await tripService.rateTrip(detailsWithId);
-    
+
     if (tripRating === "trip updated with rating") {
-      
-      res.status(200).json({message: "Trip updated with rating"})
+      res.status(200).json({ message: "Trip updated with rating" });
     } else {
-      res.status(400).json({message: "Trip not Updated"})
+      res.status(400).json({ message: "Trip not Updated" });
     }
   } catch (err) {}
 };
 
 const deleteTrip = async (req, res) => {
-    try {
-        const { trip_id } = req.params;
-        const tripDelete = await tripService.deleteTrip(trip_id);
-        if (tripDelete) {
-          res.status(200).json({ message: "trip deleted" });
-        } else {
-          res.status(400).json({ message: "trip not deleted" });
-        }
-      } catch (err) {
-        return "Error Occurred; Rider Not Deleted";
-      }
+  try {
+    const { trip_id } = req.params;
+    const tripDelete = await tripService.deleteTrip(trip_id);
+    if (tripDelete) {
+      res.status(200).json({ message: "trip deleted" });
+    } else {
+      res.status(400).json({ message: "trip not deleted" });
+    }
+  } catch (err) {
+    return "Error Occurred; Rider Not Deleted";
+  }
 };
 module.exports = {
   getAllTrips,

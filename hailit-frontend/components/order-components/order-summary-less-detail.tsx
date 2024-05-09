@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { MdOutlineLocationOn } from "react-icons/md";
+import {
+  PiMonitorFill,
+  PiMonitorLight,
+  PiPackageFill,
+  PiPackageLight,
+} from "react-icons/pi";
+import { IoArchiveOutline, IoArchive } from "react-icons/io5";
+import { PiWineLight, PiWineFill } from "react-icons/pi";
 
 import Container from "../ui/container";
 
@@ -24,10 +31,10 @@ export default function OrderSummaryLessDetail({
         <div className="flex justify-between items-start">
           <span className="space-y-1">
             <span className="flex items-center gap-2">
-                <h3 className="ml-2 font-bold text-s">Bag of rice</h3>
-                <h3 className="opacity-50 text-[12px] mt-1">- 12th May, 2024</h3>
+              <h3 className="ml-2 font-bold text-s">Bag of rice</h3>
+              <h3 className="opacity-50 text-[12px] mt-1">- 12th May, 2024</h3>
             </span>
-          <p className="ml-2 text-[12px]">Ama Saman Station</p>
+            <p className="ml-2 text-[12px]">Ama Saman Station</p>
           </span>
           <span
             className={`mr-2 flex justify-center items-center text-[12px] font-bold text-left  ${
@@ -45,8 +52,6 @@ export default function OrderSummaryLessDetail({
             <p>{deliveryStatus}</p>
           </span>
         </div>
-
-        
       </Container>
     </Link>
   );

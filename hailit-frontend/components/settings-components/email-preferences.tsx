@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,19 +12,18 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form"
-import { Switch } from "@/components/ui/switch"
-import { toast } from "@/components/ui/use-toast"
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/use-toast";
 
 const FormSchema = z.object({
   marketing_emails: z.boolean().default(false).optional(),
-})
+});
 
 export function EmailPreferenceForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    
-  })
+  });
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     toast({
@@ -34,8 +33,8 @@ export function EmailPreferenceForm() {
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
-    })
-  }
+    });
+  };
 
   return (
     <Form {...form}>
@@ -65,11 +64,10 @@ export function EmailPreferenceForm() {
                 </FormItem>
               )}
             />
-            
           </div>
         </div>
         <Button type="submit">Submit</Button>
       </form>
     </Form>
-  )
+  );
 }

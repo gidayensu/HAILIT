@@ -102,8 +102,13 @@ const verifyPassword = async (enteredPassword, id, tableDetails) => {
 
     const iterations = 100000;
     const keylen = 64;
-    const derivedKey = await crypto
-      .pbkdf2(enteredPassword, storedSalt, iterations, keylen, "sha512")
+    const derivedKey = await crypto.pbkdf2(
+      enteredPassword,
+      storedSalt,
+      iterations,
+      keylen,
+      "sha512"
+    );
     const hash = derivedKey.toString("hex");
     if (storedHash === hash) {
       return true;
@@ -150,7 +155,7 @@ const getSpecificDetails = async (tableName, specificColumn, condition) => {
 const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
   try {
     await DB.query("BEGIN");
-    const columnsString = columns.join(', ');
+    const columnsString = columns.join(", ");
     const queryText = `SELECT ${columnsString} FROM ${tableName} WHERE ${idColumn} = $1`;
     const value = [id];
     const { rows } = await DB.query(queryText, value);
@@ -158,7 +163,7 @@ const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
 
     return rows;
   } catch (err) {
-    console.log(err)
+    console.log(err);
     await DB.query("ROLLBACK");
     return "Server Error occurred, data not retrieved";
   }
@@ -166,11 +171,11 @@ const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
 
 const deleteOne = async (tableName, columnName, id) => {
   try {
-    await DB.query("BEGIN")
+    await DB.query("BEGIN");
     const queryText = `delete from ${tableName} where ${columnName} = $1`;
     const values = [id];
     const deletion = await DB.query(queryText, values);
-    await DB.query("COMMIT")
+    await DB.query("COMMIT");
     return deletion.rowCount ? true : false;
   } catch (err) {
     await DB.query("ROLLBACK");
@@ -178,20 +183,26 @@ const deleteOne = async (tableName, columnName, id) => {
   }
 };
 
-
-const increaseByValue = async (tableName, id, idColumn, columnToBeIncreased) => {
+const increaseByValue = async (
+  tableName,
+  id,
+  idColumn,
+  columnToBeIncreased
+) => {
   try {
-    DB.query("BEGIN")
-    const queryText = `UPDATE ${tableName} SET ${columnToBeIncreased} = ${columnToBeIncreased + 1} WHERE ${idColumn} =$1`
+    DB.query("BEGIN");
+    const queryText = `UPDATE ${tableName} SET ${columnToBeIncreased} = ${
+      columnToBeIncreased + 1
+    } WHERE ${idColumn} =$1`;
     const value = [id];
     const increaseValue = await DB.query(queryText, value);
-    DB.query("COMMIT")
-    return increaseValue.rowCount ? true: false;
+    DB.query("COMMIT");
+    return increaseValue.rowCount ? true : false;
   } catch (err) {
-    DB.query("ROLLBACK")
+    DB.query("ROLLBACK");
     throw err;
   }
-}
+};
 
 const deleteAccountWithoutPassword = async (queryText, value) => {
   try {
@@ -214,5 +225,5 @@ module.exports = {
   verifyPassword,
   getSpecificDetails,
   getSpecificDetailsUsingId,
-  increaseByValue
+  increaseByValue,
 };

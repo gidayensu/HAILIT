@@ -23,11 +23,10 @@ export default function MyMap() {
   const [mapSearchContainerOpen, setMapSearchContainerOpen] = useState(false);
   const [zoom, setZoom] = useState(18);
 
-
   const mapDataHandler = async (searchQuery: any) => {
     const data = await fetchMapData(searchQuery.target.value);
     setMapSearchData(data);
-    setMapSearchContainerOpen(true)
+    setMapSearchContainerOpen(true);
   };
   const locationNameData = async (
     latitude: string | number,
@@ -35,15 +34,15 @@ export default function MyMap() {
   ) => {
     const locationData = await reverseMapSearch(latitude, longitude);
 
-     const locationName = locationData?.displayName;
+    const locationName = locationData?.displayName;
     // const locationName = ''
     return locationName;
   };
 
   let windowHeight;
-if (typeof window !== 'undefined') {
-  windowHeight = window.innerHeight;
-} //determine the height of the screen/window
+  if (typeof window !== "undefined") {
+    windowHeight = window.innerHeight;
+  } //determine the height of the screen/window
 
   //get the current location point of the user and determine the name of the user's location
   useEffect(() => {
@@ -80,9 +79,9 @@ if (typeof window !== 'undefined') {
     console.log("mapSearchData:::::", mapSearchData);
   }, [selectedLocation]);
 
-  const selectedSearchItemHandler = (mapPoint:UserLocation) => {
-      setSelectedLocation(mapPoint);
-  }
+  const selectedSearchItemHandler = (mapPoint: UserLocation) => {
+    setSelectedLocation(mapPoint);
+  };
   const selectedLocationHandler = (selectedLocation: UserLocation) => {
     //push this to store or state
   };
@@ -99,7 +98,7 @@ if (typeof window !== 'undefined') {
           <div className="md:w-96 h-auto bg-white z-50 dark:bg-[#121212] text-black dark:text-slate-200 text-sm rounded-lg p-3">
             <span className="flex flex-col gap-2">
               {mapSearchData.map((data: any, index: number) => {
-                console.log('data.lat:', data.lat)
+                console.log("data.lat:", data.lat);
                 if (data && index <= 3) {
                   return (
                     <span
@@ -109,10 +108,14 @@ if (typeof window !== 'undefined') {
                       {!data.display_name ? (
                         <Skeleton className="h-4 w-full" />
                       ) : (
-                        <p onClick={()=>{
-                          selectedSearchItemHandler([data.lat, data.lon])
-                          setMapSearchContainerOpen(false)
-                        }}>{data.display_name}</p>
+                        <p
+                          onClick={() => {
+                            selectedSearchItemHandler([data.lat, data.lon]);
+                            setMapSearchContainerOpen(false);
+                          }}
+                        >
+                          {data.display_name}
+                        </p>
                       )}
 
                       <Separator className="dark:bg-slate-300 bg-[#121212] opacity-60" />
@@ -132,7 +135,7 @@ if (typeof window !== 'undefined') {
           </div>
         )}
       </div>
-        {/* // onClick={({ event, latLng, pixel }) => {
+      {/* // onClick={({ event, latLng, pixel }) => {
         //   // console.log("event:", event, "latLng:", latLng, "pixel:", pixel);
         //   setSelectedLocation(latLng);
         // }} */}
@@ -141,7 +144,6 @@ if (typeof window !== 'undefined') {
         {userLocation && selectedLocation && (
           <>
             <Map
-
               height={800}
               center={selectedLocation}
               minZoom={1}
@@ -180,7 +182,6 @@ if (typeof window !== 'undefined') {
                         {selectedLocationName || "Name could not be loaded"}
                       </p>
                       <Link href={"/"}>
-                        
                         <Button
                           variant="empty"
                           onClick={() =>

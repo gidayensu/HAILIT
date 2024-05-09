@@ -22,7 +22,6 @@ export default function TrackDelivery() {
           className="w-48 border-2 border-slate-400"
         />
         <Button type="submit" className="w-32">
-          
           Submit
         </Button>
       </div>

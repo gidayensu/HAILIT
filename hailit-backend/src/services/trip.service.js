@@ -40,39 +40,52 @@ const getOneTrip = async (trip_id) => {
 const getUserTrips = async (user_id) => {
   //FIX THE ERROR. SINCE YOU ARE FETCHING ALL TRIPS, {driver_id} = driverTrips will not work
   try {
-    
     const userData = await userModel.getOneUser(user_id);
-    
-    if (userData.message === 'detail does not exist') {
-      return "No Data"
+
+    if (userData.message === "detail does not exist") {
+      return "No Data";
     }
     const user_role = userData[0].user_role;
-    
-    
+
     if (user_role === "client") {
-      const idColumn = 'user_id';
-      const userTrips = await tripModel.getUserTrips(user_id, idColumn, tripColumns);
+      const idColumn = "user_id";
+      const userTrips = await tripModel.getUserTrips(
+        user_id,
+        idColumn,
+        tripColumns
+      );
       return userTrips;
     }
 
     if (user_role === "driver" || user_role === "rider") {
-      
       const tripColumns = [
         "trip_id, trip_type, trip_status, delivery_address, delivery_item, trip_commencement_date, trip_completion_date",
       ];
-      
+
       //driver is used to represent drivers and riders except user role
-      let driverData = await driverModel.getDriverDetailOnCondition('user_id', user_id)
+      let driverData = await driverModel.getDriverDetailOnCondition(
+        "user_id",
+        user_id
+      );
       let driver_id = driverData[0].driver_id;
-      user_role === 'rider' ? driverData = await riderModel.getRiderOnCondition('user_id', user_id) : '';
-      user_role === 'rider' ? driver_id = driverData[0].rider_id : '';
-      
-      const idColumn = 'driver_id'; //this is because driver is used to represent rider and driver in the trips table
-      const driverTrips = await tripModel.getUserTrips(driver_id, idColumn, tripColumns);
+      user_role === "rider"
+        ? (driverData = await riderModel.getRiderOnCondition(
+            "user_id",
+            user_id
+          ))
+        : "";
+      user_role === "rider" ? (driver_id = driverData[0].rider_id) : "";
+
+      const idColumn = "driver_id"; //this is because driver is used to represent rider and driver in the trips table
+      const driverTrips = await tripModel.getUserTrips(
+        driver_id,
+        idColumn,
+        tripColumns
+      );
       return driverTrips;
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return "Error occurred getting user trips details";
   }
 };
@@ -156,9 +169,9 @@ const updateTrip = async (tripDetails) => {
 const rateTrip = async (ratingDetails) => {
   try {
     const { trip_id, driver_id } = ratingDetails;
-    console.log('driver_id:::', driver_id)
+    console.log("driver_id:::", driver_id);
     const updateTrip = await tripModel.updateTrip(ratingDetails);
-    console.log('updateTrip::::', updateTrip)
+    console.log("updateTrip::::", updateTrip);
     if (updateTrip === "detail updated") {
       const tripIdColumn = "trip_id";
       const tripTypeColumn = "trip_type";
@@ -167,7 +180,7 @@ const rateTrip = async (ratingDetails) => {
         tripIdColumn,
         tripTypeColumn
       );
-      
+
       const averageRating = "AVG(driver_rating)";
       const driverIdColumn = "driver_id";
       const excludeZeroRating = 0;
@@ -178,7 +191,7 @@ const rateTrip = async (ratingDetails) => {
           averageRating,
           excludeZeroRating
         );
-        console.log('cumulative_driver_rating:', cumulative_driver_rating)
+      console.log("cumulative_driver_rating:", cumulative_driver_rating);
       if (tripType === "motor") {
         const rider_id = driver_id;
         const updateRiderRating = await riderModel.updateRider({
@@ -187,10 +200,13 @@ const rateTrip = async (ratingDetails) => {
         });
 
         if (updateRiderRating) {
-          const driverRatingCountIncrease = await tripModel.driverRateCouIntIncrease(driver_id, tripType)
-          driverRatingCountIncrease ? "trip updated with rating" : "trip not updated with rating";
+          const driverRatingCountIncrease =
+            await tripModel.driverRateCouIntIncrease(driver_id, tripType);
+          driverRatingCountIncrease
+            ? "trip updated with rating"
+            : "trip not updated with rating";
         } else {
-          return "Error occurred updating trip rate"
+          return "Error occurred updating trip rate";
         }
       }
 
@@ -198,7 +214,7 @@ const rateTrip = async (ratingDetails) => {
         cumulative_driver_rating,
         driver_id,
       });
-  
+
       console.log("updateDriverRating:", updateDriverRating);
       if (updateDriverRating) {
         return "trip updated with rating";
@@ -206,10 +222,8 @@ const rateTrip = async (ratingDetails) => {
         return "trip not updated with rating";
       }
     }
-
-    
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return "Server Error Occurred Adding Rating";
   }
 };
@@ -235,3 +249,4 @@ module.exports = {
   getUserTrips,
   rateTrip,
 };
+

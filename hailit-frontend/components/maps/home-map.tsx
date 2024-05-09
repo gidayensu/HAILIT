@@ -14,12 +14,7 @@ export default function HomeMap() {
         metaWheelZoom={false}
         zoom={16}
       >
-        <Marker 
-        anchor={[6.69858, -1.62343]} 
-        width={36}
-        color="red"
-        >  
-        </Marker>
+        <Marker anchor={[6.69858, -1.62343]} width={36} color="red"></Marker>
       </Map>
     </div>
   );
