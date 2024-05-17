@@ -5,7 +5,7 @@ import { UserAvatar } from "@/components/common/user-avatar";
 
 export default function CourierCard() {
   return (
-    <Container className="w-[330px] rounded-xl border  h-24  p-4 flex justify-between items-center">
+    <Container className="w-full rounded-xl border  h-24  p-4 flex justify-between items-center">
       <div className="flex items-center gap-2">
         <span>
           <UserAvatar />

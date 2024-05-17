@@ -47,19 +47,19 @@ const addTrip = async (req, res) => {
   ///trip amount, trip_status, driver_id, trip_date, total amount, payment_status, delivery_time, payment_method, driver_rating, driver_rating_comment will be added in the service layer based on certain conditions
 
   try {
-    const { trip_type, delivery_item, delivery_address, pickup_location } =
+    const { trip_medium, delivery_item, delivery_address, pickup_location } =
       req.body;
-    if (!trip_type || !delivery_item || !delivery_address || !pickup_location) {
+    if (!trip_medium || !delivery_item || !delivery_address || !pickup_location) {
       return res.status(400).json({
         message:
           "Provide all details: trip type, delivery item, and delivery address",
       });
     }
 
-    if (trip_type) {
-      const acceptedTripTypes = ["motor", "car"];
-      const validTripType = acceptedTripTypes.includes(trip_type);
-      if (!validTripType) {
+    if (trip_medium) {
+      const acceptedTripMediums = ["motor", "car"];
+      const validTripMedium = acceptedTripMediums.includes(trip_medium);
+      if (!validTripMedium) {
         return res.status(403).json({ message: "Trip Type Invalid" });
       }
     }

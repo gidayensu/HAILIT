@@ -2,13 +2,13 @@ const express = require('express')
 const tripController = require('../../controllers/trip.controller')
 const authenticateToken = require('../../auth/authToken');
 const isAdminOrUser = require('../../auth/user-auth/isAdminOrUser');
-const isAdminOrRole = require('../../auth/user-auth/isAdminOrRole');
+const isUserRole = require('../../auth/user-auth/isUserRole');
 const tripAuth = require('../../auth/trip-auth/tripAuth');
 
 
 const router = express.Router()
 
-router.get('/', authenticateToken, isAdminOrRole(), tripController.getAllTrips);
+router.get('/', authenticateToken, isUserRole, tripController.getAllTrips);
 
 router.get('/user-trip/:trip_id', authenticateToken, tripAuth, tripController.getOneTrip);
 
@@ -20,6 +20,6 @@ router.put('/:trip_id', authenticateToken, tripAuth, tripController.updateTrip)
 
 router.put('/rate-trip/:trip_id', authenticateToken, tripAuth, tripController.rateTrip)
 
-router.delete('/:trip_id', authenticateToken, isAdminOrRole(), tripController.deleteTrip)
+router.delete('/:trip_id', authenticateToken, isUserRole, tripController.deleteTrip)
 
 module.exports = {router, }

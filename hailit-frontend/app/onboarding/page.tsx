@@ -1,8 +1,10 @@
 "use client";
-//packages + react + next
+//packages + react + next + redux
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
+import { useAppSelector } from "@/lib/store/hooks";
+
 
 //main components
 import CustomerProfileForm from "@/components/forms/customer-profile";
@@ -14,6 +16,7 @@ import { FiArrowLeft, FiCheck } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import customerAnimation from "@/public/animations/customer-animation.json";
 import riderAnimation from "@/public/animations/rider-animation.json";
+import Link from "next/link";
 
 type Onboarding = {
   stageOne: boolean;
@@ -28,11 +31,14 @@ type SelectedUserRole = {
 export default function Onboarding() {
   const router = useRouter();
 
-  const userHasNoRole = true; //will be determined from the data that would be fetched from the database and stored in the redux store;
-  if (!userHasNoRole) {
-    router.push("/");
-  }
+  const {authenticationState} = useAppSelector((state)=>state.auth);
+  const {onboard} = useAppSelector((state)=>state.user)
 
+  //redirect to homepage if user is not logged in or onboarding has taken place  
+  // if(!authenticationState || onboard) {
+  //   router.push('/')
+  //   return null
+  // }
   const [onBoardingStage, setOnBoardingStage] = useState<Onboarding>({
     stageOne: true,
     stageTwo: false,
@@ -108,11 +114,28 @@ export default function Onboarding() {
   const labelClass = "text-md font-medium mb-2";
 
   return (
-    <main className="flex flex-col  items-center w-full max-h-screen p-5 bg-slate-50 mb-20 dark:bg-[#121212]">
+    <>
+    {
+      (!authenticationState || onboard) && 
+      (
+        <section className="flex flex-col items-center justify-center bg-slate-50 dark:bg-[#121212] min-h-screen gap-4">
+            
+              
+                <h2 className="font-bold text-2xl">
+                  Page Not Found
+                </h2>
+               <Link href={'/'}> <Button>Return Home </Button></Link>
+            
+              
+        </section>    
+      )
+    }
+    { authenticationState && !onboard &&(
+      <main className="flex flex-col  items-center w-full max-h-screen p-5 md:justify-center bg-slate-50 mb-20 dark:bg-[#121212]">
       {/* Onboarding stages 1 - 3 starts here */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center md:w-1/2">
         <div
-          className={`flex items-center justify-center h-10 w-10 border-2 border-slate-800 rounded-full text-sm ${
+          className={`flex items-center justify-center h-10 w-10 border-2 border-slate-800 rounded-full text-sm  ${
             onBoardingStage.stageOne
               ? "bg-blue-500 text-white border-white"
               : "border-opacity-50"
@@ -171,13 +194,13 @@ export default function Onboarding() {
         !onBoardingStage.stageTwo &&
         !onBoardingStage.stageThree && (
           <>
-            <div className="grid  grid-cols-1 w-full min-h-[300px] p-5 gap-2 justify-between -mt-3">
-              <span className="flex flex-col items-start justify-start p-5 gap-2">
+            <div className="grid  grid-cols-1 w-full min-h-[300px] p-5 gap-2 justify-between -mt-3 md:w-1/2">
+              <div className="flex flex-col items-start justify-start md:items-center md:justify-center p-5 gap-2">
                 <p className="font-bold text-2xl">
-                  Do you want to be a customer or a dispatcher?{" "}
+                  Do you want to be a customer or a dispatcher?
                 </p>
                 <p>Hailit gives you a wholesome delivery experience! </p>
-              </span>
+              </div>
               <div className="flex gap-4 p-2 -mt-4 ">
                 <div className="w-1/2 flex flex-col gap-2 items-center justify-center font-bold text-blue-500 ">
                   <p>Customer</p>
@@ -197,7 +220,7 @@ export default function Onboarding() {
                       className={`flex items-center justify-center -mt-4  border border-rose-500   h-8 w-8 rounded-full    ${
                         selectedUserRole.customer
                           ? "bg-rose-500 text-white"
-                          : "text-rose-500 bg-white"
+                          : "text-rose-500 bg-white hidden"
                       }`}
                     >
                       <FiCheck />
@@ -222,7 +245,7 @@ export default function Onboarding() {
                       className={`flex items-center justify-center -mt-4  border border-rose-500 h-8 w-8 rounded-full   ${
                         selectedUserRole.dispatcher
                           ? "bg-rose-500 text-white"
-                          : "text-rose-500 bg-white"
+                          : "text-rose-500 bg-white hidden"
                       }`}
                     >
                       <FiCheck />
@@ -245,16 +268,20 @@ export default function Onboarding() {
       {onBoardingStage.stageOne &&
         onBoardingStage.stageTwo &&
         !onBoardingStage.stageThree && (
-          <div className="grid  grid-cols-1 w-full min-h-[300px] p-5 gap-2 justify-between -mt-3">
-            <span className="flex flex-col items-start justify-start p-5 gap-2">
+          <>
+          
+          <div className="grid  grid-cols-1 w-full min-h-[300px]  p-4 gap-2 md:justify-center md:items-center -mt-3  md:w-1/2">
+            <span className="flex flex-col items-start justify-start p-5 gap-2 md:items-center md:justify-center">
               <p className="font-bold text-2xl">Enter your details </p>
               <p>Send packages with ease using Hailit </p>
             </span>
-            <form action="w-full space-y-6">
+            <form className="w-full space-y-6 p-3 md:flex md:flex-col md:items-center md:justify-center">
               <CustomerProfileForm />
             </form>
 
-            <div className="w-full p-5 flex items-center justify-center gap-4 ">
+            
+          </div>
+          <div className="flex md:w-1/3 w-full gap-4 px-4 md:p-0 ">
               <Button
                 variant={"outline"}
                 className="w-1/3"
@@ -273,13 +300,13 @@ export default function Onboarding() {
                 Next
               </Button>
             </div>
-          </div>
+          </>
         )}
       {/* Onboarding stage 3 */}
       {onBoardingStage.stageOne &&
         onBoardingStage.stageTwo &&
         onBoardingStage.stageThree && (
-          <div className="grid  grid-cols-1 w-full min-h-[300px] p-5 gap-2 justify-between -mt-3">
+          <div className="grid  grid-cols-1 w-full min-h-[300px] p-5 gap-2 justify-between -mt-3 md:w-1/2 md:justify-center md:items-center">
             <span className="flex flex-col items-start justify-start p-5 gap-2">
               <p className="font-bold text-2xl">Set your password </p>
               <p>Hailit is secure and safe! </p>
@@ -303,7 +330,7 @@ export default function Onboarding() {
               </div>
               <div></div>
             </form>
-            <div className="w-full p-5 flex items-center justify-center gap-4">
+            <div className="w-full md:w-3/4 p-5 flex items-center justify-center gap-4">
               <Button
                 variant={"outline"}
                 className="w-1/3"
@@ -324,6 +351,7 @@ export default function Onboarding() {
             </div>
           </div>
         )}
-    </main>
+    </main>)
+}    </>
   );
 }

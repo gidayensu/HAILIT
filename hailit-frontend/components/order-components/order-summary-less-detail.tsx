@@ -3,12 +3,12 @@
 import Link from "next/link";
 import {
   PiMonitorFill,
-  PiMonitorLight,
+  
   PiPackageFill,
-  PiPackageLight,
+  
 } from "react-icons/pi";
-import { IoArchiveOutline, IoArchive } from "react-icons/io5";
-import { PiWineLight, PiWineFill } from "react-icons/pi";
+import { IoArchive, IoFastFood } from "react-icons/io5";
+import {  PiWineFill } from "react-icons/pi";
 
 import Container from "../ui/container";
 
@@ -17,27 +17,71 @@ type DeliveryStatus =
   | "Cancelled"
   | "Picked up"
   | "Delivering"
-  | "Booked";
+  | "Booked"
+  |  "Yet to Book";
 
+type PackageType = | "Gadgets"
+| "Parcel"
+| "Food"
+| "Fragile"
+| "Others";
 export default function OrderSummaryLessDetail({
   deliveryStatus,
+  packageType
 }: {
-  deliveryStatus: DeliveryStatus;
+  deliveryStatus: DeliveryStatus,
+  packageType: PackageType
 }) {
+
+    //default icon gadgets
+  let deliveryTypeIconBgClass = 'bg-blue-100';
+  let deliveryTypeIcon = <PiPackageFill className="text-blue-400"/>;
+
+  //setting other icon colors
+  switch (packageType) {
+    case("Parcel"): {
+      deliveryTypeIcon = <PiMonitorFill className="text-teal-400 dark:text-teal-500"/> 
+      deliveryTypeIconBgClass = "bg-teal-100 dark:bg-teal-200" 
+    }
+    break;
+    case("Food"): {
+      deliveryTypeIcon = <IoFastFood className="text-orange-400 dark:text-orange-500"/> 
+      deliveryTypeIconBgClass = "bg-orange-100 dark:bg-orange-200" 
+    }
+    break;
+    case("Others"): {
+      deliveryTypeIcon = < IoArchive className="text-amber-400 dark:text-amber-500"/> 
+      deliveryTypeIconBgClass = "bg-amber-100 dark:bg-amber-200"; 
+    }
+    break;
+    case("Fragile"): {
+      deliveryTypeIcon = < PiWineFill className="text-rose-400 dark:text-rose-500"/> 
+      deliveryTypeIconBgClass = "bg-rose-100 dark:bg-rose-200" 
+    }
+
+  }
+  
+  
+
+
   return (
     <Link href="/track/s" className="w-full">
       {/* <div className="flex flex-col gap-3 bg-gradient-to-tl from-[#9da9ac25] from-1% via-white via-50% to-white border border-slate-300 h-56 rounded-2xl p-4 dark:bg-transparent"> */}
-      <Container className="flex flex-col gap-1  h-16 rounded-xl p-2">
-        <div className="flex justify-between items-start">
-          <span className="space-y-1">
-            <span className="flex items-center gap-2">
-              <h3 className="ml-2 font-bold text-s">Bag of rice</h3>
-              <h3 className="opacity-50 text-[12px] mt-1">- 12th May, 2024</h3>
-            </span>
-            <p className="ml-2 text-[12px]">Ama Saman Station</p>
+      <Container className="flex  gap-3 justify-between   h-16 rounded-xl p-2">
+        <div className="flex gap-2">
+
+          <span className={`flex justify-center items-center ${deliveryTypeIconBgClass} w-10 h-10 rounded-md text-2xl`}>
+            {deliveryTypeIcon}
           </span>
+          <span >
+              <h3 className="ml-2 font-bold text-s">#PKG-1205-3</h3>
+            <p className="ml-2 text-[12px] text-slate-500">12th May, 2024</p>
+          </span>
+        </div>
+          <div className="flex flex-col">
+
           <span
-            className={`mr-2 flex justify-center items-center text-[12px] font-bold text-left  ${
+            className={`text-[12px] font-bold   ${
               deliveryStatus === "Delivered"
                 ? "  text-green-500"
                 : deliveryStatus === "Picked up"
@@ -51,7 +95,11 @@ export default function OrderSummaryLessDetail({
           >
             <p>{deliveryStatus}</p>
           </span>
-        </div>
+          
+            <p className="font-bold">GHS 50</p>
+          
+          </div>
+        
       </Container>
     </Link>
   );

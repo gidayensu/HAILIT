@@ -25,7 +25,7 @@ export default function OrderSummaryCard({
         <div className="flex justify-between -mt-1">
           <div className="flex items-center gap-2">
             <h3 className="font-bold -ml-1">#ASD-593</h3>
-            <h3 className="opacity-50 text-[12px]">- 12th May, 2024</h3>
+            
           </div>
 
           <span

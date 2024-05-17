@@ -5,16 +5,16 @@ export default function CustomerProfile() {
   const labelClass = "text-sm font-medium mb-1";
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
+      
         <div className={inputAndLabeClass}>
           <h3 className={labelClass}>First Name</h3>
-          <Input type="text" placeholder="First Name" className="h-14" />
+          <Input type="text" placeholder="First Name" className="h-14 " />
         </div>
         <div className={inputAndLabeClass}>
           <h3 className={labelClass}>Last Name</h3>
           <Input type="text" placeholder="Last Name" className="h-14" />
         </div>
-      </div>
+      
       <div className={inputAndLabeClass}>
         <h3 className={labelClass}>Email</h3>
         <Input type="email" placeholder="email@example.com" className="h-14" />

@@ -9,8 +9,9 @@ import {
 
 export function SelectDeliveryType() {
   return (
+    
     <Select>
-      <SelectTrigger className="w-full h-14">
+      <SelectTrigger className="w-full h-14 border-slate-500">
         <SelectValue placeholder="Same day" />
       </SelectTrigger>
       <SelectContent>

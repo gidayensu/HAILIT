@@ -23,6 +23,7 @@ const tripAuth = async (req, res, next)=> {
     
     user_role === 'driver' ? tripAssociation = await associatedWithTrip(driver_id, trip_id, role) : tripAssociation = await associatedWithTrip(user_id, trip_id, role)
     
+    console.log('tripAssociation:', tripAssociation)
     
     
     if(tripAssociation ===true || isAdmin) {

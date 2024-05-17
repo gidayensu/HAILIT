@@ -119,10 +119,10 @@ const deleteTrip = async (trip_id) => {
   }
 };
 
-const driverRateCouIntIncrease = async (driver_id, tripType) => {
+const driverRateCouIntIncrease = async (driver_id, tripMedium) => {
   let idColumn = "driver_id";
   let columnToBeIncreased = "driver_rating_count";
-  if (tripType === "motor") {
+  if (tripMedium === "motor") {
     idColumn = "rider_id";
     columnToBeIncreased = "rider_rating_count";
   }

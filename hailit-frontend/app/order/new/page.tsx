@@ -22,9 +22,7 @@ export default function NewOrder() {
         <MidContent className="flex flex-col justify-start items-center p-10 mb-20">
           <form className="w-full space-y-6">
             <NewOrderForm />
-            <Button type="submit" className="w-full h-14">
-              Proceed
-            </Button>
+            
           </form>
         </MidContent>
       </main>

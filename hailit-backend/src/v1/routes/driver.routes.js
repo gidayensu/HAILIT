@@ -1,20 +1,20 @@
 const express = require('express');
-const driverController = require('../../controllers/driver.controller')
+const driverController = require('../../controllers/driver.controller');
 const authenticateToken = require('../../auth/authToken');
-const isAdminOrRole = require('../../auth/user-auth/isAdminOrRole');
+const isUserRole = require('../../auth/user-auth/isUserRole');
 
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', authenticateToken, isAdminOrRole(), driverController.getAllDrivers)
+router.get('/', authenticateToken, isUserRole, driverController.getAllDrivers);
 
-router.get('/:driver_id', authenticateToken, driverController.getOneDriver)
+router.get('/:driver_id', authenticateToken, driverController.getOneDriver);
 
-router.post('/register', driverController.addDriver)
+router.post('/register', driverController.addDriver);
 
 router.put('/:driver_id', authenticateToken, driverController.updateDriver);
 
 
-router.delete('/:driver_id', authenticateToken, isAdminOrRole(), driverController.deleteDriver)
+router.delete('/:driver_id', authenticateToken, isUserRole, driverController.deleteDriver);
 
 module.exports = {router, }

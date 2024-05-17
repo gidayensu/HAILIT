@@ -6,11 +6,11 @@ const userModel = require("../model/user.model");
 const { allowedPropertiesOnly } = require("../utils/util");
 
 const tripColumns = [
-  "trip_type, trip_status, delivery_item, pickup_location, delivery_address, special_instructions, trip_request_date, trip_cost, payment_status, payment_method ",
+  "trip_medium, trip_status, delivery_item, pickup_location, delivery_address, special_instructions, trip_request_date, trip_cost, payment_status, payment_method ",
 ];
 // const allowedTripStatus = ['requested', 'in progress', 'completed', 'cancelled'];
 const allowedAddTripProperties = [
-  "trip_type",
+  "trip_medium",
   "delivery_item",
   "pickup_location",
   "delivery_address",
@@ -59,7 +59,7 @@ const getUserTrips = async (user_id) => {
 
     if (user_role === "driver" || user_role === "rider") {
       const tripColumns = [
-        "trip_id, trip_type, trip_status, delivery_address, delivery_item, trip_commencement_date, trip_completion_date",
+        "trip_id, trip_medium, trip_status, delivery_address, delivery_item, trip_commencement_date, trip_completion_date",
       ];
 
       //driver is used to represent drivers and riders except user role
@@ -136,7 +136,7 @@ const addTrip = async (user_id, tripDetails) => {
 const updateTrip = async (tripDetails) => {
   const allowedProperties = [
     "trip_id",
-    "trip_type",
+    "trip_medium",
     "trip_status",
     "delivery_item",
     "pickup_location",
@@ -174,11 +174,11 @@ const rateTrip = async (ratingDetails) => {
     console.log("updateTrip::::", updateTrip);
     if (updateTrip === "detail updated") {
       const tripIdColumn = "trip_id";
-      const tripTypeColumn = "trip_type";
-      const tripType = await tripModel.getSpecificDetailsUsingId(
+      const tripMediumColumn = "trip_medium";
+      const tripMedium = await tripModel.getSpecificDetailsUsingId(
         trip_id,
         tripIdColumn,
-        tripTypeColumn
+        tripMediumColumn
       );
 
       const averageRating = "AVG(driver_rating)";
@@ -192,7 +192,7 @@ const rateTrip = async (ratingDetails) => {
           excludeZeroRating
         );
       console.log("cumulative_driver_rating:", cumulative_driver_rating);
-      if (tripType === "motor") {
+      if (tripMedium === "motor") {
         const rider_id = driver_id;
         const updateRiderRating = await riderModel.updateRider({
           cumulative_driver_rating,
@@ -201,7 +201,7 @@ const rateTrip = async (ratingDetails) => {
 
         if (updateRiderRating) {
           const driverRatingCountIncrease =
-            await tripModel.driverRateCouIntIncrease(driver_id, tripType);
+            await tripModel.driverRateCouIntIncrease(driver_id, tripMedium);
           driverRatingCountIncrease
             ? "trip updated with rating"
             : "trip not updated with rating";

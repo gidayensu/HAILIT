@@ -3,8 +3,6 @@ const riderModel = require("./rider.model");
 const driverModel = require("./driver.model");
 
 const userTableName = "users";
-const passwordTable = "password_info";
-const passwordTableColumns = ["user_id", "ps_salt", "ps_hash"];
 
 const userColumnsForAdding = [
   "user_id",
@@ -15,7 +13,7 @@ const userColumnsForAdding = [
 ];
 const getAllUsers = () => dbFunctions.getAll(userTableName);
 
-//CLEAN
+
 const getOneUser = async (userId) => {
   const userColumnName = userColumnsForAdding[0];
   const data = await dbFunctions.getOne(userTableName, userColumnName, userId);
@@ -25,7 +23,7 @@ const getOneUser = async (userId) => {
 
 const isUserRole = async (userId, user_role) => {
   const data = await getOneUser(userId);
-  console.log();
+  
   if (data[0].user_role === user_role) {
     return true;
   } else {
@@ -65,56 +63,25 @@ const numberExists = async (phoneNumber) => {
 };
 
 //add user METHOD: POST
-const addUser = async (userDetails, password) => {
+const addUser = async (userDetails) => {
   const { email } = userDetails;
-  const { phone_number } = userDetails;
-  const { user_id } = userDetails;
-  const { user_role } = userDetails;
-
   const columnsForAdding = Object.keys(userDetails);
   const userDetailsArray = Object.values(userDetails);
-  console.log("userDetailsArray:", columnsForAdding);
-
+  
   try {
     const emailExist = await emailExists(email);
-    const numberExist = await numberExists(phone_number);
-    if (!emailExist && !numberExist) {
-      const insertUserOtherDetails = await dbFunctions.addOne(
+   
+    if (!emailExist) {
+      const insertUserDetails = await dbFunctions.addOne(
         userTableName,
         columnsForAdding,
         userDetailsArray
       );
-      if (insertUserOtherDetails) {
-        const insertPassword = await dbFunctions.hashPassword(
-          user_id,
-          password,
-          passwordTable,
-          passwordTableColumns
-        );
-        if (insertPassword) {
-          //adding rider if rider role set
-          if (user_role === "rider") {
-            const addMotorRider = await riderModel.addMotorRider(user_id);
-            addMotorRider
-              ? { message: "motor rider added" }
-              : { message: "error occurred in adding motor rider" };
-          }
-          //adding driver if driver role set
-          if (user_role === "driver") {
-            const addCarDriver = await driverModel.addDriver(user_id);
-            addCarDriver
-              ? { message: "driver added" }
-              : { message: "error occurred in adding driver" };
-          }
-
-          return { message: "User added" };
-        } else {
-          const queryText = `delete from ${userTableName} where ${passwordTableColumns[0]} not in (select $1 from ${passwordTable})`;
-          const value = [passwordTableColumns[0]];
-          await dbFunctions.deleteAccountWithoutPassword(queryText, value);
-          return { message: "Error: User not added to database" };
-        }
-      }
+    if (insertUserDetails) {
+      return insertUserDetails
+    }
+        
+      
     } else {
       return { message: "user email or number exists" };
     }
@@ -123,21 +90,7 @@ const addUser = async (userDetails, password) => {
   }
 };
 
-const userLogin = async (password, user_id) => {
-  const tableDetails = [passwordTable, passwordTableColumns[0]];
-  const verifyPassword = await dbFunctions.verifyPassword(
-    password,
-    user_id,
-    tableDetails
-  );
-  if (!verifyPassword) {
-    return { message: "wrong email or password", verification_status: false };
-  } else {
-    const userData = await getOneUser(user_id);
 
-    return userData;
-  }
-};
 
 //update user
 const updateUser = async (userId, userDetails) => {
@@ -203,6 +156,24 @@ const updateUser = async (userId, userDetails) => {
         idColumn,
         ...userDetailsArray
       );
+      if (userDetails.user_role) {
+        //adding rider if rider role set
+        if (userDetails.user_role === "rider") {
+          const addMotorRider = await riderModel.addMotorRider(userId);
+          addMotorRider
+            ? { message: "motor rider added" }
+            : { message: "error occurred in adding motor rider" };
+        }
+        //adding driver if driver role set
+        if (userDetails.user_role === "driver") {
+          const addCarDriver = await driverModel.addDriver(userId);
+          addCarDriver
+            ? { message: "driver added" }
+            : { message: "error occurred in adding driver" };
+        }
+
+        return { message: "User added" };
+      } 
       if (existingDetails.length > 0) {
         update;
         return {
@@ -231,7 +202,7 @@ const deleteUser = async (userId) => {
     await dbFunctions.deleteOne(userTableName, columnName, userId);
     return { message: "user deleted" };
   } else {
-    return { message: "no account associated with this email or password" };
+    return { message: "no account associated with this email" };
   }
 };
 module.exports = {
@@ -242,6 +213,5 @@ module.exports = {
   deleteUser,
   emailExists,
   getUserIdUsingEmail,
-  userLogin,
   isUserRole,
 };

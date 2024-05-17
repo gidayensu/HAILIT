@@ -1,3 +1,5 @@
+//ui + icons
+'use client'
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
@@ -13,8 +15,57 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
 
-export function AccountAccess() {
+//redux
+import { useAppDispatch } from "@/lib/store/hooks";
+import { setAuthState } from "@/lib/store/authSlice";
+import { setUserState } from "@/lib/store/userSlice";
+
+
+//react-hook-forms
+import {useForm, SubmitHandler} from 'react-hook-form';
+
+//supabase
+
+import {  supabaseSession, supabaseSignUp, supabaseSignIn, supabaseSignOut } from "@/lib/supabaseAuth";
+
+import type { Inputs } from "@/lib/supabaseAuth";
+
+
+export default function AccountAccess() {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const {register, handleSubmit} = useForm<Inputs>();
+  const onSignUpSubmit: SubmitHandler<Inputs> = (data)=> {
+    supabaseSignUp(data)
+  }
+
+  const onSignInSubmit:SubmitHandler<Inputs> = async (data)=> {
+    const signInData= await supabaseSignIn(data);
+    
+    if (signInData.user) {
+        
+        dispatch(setAuthState(true))
+        
+        dispatch(setUserState({
+          user_id: signInData.user[0].user_id,
+          first_name: signInData.user[0].first_name,
+          last_name: signInData.user[0].last_name,
+          email: signInData.user[0].email,
+          onboard: signInData.user[0].onboard
+      
+        }))
+        
+      const onboard = signInData.user[0].onboard;
+        onboard ? router.push('/profile') : router.push('/onboarding')
+    }
+    
+  }
+  
+
+  
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -36,21 +87,24 @@ export function AccountAccess() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
+                <form onSubmit={handleSubmit(onSignUpSubmit)}>
                 <div className="space-y-1">
                   <Label>Email</Label>
-                  <Input id="current" type="email" />
+                  <Input id="current" type="email" {...register("email")}/>
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="new">Password</Label>
-                  <Input id="new" type="password" />
+                  <Input id="new" type="password" {...register("password")}/>
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="new">Confirm Password</Label>
                   <Input id="new" type="password" />
                 </div>
+                <Button className="w-full h-12" type="submit">Sign Up</Button>
+                </form>
               </CardContent>
               <CardFooter className="flex flex-col gap-4">
-                <Button className="w-full h-12">Sign Up</Button>
+                
                 <div className="flex gap-4 justify-center items-center">
                   <Separator className="w-32" />
                   <p className="text-sm">or</p>
@@ -67,6 +121,7 @@ export function AccountAccess() {
             </Card>
           </TabsContent>
 
+      {/* LOGIN TAB */}
           <TabsContent value="login">
             <Card>
               <CardHeader>
@@ -74,21 +129,28 @@ export function AccountAccess() {
                 <CardDescription>Log into your account here</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
+                <form onSubmit={handleSubmit(onSignInSubmit)}>
+                  
                 <div className="space-y-1">
                   <Label htmlFor="name">Email</Label>
                   <Input
                     id="name"
                     placeholder="example@email.com"
                     type="text"
+                    {...register("email")}
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="username">Username</Label>
-                  <Input id="username" placeholder="Password" type="password" />
+                  <Label htmlFor="username">Password</Label>
+                  <Input id="username" placeholder="Password" type="password" 
+                  {...register("password")}
+                  />
                 </div>
+                <Button className="w-full h-12" type="submit">Login</Button>
+                </form>
               </CardContent>
+ 
               <CardFooter className="flex flex-col gap-2">
-                <Button className="w-full h-12">Login</Button>
                 <div className="flex gap-4 justify-center items-center">
                   <Separator className="w-32" />
                   <p className="text-sm">or</p>
@@ -109,3 +171,4 @@ export function AccountAccess() {
     </Dialog>
   );
 }
+

@@ -17,7 +17,7 @@ const isAdminOrUserAuth = async (req, res, next) => {
             }
                 
             if (userId === jwtUserId || isAdmin) {
-                console.log(isAdmin)
+                
                 
                 if (
                     (userDetails.user_role === 'admin' && isAdmin) ||

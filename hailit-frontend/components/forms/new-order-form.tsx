@@ -1,7 +1,10 @@
+//main components
 import { SelectDeliveryType } from "@/components/order-components/select-delivery-type";
+//ui
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
+import { Button } from "../ui/button";
+//icons
 import {
   PiMonitorFill,
   PiMonitorLight,
@@ -20,16 +23,36 @@ export default function NewOrderForm() {
   const iconFillClass = "text-3xl opacity-0 absolute group-hover:opacity-100 ";
   const iconTextClass = "text-[13px] group-hover:text-white";
   return (
-    <>
-      <div className="flex flex-col gap-2 w-full">
-        <h3 className=" text-[14px] font-bold">Package Type</h3>
-        <div className=" flex gap-[5px] -mb-5">
+    <div className="flex flex-col gap-4 md:justify-center md:items-center">
+      <div className=" w-full grid w-full max-w-sm items-center gap-1.5 md:justify-center md:items-center">
+        <span className="flex items-start justify-start">
+
+        <h3 className=" text-[14px] font-bold ">Package Type</h3>
+        </span>
+        <div className=" flex gap-[8px] -mb-5 flex-wrap">
+
           <div className={iconsAndTextDivClass}>
             <span className={iconsAndTextSpanClass}>
               <PiMonitorLight className={iconOutlineClass} />
               <PiMonitorFill className={iconFillClass} />
             </span>
-            <p className={iconTextClass}>Food</p>
+            <p className={iconTextClass}>Gadgets</p>
+          </div>
+
+          <div className={iconsAndTextDivClass}>
+            <span className={iconsAndTextSpanClass}>
+              <PiPackageLight className={iconOutlineClass} />
+              <PiPackageFill className={iconFillClass} />
+            </span>
+            <p className={iconTextClass}>Parcel</p>
+          </div>
+          
+          <div className={iconsAndTextDivClass}>
+            <span className={iconsAndTextSpanClass}>
+              <PiPackageLight className={iconOutlineClass} />
+              <PiPackageFill className={iconFillClass} />
+            </span>
+            <p className={iconTextClass}>Parcel</p>
           </div>
 
           <div className={iconsAndTextDivClass}>
@@ -57,9 +80,14 @@ export default function NewOrderForm() {
           </div>
         </div>
       </div>
-      <div className="grid w-full max-w-sm items-center gap-1.5"></div>
-      <h3 className=" text-[14px] font-bold">Delivery Type</h3>
+      <div className="grid w-full max-w-sm items-center gap-1.5 mt-4">
+
+      <h3 className=" text-[14px] text-left font-bold ">Delivery Type</h3>
+      
       <SelectDeliveryType />
+      </div>
+      
+
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <h3 className=" text-[14px] font-bold">Pickup Location</h3>
@@ -110,7 +138,11 @@ export default function NewOrderForm() {
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <h3 className=" text-[14px] font-bold">Additional Information</h3>
         <Textarea className="h-32" />
+        <Button type="submit" className="w-full h-14">
+              Book
+            </Button>
       </div>
-    </>
+      
+    </div>
   );
 }

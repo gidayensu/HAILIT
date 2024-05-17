@@ -60,65 +60,13 @@ const addOne = async (tableName, columns, values) => {
     await DB.query("BEGIN");
     const result = await DB.query(queryText, values);
     await DB.query("COMMIT");
-    return result.rowCount > 0;
+    return result.rows;
   } catch (err) {
     await DB.query("ROLLBACK");
     throw err;
   }
 };
 
-const hashPassword = async (userId, password, passwordTable, columns) => {
-  //generate a random salt
-  try {
-    const salt = await crypto.randomBytes(16).toString("hex");
-
-    //hash the password with salt using the PBKDF2 algorithm
-    const hash = await crypto
-      .pbkdf2Sync(password, salt, 1000, 64, "sha512")
-      .toString("hex");
-
-    const values = [userId, salt, hash];
-
-    const queryText = `INSERT INTO ${passwordTable} (${columns}) values ($1, $2, $3) RETURNING *`;
-    await DB.query("BEGIN");
-    const result = await DB.query(queryText, values);
-    await DB.query("COMMIT");
-    return result.rowCount > 0;
-  } catch (err) {
-    await DB.query("ROLLBACK");
-    throw err;
-  }
-};
-
-const verifyPassword = async (enteredPassword, id, tableDetails) => {
-  try {
-    const stringedId = id.toString();
-    const [passwordTable, tableColumn] = tableDetails;
-
-    const queryText = `SELECT * from ${passwordTable} where ${tableColumn} = $1`;
-    const result = await DB.query(queryText, [`${stringedId}`]);
-    const storedHash = await result.rows[0].ps_hash;
-    const storedSalt = await result.rows[0].ps_salt;
-
-    const iterations = 100000;
-    const keylen = 64;
-    const derivedKey = await crypto.pbkdf2(
-      enteredPassword,
-      storedSalt,
-      iterations,
-      keylen,
-      "sha512"
-    );
-    const hash = derivedKey.toString("hex");
-    if (storedHash === hash) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (err) {
-    return err;
-  }
-};
 
 const updateOne = async (tableName, columns, id, idColumn, ...details) => {
   try {
@@ -153,10 +101,11 @@ const getSpecificDetails = async (tableName, specificColumn, condition) => {
 };
 
 const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
+  console.log('columns:', columns)
   try {
-    await DB.query("BEGIN");
-    const columnsString = columns.join(", ");
-    const queryText = `SELECT ${columnsString} FROM ${tableName} WHERE ${idColumn} = $1`;
+    await DB.query("BEGIN");  
+    // const columnsString = columns.join(", ");
+    const queryText = `SELECT ${columns} FROM ${tableName} WHERE ${idColumn} = $1`;
     const value = [id];
     const { rows } = await DB.query(queryText, value);
     await DB.query("COMMIT");
@@ -204,25 +153,18 @@ const increaseByValue = async (
   }
 };
 
-const deleteAccountWithoutPassword = async (queryText, value) => {
-  try {
-    await DB.query(queryText, value);
-  } catch (err) {
-    throw err;
-  }
-};
+
 
 module.exports = {
   getAll,
   addOne,
   updateOne,
   deleteOne,
-  checkOneDetail,
-  hashPassword,
+  checkOneDetail,  
   getOne,
-  deleteAccountWithoutPassword,
+
   detailExists,
-  verifyPassword,
+  
   getSpecificDetails,
   getSpecificDetailsUsingId,
   increaseByValue,

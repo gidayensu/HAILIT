@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { BottomBar } from "@/components/bottom-bar";
+import { TopBar } from "@/components/top-nav-bar";
+import Providers from "@/lib/store/redux-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,16 +19,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <Providers>
     <html lang="en">
       <body className={inter.className}>
+        
         <ThemeProvider
         attribute="class"
         defaultTheme="system" >
-
+        <TopBar/>
         {children}
         <BottomBar/>
         </ThemeProvider>
         </body>
     </html>
+        </Providers>
   );
 }

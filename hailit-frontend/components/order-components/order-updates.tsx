@@ -5,7 +5,9 @@ import Container from "../ui/container";
 
 export default function OrderUpdates() {
   return (
-    <Container className="w-[330px] rounded-xl  h-24  p-4 flex justify-between items-center ">
+    <Container className="w-full rounded-xl h-24 flex justify-center items-center  ">
+      <div className="flex justify-center items-center ml-6">
+
       <div className="flex flex-col gap-2 w-full items-start ">
         <div className="flex gap-2 items-center justify-start w-[82px]   ">
           <div className="bg-green-600 dark:bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center">
@@ -45,6 +47,7 @@ export default function OrderUpdates() {
         </div>
 
         <p className="-ml-1 text-[13px]">Delivered</p>
+      </div>
       </div>
     </Container>
   );
