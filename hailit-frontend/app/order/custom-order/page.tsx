@@ -3,21 +3,21 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SelectDate } from "@/components/order-components/select-date";
-import { SelectDeliveryType } from "@/components/order-components/select-delivery-type";
-import TopContent from "@/components/common/top-content";
-import MidContent from "@/components/common/mid-content";
+import { SelectDate } from "@/components/Order/SelectDate";
+import { SelectDeliveryType } from "@/components/Order/SelectDeliveryType";
+import TopSectionContainer from "@/components/Shared/TopSectionContainer";
+import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 
 export default function CustomOrder() {
   return (
     <>
       <main className="flex min-h-screen flex-col items-center gap-10 ">
-        <TopContent className="">
+        <TopSectionContainer className="">
           <span className="text-5xl font-bold">Custom Order</span>
           <p className="text-lg">Schedule your order</p>
-        </TopContent>
+        </TopSectionContainer>
 
-        <MidContent className=" flex flex-col justify-start items-center p-10 mb-20">
+        <MiddleSectionContainer className=" flex flex-col justify-start items-center p-10 mb-20">
           <form className="w-full space-y-6">
             <div className="flex gap-5 w-full">
               <div className="flex flex-col justify-center items-center gap-2">
@@ -100,7 +100,7 @@ export default function CustomOrder() {
               Proceed
             </Button>
           </form>
-        </MidContent>
+        </MiddleSectionContainer>
       </main>
     </>
   );

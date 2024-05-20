@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 
 //ui + icons
 import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RiLockPasswordFill, RiLockPasswordLine } from "react-icons/ri";
 import { FiChevronRight } from "react-icons/fi";
@@ -36,15 +35,16 @@ import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/button";
 
 //main components
-import TopContent from "@/components/common/top-content";
-import MidContent from "@/components/common/mid-content";
-import { ThemeToggle } from "@/components/theme-toggle";
-import ChangePassword from "@/components/customer-profile-components/password-change";
-import Feedback from "@/components/customer-profile-components/send-feedback";
-import CustomerHelp from "@/components/customer-profile-components/customer-help";
-import ShareHailit from "@/components/customer-profile-components/share-hailit";
-import PrivacyPolicy from "@/components/customer-profile-components/privacy-policy";
-import  AccountAccess  from "@/components/home-components/account-access";
+import TopSectionContainer from "@/components/Shared/TopSectionContainer";
+import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
+import { ThemeToggle } from "@/components/Theme/ThemeToggle";
+import ChangePassword from "@/components/Profile/ChangePassword";
+import Feedback from "@/components/Profile/Feedback";
+import CustomerHelp from "@/components/Profile/CustomerHelp";
+import ShareHailit from "@/components/Profile/ShareHailit";
+import PrivacyPolicy from "@/components/Profile/PrivacyPolicy";
+
+import LoginSignUp from "@/components/Profile/LoginSignUp";
 
 export type CurrentTheme = string | undefined;
 
@@ -55,9 +55,9 @@ export default function Profile() {
   const {authenticationState} = useAppSelector((state)=>state.auth);
   const {first_name, email, last_name, onboard} = useAppSelector((state)=>state.user);
 
-  // if(authenticationState && !onboard) {
-  //   router.push('/onboarding')
-  // }
+  if(authenticationState && !onboard) {
+    router.push('/onboarding')
+  }
 
   //setting theme
   const { theme, setTheme, systemTheme } = useTheme();
@@ -72,7 +72,6 @@ export default function Profile() {
 
   }  
 
-  console.log(first_name, email, last_name, onboard)
   
   //setting current theme. Not using useEffect result in hydration errors
   useEffect(() => {
@@ -100,11 +99,11 @@ export default function Profile() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center gap-10 mb-20">
+      <main className="flex min-h-screen flex-col items-center gap-10 mb-32">
         {!authenticationState && (
           <>
 
-          <div className="flex flex-col items-center justify-center gap-2 mt-20">
+          <div className="flex flex-col items-center justify-center gap-2 mt-10">
           <div className={`${iconsAndTextDivClass} mt-5 mb-5 md:hidden border border-black dark:border-white`} onClick={handleThemeChange}>
             <span className={iconsAndTextSpanClass}>
               <ThemeToggle />
@@ -119,33 +118,17 @@ export default function Profile() {
               Request for affordable <br /> but fast deliveries in Accra
             </p>
           </div>
-          <div></div>
-          <div className="mt-16 flex flex-col gap-5">
-            <Button
-              variant="outline"
-              className="border border-slate-300 h-14 w-60 flex gap-4"
-            >
-              
-              <FcGoogle className="text-2xl" /> Continue with Google
-            </Button>
-            <Link href="/order">
-              <Button
-                variant="outline"
-                className="border border-slate-300 h-14 w-60 flex gap-4"
-              >
-                
-                Continue as Guest
-              </Button>
-            </Link>
+          
+          <div className="">
 
-            <AccountAccess />
+            <LoginSignUp />
           </div>
         </>
         )}
         {authenticationState && (
           <>
           
-        <TopContent className="justify-center items-center">
+        <TopSectionContainer className="justify-center items-center">
           <div className="flex flex-col items-center justify-center gap-5">
             <div className="flex items-center justify-center">
               <span className="bg-gradient-to-r from-cyan-500 to-blue-500 w-16 h-16 rounded-full"></span>
@@ -159,9 +142,9 @@ export default function Profile() {
               </div>
             </div>
           </div>
-        </TopContent>
+        </TopSectionContainer>
 
-        <MidContent className="flex flex-col gap-3 bg-white w-full -mt-20 rounded-tr-[50px] p-5 md:items-center md:justify-center">
+        <MiddleSectionContainer className="flex flex-col gap-3 bg-white w-full -mt-20 rounded-tr-[50px] p-5 md:items-center md:justify-center">
           {/* Account section */}
           <h2 className="font-bold text-md"> Account</h2>
 
@@ -302,7 +285,7 @@ export default function Profile() {
             </Dialog>
 
           </div>
-        </MidContent>
+        </MiddleSectionContainer>
         </>
 )}      </main>
     </>

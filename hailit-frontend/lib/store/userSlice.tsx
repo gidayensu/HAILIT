@@ -30,6 +30,12 @@ export const userSlice = createSlice({
             state.onboard = action.payload.onboard
             
         },
+        setBoardingCompletion(state, action:PayloadAction<boolean>) {
+            console.log('this really runs')
+            state.onboard = action.payload
+            console.log('this is payload action',action.payload)
+        },
+
         logUserOut(state) {
             state.user_id = ''
             state.email = ''
@@ -42,4 +48,4 @@ export const userSlice = createSlice({
 
 })
 
-export const {setUserState, logUserOut} = userSlice.actions;
+export const {setUserState, logUserOut, setBoardingCompletion} = userSlice.actions;

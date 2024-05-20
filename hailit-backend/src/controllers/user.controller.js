@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+
 const StatusCodes = require("http-status-codes");
 const userService = require("../services/user.service");
 
@@ -26,7 +26,8 @@ const getAllUsers = async (req, res) => {
 const getOneUser = async (req, res) => {
   try {
     const { userId } = req.params;
-
+    
+    
     // const jwtUserId = req.user.user_id;
     // const isAdmin = await userIsUserRole(jwtUserId, 'admin');
 

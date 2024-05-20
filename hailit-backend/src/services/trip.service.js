@@ -1,5 +1,5 @@
 const tripModel = require("../model/trip.model");
-const { v4: uuid } = require("uuid");
+const crypto = require('crypto')
 const driverModel = require("../model/driver.model");
 const riderModel = require("../model/rider.model");
 const userModel = require("../model/user.model");
@@ -91,7 +91,7 @@ const getUserTrips = async (user_id) => {
 };
 const addTrip = async (user_id, tripDetails) => {
   try {
-    const trip_id = uuid();
+    const trip_id = crypto.randomBytes(4).toString("hex");
     const validTripDetails = allowedPropertiesOnly(
       tripDetails,
       allowedAddTripProperties

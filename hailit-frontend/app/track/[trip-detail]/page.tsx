@@ -2,23 +2,23 @@
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 //main components
-import TopContent from "@/components/common/top-content";
-import MidContent from "@/components/common/mid-content";
-import OrderUpdates from "@/components/order-components/order-updates";
-import OrderSummaryCard from "@/components/order-components/order-summary-card";
-import CourierCard from "@/components/courier-components/courier-card";
-import { ReOrder } from "@/components/order-components/reorder";
+import TopSectionContainer from "@/components/Shared/TopSectionContainer";
+import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
+import OrderUpdates from "@/components/Order/OrderUpdates";
+import OrderSummary from "@/components/Order/OrderSummary";
+import CourierCard from "@/components/Courier/CourierCard";
+import { ReOrder } from "@/components/Order/ReOrder";
 
 export default function TrackDelivery() {
   
   return (
     <main className="flex min-h-screen flex-col items-center gap-10 mb-20">
-      <TopContent className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
+      <TopSectionContainer className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
         <span className="text-5xl font-bold ">#235-ASF5</span>
         <p className="text-lg font-bold">12th May, 2024</p>
-      </TopContent>
+      </TopSectionContainer>
 
-      <MidContent className="flex flex-col justify-start items-center space-y-2 p-5">
+      <MiddleSectionContainer className="flex flex-col justify-start items-center space-y-2 p-5">
         {/* T Status */}
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <h3 className="font-bold text-sm">Trip Status</h3>
@@ -34,7 +34,7 @@ export default function TrackDelivery() {
         {/* Trip Details */}
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <h3 className="font-bold text-sm">Delivery Dates</h3>
-          <OrderSummaryCard deliveryStatus="INTERCITY" />
+          <OrderSummary deliveryStatus="INTERCITY" />
         </div>
         {/* Cost Details */}
         <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -60,7 +60,7 @@ export default function TrackDelivery() {
           <ReOrder/>
           </div>
         </div>
-      </MidContent>
+      </MiddleSectionContainer>
     </main>
   );
 }

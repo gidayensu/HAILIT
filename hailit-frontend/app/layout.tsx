@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/Theme/ThemeProvider";
 import "./globals.css";
-import { BottomBar } from "@/components/bottom-bar";
-import { TopBar } from "@/components/top-nav-bar";
+import { BottomNavBar } from "@/components/Nav/BottomNavBar";
+import { TopNavBar } from "@/components/Nav/TopNavBar";
 import Providers from "@/lib/store/redux-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,9 +26,9 @@ export default function RootLayout({
         <ThemeProvider
         attribute="class"
         defaultTheme="system" >
-        <TopBar/>
+        <TopNavBar/>
         {children}
-        <BottomBar/>
+        <BottomNavBar/>
         </ThemeProvider>
         </body>
     </html>

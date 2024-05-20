@@ -1,24 +1,24 @@
 import { Separator } from "@/components/ui/separator";
-import { UserAvatar } from "@/components/common/user-avatar";
+import { UserAvatar } from "@/components/Shared/user-avatar";
 import { PiPackageThin } from "react-icons/pi";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { RiMessage3Line } from "react-icons/ri";
 import { LuPhone } from "react-icons/lu";
 
-import TopContent from "@/components/common/top-content";
-import MidContent from "@/components/common/mid-content";
+import TopSectionContainer from "@/components/Shared/TopSectionContainer";
+import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 
 export default function TrackDelivery() {
   const status = "delivered";
   return (
     <main className="flex min-h-screen flex-col items-center gap-10 mb-5">
-      <TopContent className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
+      <TopSectionContainer className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
         <span className="text-5xl font-bold ">Package</span>
         <p className="text-3xl">#235-ASF5</p>
-      </TopContent>
+      </TopSectionContainer>
 
-      <MidContent className="flex flex-col justify-start items-center">
+      <MiddleSectionContainer className="flex flex-col justify-start items-center">
         <div className="flex text-sm w-[300px] items-center justify-center mt-10 ">
           <div className="flex flex-col gap-2 w-full items-start ">
             <div className="flex gap-2 items-center justify-start w-[82px] ">
@@ -72,7 +72,7 @@ export default function TrackDelivery() {
 
               <span>
                 <p className="font-bold text-sm">Samson Ayeni</p>
-                <p className="font-bold text-[10px]">Your Courier</p>
+                <p className="font-bold text-[10px]">M</p>
               </span>
             </div>
             <div className="flex justify-center items-center gap-2">
@@ -148,7 +148,7 @@ export default function TrackDelivery() {
             </div>
           </div>
         </div>
-      </MidContent>
+      </MiddleSectionContainer>
     </main>
   );
 }

@@ -1,9 +1,9 @@
 'use client'
-import OrderSummaryLessDetail from "@/components/order-components/order-summary-less-detail";
+import OrderSummaryMin from "@/components/Order/OrderSummaryMin";
 import { useState } from "react";
 import type { Deliveries } from "@/app/page";
-import MidContent from "@/components/common/mid-content";
-import TopContent from "@/components/common/top-content";
+import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
+import TopSectionContainer from "@/components/Shared/TopSectionContainer";
 
 export default function AllOrders () {
     
@@ -15,12 +15,12 @@ export default function AllOrders () {
   
     return (
       <main className="flex min-h-screen flex-col items-center gap-10 ">
-        <TopContent className="">
+        <TopSectionContainer className="">
           <span className="text-5xl font-bold ">Your Deliveries</span>
           <p className="text-lg">Current and Previous Deliveries</p>
-        </TopContent>
+        </TopSectionContainer>
 
-        <MidContent className="flex flex-col justify-center items-center gap-6 bg-white w-full -mt-20 rounded-tr-[50px] p-10 mb-20">
+        <MiddleSectionContainer className="flex flex-col justify-center items-center gap-6 bg-white w-full -mt-20 rounded-tr-[50px] p-10 mb-20">
       
         <div className="flex flex-col w-5/6 mt-4 rounded-2xl gap-2">
             <h2 className="font-bold text-xl"> Your Deliveries</h2>
@@ -49,22 +49,22 @@ export default function AllOrders () {
 
             {currentDeliveries && (
               <>
-                <OrderSummaryLessDetail deliveryStatus="Booked" packageType="Gadgets"/>
-                <OrderSummaryLessDetail deliveryStatus="Picked up" packageType="Parcel"/>
+                <OrderSummaryMin deliveryStatus="Booked" packageType="Gadgets"/>
+                <OrderSummaryMin deliveryStatus="Picked up" packageType="Parcel"/>
 
-                <OrderSummaryLessDetail deliveryStatus="Delivering" packageType="Others"/>
+                <OrderSummaryMin deliveryStatus="Delivering" packageType="Others"/>
               </>
             )}
             {!currentDeliveries && (
               <>
-                <OrderSummaryLessDetail deliveryStatus="Delivered" packageType="Food" />
-                <OrderSummaryLessDetail deliveryStatus="Cancelled" packageType="Fragile"/>
-                <OrderSummaryLessDetail deliveryStatus="Delivered" packageType="Others"/>
-                <OrderSummaryLessDetail deliveryStatus="Delivered" packageType="Parcel"/>
+                <OrderSummaryMin deliveryStatus="Delivered" packageType="Food" />
+                <OrderSummaryMin deliveryStatus="Cancelled" packageType="Fragile"/>
+                <OrderSummaryMin deliveryStatus="Delivered" packageType="Others"/>
+                <OrderSummaryMin deliveryStatus="Delivered" packageType="Parcel"/>
               </>
             )}
           </div>
-          </MidContent>
+          </MiddleSectionContainer>
           </main>
     )
 }

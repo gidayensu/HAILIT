@@ -3,18 +3,18 @@ import { Input } from "@/components/ui/input";
 import { IoIosInformationCircle } from "react-icons/io";
 import { FaPhone } from "react-icons/fa6";
 import Container from "@/components/ui/container";
-import TopContent from "@/components/common/top-content";
-import MidContent from "@/components/common/mid-content";
+import TopSectionContainer from "@/components/Shared/TopSectionContainer";
+import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 import { FaWhatsapp } from "react-icons/fa";
 export default function TrackDelivery() {
   return (
     <main className="flex min-h-screen flex-col items-center gap-10 mb-20">
-      <TopContent className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
+      <TopSectionContainer className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
         <span className="text-7xl font-bold">Track</span>
         <p className="text-3xl">Your Deliveries</p>
-      </TopContent>
+      </TopSectionContainer>
 
-      <MidContent className="flex flex-col justify-start items-center  p-5">
+      <MiddleSectionContainer className="flex flex-col justify-start items-center  p-5">
           
       
       <div className="flex w-full max-w-xl items-center space-x-2 justify-center mt-10 ">
@@ -46,19 +46,19 @@ export default function TrackDelivery() {
         
       </Container>
       
-          </MidContent>
+          </MiddleSectionContainer>
     </main>
   );
 }
 
 const carryOn = (
   <main className="flex min-h-screen flex-col items-center gap-10 mb-20">
-      <TopContent className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
+      <TopSectionContainer className="flex flex-col items-start justify-center gap-2 w-full h-80 bg-slate-800  p-4 text-white ">
         <span className="text-5xl font-bold ">#235-ASF5</span>
         <p className="text-lg font-bold">12th May, 2024</p>
-      </TopContent>
+      </TopSectionContainer>
 
-      <MidContent className="flex flex-col justify-start items-center space-y-2 p-5">
+      <MiddleSectionContainer className="flex flex-col justify-start items-center space-y-2 p-5">
         {/* T Status */}
         <div className="flex flex-col gap-2 mt-5">
           <h3 className="font-bold text-sm">Trip Status</h3>
@@ -98,7 +98,7 @@ const carryOn = (
 
           
         </div>
-      </MidContent>
+      </MiddleSectionContainer>
     </main>
 
 )
