@@ -1,13 +1,13 @@
 //ui components + icons
-import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 //main components
 import TopSectionContainer from "@/components/Shared/TopSectionContainer";
 import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 import OrderUpdates from "@/components/Order/OrderUpdates";
 import OrderSummary from "@/components/Order/OrderSummary";
-import CourierCard from "@/components/Courier/CourierCard";
+import CourierCard from "@/components/Dispatcher/DispatcherCard";
 import { ReOrder } from "@/components/Order/ReOrder";
+import TrackOrderContainer from "@/components/Order/TrackOrderContainer";
 
 export default function TrackDelivery() {
   
@@ -19,26 +19,23 @@ export default function TrackDelivery() {
       </TopSectionContainer>
 
       <MiddleSectionContainer className="flex flex-col justify-start items-center space-y-2 p-5">
-        {/* T Status */}
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <h3 className="font-bold text-sm">Trip Status</h3>
+        
+        <TrackOrderContainer headingText="Trip Status" >
+          
           <OrderUpdates />
-        </div>
+        </TrackOrderContainer>
 
-        {/* Courier Details */}
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <h3 className="font-bold text-sm">Courier</h3>
+        
+        <TrackOrderContainer headingText="Courier">
           <CourierCard />
-        </div>
+        </TrackOrderContainer>
 
-        {/* Trip Details */}
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <h3 className="font-bold text-sm">Delivery Dates</h3>
+        
+        <TrackOrderContainer headingText="Location and Timeline">
           <OrderSummary deliveryStatus="INTERCITY" />
-        </div>
-        {/* Cost Details */}
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <h3 className="font-bold text-sm">Cost and Payment</h3>
+        </TrackOrderContainer>
+        
+        <TrackOrderContainer headingText="Cost and Payment">
           <Container className=" w-full h-auto rounded-xl">
             <div className="grid grid-cols-3  p-3 ">
               <span className="text-[13px]">
@@ -59,7 +56,7 @@ export default function TrackDelivery() {
 
           <ReOrder/>
           </div>
-        </div>
+        </TrackOrderContainer>
       </MiddleSectionContainer>
     </main>
   );

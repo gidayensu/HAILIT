@@ -104,7 +104,7 @@ import {
         amount: "GHS 210.00",
         paymentStatus: "Paid",
         paymentMethod: "Mobile Money",
-        deliveryStatus: "Booked",
+        deliveryStatus: "New Order",
     }
 ];
 
@@ -156,7 +156,7 @@ import {
                 ? "  bg-sky-600"
                 : trip.deliveryStatus === "In Transit"
                 ? " bg-amber-500 "
-                : trip.deliveryStatus === "Booked"
+                : trip.deliveryStatus === "New Order"
                 ? " bg-slate-600 dark:text-slate-50"
                 : " bg-red-500"}`}>
                     <p>

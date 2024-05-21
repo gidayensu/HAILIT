@@ -1,5 +1,5 @@
 'use client'
-import LocationMap from "@/components/MapsOpenStreet/Map"
+import LocationMap from "@/components/Maps/Map"
 
 export default function Map(){
     return (

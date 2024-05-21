@@ -16,7 +16,7 @@ export default function OrderUpdates() {
           <Separator className="w-1/3 bg-slate-800 dark:bg-slate-50" />
         </div>
 
-        <p className="-ml-1 text-[13px]">Booked</p>
+        <p className="-ml-1 text-[13px]">New Order</p>
       </div>
       <div className="flex flex-col gap-2 w-full items-start ">
         <div className="flex gap-2 items-center justify-start w-[82px] ">

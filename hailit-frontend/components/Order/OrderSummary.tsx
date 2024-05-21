@@ -1,9 +1,8 @@
 "use client";
 
-import { TbCurrentLocation } from "react-icons/tb";
-import { MdOutlineLocationOn } from "react-icons/md";
+import { HiLocationMarker } from "react-icons/hi";
 import Container from "@/components/ui/container";
-
+import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 
 type DeliveryStatus =
@@ -11,49 +10,52 @@ type DeliveryStatus =
   | "SCHEDULED"
   | "NEXT DAY"
   | "SAME DAY"
-  | "GHS 40";
+  
 
 export default function OrderSummary({
   deliveryStatus,
 }: {
   deliveryStatus: DeliveryStatus;
 }) {
+
+  const path = usePathname();
   return (
     <>
       {/* <div className="flex flex-col gap-3 bg-gradient-to-tl from-[#9da9ac25] from-1% via-white via-50% to-white border border-slate-300 h-56 rounded-2xl p-4 dark:bg-transparent"> */}
-      <Container className="w-full flex flex-col gap-3 h-36 rounded-xl p-4 ">
-        <div className="flex justify-between -mt-1">
-          <div className="flex items-center gap-2">
-            <h3 className="font-bold -ml-1">#ASD-593</h3>
+      <Container className="w-full flex flex-col gap-2 h-52 rounded-xl p-4 ">
+        <div className="flex justify-between items-center -mt-1">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-[12px] text-slate-500">Order ID</p>
+            <h3 className="font-bold text-[14px] ">#ASD-593</h3>
             
           </div>
-
-          <span
-            className={`flex justify-center items-center text-[11px] font-bold  ${
-              deliveryStatus === "INTERCITY"
-                ? "  text-blue-500"
+        {!path.startsWith('/dispatcher') &&
+          <div
+            className={`flex justify-center items-center text-[12px] font-medium w-24  ${
+              deliveryStatus === "SCHEDULED"
+                ? "  bg-blue-500 text-white"
                 : deliveryStatus === "NEXT DAY"
-                ? "  text-sky-500"
+                ? "  bg-teal-500 text-white"
                 : deliveryStatus === "SAME DAY"
-                ? " text-amber-500 "
-                : deliveryStatus === "GHS 40"
-                ? " text-slate-800  dark:text-slate-50"
-                : " text-red-500"
-            }  h-6 w-20 rounded-full   `}
+                ? " bg-amber-500 dark:text-[#1e1e1e]"
+                : " bg-red-500 text-white"
+            }  h-6 w-24 rounded-md`}
           >
             <p>{deliveryStatus}</p>
-          </span>
+          </div>
+          }
         </div>
+          <Separator className="mb-2 dark:bg-slate-100 dark:opacity-10"/>
 
         <div className="flex flex-col justify-center h-full">
           <span className="flex items-start  gap-2 -ml-2">
-            <TbCurrentLocation className="text-lg" />
+            <HiLocationMarker className="text-lg" />
             <span className="flex gap-2">
               <span className="space-y-1">
-                <p className="text-[13px]">Accra, Teiman</p>
-                <p className="text-[13px] opacity-50">0587468974115</p>
+                <p className="text-[13px] font-medium">Accra, Teiman</p>
+                <p className="text-[13px] opacity-70">12/05/2024 (1:24 PM)</p>
               </span>
-              <h3 className="opacity-50 text-[12px]">- 12/05/2024 (1:24 PM)</h3>
+              
             </span>
           </span>
 
@@ -62,13 +64,13 @@ export default function OrderSummary({
             className="bg-slate-800 h-1/3 dark:bg-slate-100 -mt-4 mb-1"
           />
           <span className="flex items-start gap-2 -ml-[9px]">
-            <MdOutlineLocationOn className="text-xl" />
+            <HiLocationMarker className="text-xl text-green-500" />
             <span className="flex gap-2">
               <span>
                 <p className="font-bold text-[13px]">Amakom, Kumasi</p>
-                <p className="text-[13px] opacity-50">024987944645</p>
+                <p className="text-[13px] opacity-70">12/05/2024 (5:54 PM)</p>
               </span>
-              <h3 className="opacity-50 text-[12px]">- 12/05/2024 (5:54 PM)</h3>
+              
             </span>
           </span>
         </div>

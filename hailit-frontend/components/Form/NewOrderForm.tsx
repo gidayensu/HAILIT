@@ -81,16 +81,8 @@ export default function NewOrderForm() {
           </div>
         </div>
       </div>
-      <div className="grid w-full max-w-sm items-center gap-1.5 mt-4">
-
-      <h3 className=" text-[14px] text-left font-bold ">Delivery Type</h3>
       
-      <SelectDeliveryType />
-      </div>
-      
-
-
-      <div className="grid w-full max-w-sm items-center gap-1.5">
+      <div className="mt-4 grid w-full max-w-sm items-center gap-1.5">
         <h3 className=" text-[14px] font-bold">Pickup Location</h3>
         <Input
           type="text"
@@ -131,7 +123,7 @@ export default function NewOrderForm() {
         />
       </div>
       <div className="grid w-full max-w-sm items-center gap-1.5">
-        <h3 className=" text-[14px] font-bold">Package value (in cedis)</h3>
+        <h3 className=" text-[14px] font-bold">Package value (GHS)</h3>
         <Input
           type="number"
           placeholder="Enter number of recipient"

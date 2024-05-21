@@ -13,7 +13,7 @@ import { LuUser } from "react-icons/lu";
 import OrderSummary from "../../Order/OrderSummary";
 import OrderStatusElement from "./OrderStatusElement";
 
-// type OrderStatus = "Booked" | "Picked Up" | "In Transit" | "Delivered" | "Cancelled";
+// type OrderStatus = "New Order" | "Picked Up" | "In Transit" | "Delivered" | "Cancelled";
 export type OrderStatus = string;
 
 export default function TrackOrder() {
@@ -24,7 +24,7 @@ export default function TrackOrder() {
 
   let currentOrderStage = 4;
 
-  currentOrderStatus === "Booked"
+  currentOrderStatus === "New Order"
     ? currentOrderStage
     : currentOrderStatus === "Picked Up"
     ? (currentOrderStage = 2)
@@ -71,7 +71,7 @@ export default function TrackOrder() {
 
           <div className="flex">
             <OrderStatusElement
-              orderStatus="Booked"
+              orderStatus="New Order"
               currentOrderStage={currentOrderStage}
               orderStage={1}
             >

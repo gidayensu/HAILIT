@@ -1,30 +1,18 @@
 'use client'
-import OrderSummaryMin from "@/components/Order/OrderSummaryMin";
-import { useState } from "react";
-import type { Deliveries } from "@/app/page";
-import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
-import TopSectionContainer from "@/components/Shared/TopSectionContainer";
+import { useState } from "react"
+import OrderSummaryMin from "./OrderSummaryMin"
+export type Deliveries = boolean;
 
-export default function AllOrders () {
-    
-  const [currentDeliveries, setCurrentDeliveries] = useState<Deliveries>(true);
+export default function OrderHistory () {
+    const [currentDeliveries, setCurrentDeliveries] = useState<Deliveries>(true);
 
-  const handleSelectedDeliveries = (status: boolean) => {
-    setCurrentDeliveries(status);
-  };
-  
+    const handleSelectedDeliveries = (status: boolean) => {
+      setCurrentDeliveries(status);
+    };
     return (
-      <main className="flex min-h-screen flex-col items-center gap-10 ">
-        <TopSectionContainer className="">
-          <span className="text-5xl font-bold ">Your Deliveries</span>
-          <p className="text-lg">Current and Previous Deliveries</p>
-        </TopSectionContainer>
-
-        <MiddleSectionContainer className="flex flex-col justify-center items-center gap-6 bg-white w-full -mt-20 rounded-tr-[50px] p-10 mb-20">
-      
-        <div className="flex flex-col w-5/6 mt-4 rounded-2xl gap-2">
+        <div className="flex flex-col md:4/6 w-5/6 mt-4 rounded-2xl gap-2 items-center justify-center">
             <h2 className="font-bold text-xl"> Your Deliveries</h2>
-            <div className="flex justify-between items-center w-full h-10 bg-white dark:bg-[#1e1e1e] border border-blue-500   rounded-xl p-2 gap-3 text-[13px] mb-4">
+            <div className="flex justify-between items-center w-full md:w-4/6 h-10 bg-white dark:bg-[#1e1e1e] border border-blue-500   rounded-xl p-2 gap-3 text-[13px] mb-4">
               <span
                 className={`flex items-center justify-center ${
                   currentDeliveries
@@ -48,23 +36,25 @@ export default function AllOrders () {
             </div>
 
             {currentDeliveries && (
-              <>
+              <div className="flex flex-col md:w-5/6 w-full mt-4 rounded-2xl gap-2 items-center justify-center">
+                <div className="flex flex-col md:w-5/6 w-full items-center justify-center gap-2 md:items-start md:p-3">
+
                 <OrderSummaryMin deliveryStatus="New Order" packageType="Gadgets"/>
                 <OrderSummaryMin deliveryStatus="Picked up" packageType="Parcel"/>
 
                 <OrderSummaryMin deliveryStatus="Delivering" packageType="Others"/>
-              </>
+                </div>
+              </div>
             )}
             {!currentDeliveries && (
-              <>
+              <div className="flex flex-col md:w-5/6 w-full mt-4 rounded-2xl gap-2 items-center justify-center">
+                <div className="flex flex-col md:w-5/6 w-full items-center justify-center gap-2 md:items-start md:p-3">
+
                 <OrderSummaryMin deliveryStatus="Delivered" packageType="Food" />
                 <OrderSummaryMin deliveryStatus="Cancelled" packageType="Fragile"/>
-                <OrderSummaryMin deliveryStatus="Delivered" packageType="Others"/>
-                <OrderSummaryMin deliveryStatus="Delivered" packageType="Parcel"/>
-              </>
+                </div>
+              </div>
             )}
           </div>
-          </MiddleSectionContainer>
-          </main>
     )
 }

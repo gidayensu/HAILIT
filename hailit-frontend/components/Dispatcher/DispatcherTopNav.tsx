@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 
 
-export function TopNavBar() {
+export function DispatcherTopNav() {
   const { theme, setTheme, systemTheme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState<CurrentTheme>("system"); // Default theme
 
@@ -37,13 +37,13 @@ export function TopNavBar() {
 
   return (
     
-    <nav className={`hidden   left-0 right-0 top-auto z-40 ${path.startsWith('/dashboard') || path.startsWith('/dispatcher') ? 'hidden': 'md:flex justify-center'}  items-center p-4 h-20 shadow-md gap-10 w-full bg-white dark:bg-[#121212] font-bold`}>
+    <nav className={`hidden   left-0 right-0 top-auto z-40 ${path.startsWith('/dashboard') ? 'hidden': 'md:flex justify-center'}  items-center p-4 h-20 shadow-md gap-10 w-full bg-white dark:bg-[#121212] font-bold`}>
       {path !== '/dashboard' && (
         <>
-      <Link href="/">
+      <Link href="/dispatcher">
         <div className={divClass}>
           <Button
-            variant={path === "/" ? "default" : "secondary"}
+            variant={path === "/dispatcher" ? "default" : "secondary"}
             className="border-none font-bold"
           >
             Home
@@ -51,22 +51,22 @@ export function TopNavBar() {
         </div>
       </Link>
 
-      <Link href="/order/new">
+      <Link href="/dispatcher/trips">
         <div className={divClass}>
           <Button
             variant={path.startsWith("/order") ? "default" : "secondary"}
             className="border-none font-bold"
           >
-            New Delivery
+            Deliveries
           </Button>
         </div>
       </Link>
 
-      <Link href="/profile">
-        {" "}
+      <Link href="/dispatcher/profile">
+        
         <div className={divClass}>
           <Button
-            variant={path.startsWith("/profile") ? "default" : "secondary"}
+            variant={path.startsWith("/dispatcher/profile") ? "default" : "secondary"}
             className="border-none font-bold"
           >
             Profile

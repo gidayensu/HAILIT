@@ -48,7 +48,7 @@ import {
         amount: "GHS 150.00",
         paymentStatus: "Paid",
         paymentMethod: "Cash",
-        deliveryStatus: "Booked",
+        deliveryStatus: "New Order",
     },
     {
         tripId: "INV004",
@@ -62,7 +62,7 @@ import {
         amount: "GHS 400.00",
         paymentStatus: "Paid",
         paymentMethod: "Credit Card",
-        deliveryStatus: "Booked",
+        deliveryStatus: "New Order",
     },
     {
         tripId: "INV005",
@@ -104,7 +104,7 @@ import {
         amount: "GHS 210.00",
         paymentStatus: "Paid",
         paymentMethod: "Mobile Money",
-        deliveryStatus: "Booked",
+        deliveryStatus: "New Order",
     },
     {
         tripId: "INV008",
@@ -160,7 +160,7 @@ import {
         amount: "GHS 350.00",
         paymentStatus: "Paid",
         paymentMethod: "Credit Card",
-        deliveryStatus: "Booked",
+        deliveryStatus: "New Order",
     },
     {
         tripId: "INV012",
@@ -188,7 +188,7 @@ import {
         amount: "GHS 260.00",
         paymentStatus: "Paid",
         paymentMethod: "Mobile Money",
-        deliveryStatus: "Booked",
+        deliveryStatus: "New Order",
     },
     {
         tripId: "INV014",
@@ -338,7 +338,7 @@ import {
                 ? "  bg-sky-600"
                 : trip.deliveryStatus === "In Transit"
                 ? " bg-amber-500 "
-                : trip.deliveryStatus === "Booked"
+                : trip.deliveryStatus === "New Order"
                 ? " bg-slate-600 dark:text-slate-50"
                 : " bg-red-500"}`}>
                     <p>

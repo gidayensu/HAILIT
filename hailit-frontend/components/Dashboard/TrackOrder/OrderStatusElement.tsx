@@ -6,7 +6,7 @@ export default function OrderStatusElement ({orderStatus, orderStage, currentOrd
     return(
         <div className="flex flex-col items-center justify-center w-1/4 gap-4 relative">
                         <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentOrderStage < orderStage ? 'bg-gray-300 dark:bg-[#4e4e4e]' : 'bg-black dark:bg-slate-50'} ${ orderStage === 0 ? 'bg-red-500' : currentOrderStage === 4 && orderStatus === 'Delivered' ? 'bg-green-500 dark:bg-green-500' : ''} `}>
-                            { (orderStatus === "Booked" || orderStatus === "In Transit" || orderStatus === "Picked Up")  &&
+                            { (orderStatus === "New Order" || orderStatus === "In Transit" || orderStatus === "Picked Up")  &&
                                 
                                 <div>
                                 <div className={`absolute w-full h-1 ${currentOrderStage < orderStage ? 'bg-gray-300 dark:bg-[#4e4e4e]' : 'bg-black dark:bg-slate-50'}`}>
