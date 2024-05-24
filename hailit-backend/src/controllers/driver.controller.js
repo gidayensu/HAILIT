@@ -4,11 +4,14 @@ const getAllDrivers = async (req, res) => {
   try {
     const allDrivers = await driverService.getAllDrivers();
     if (res && res.status) {
-      res.status(200).json({ message: "OK", data: allDrivers });
+      if(allDrivers.error) {
+        return res.status(200).json({error: allDrivers.error})
+      }
+      res.status(200).json({ drivers: allDrivers });
     }
   } catch (error) {
     if (res && res.status) {
-      res.status(500).json({ message: "ERROR", data: "server error" });
+      res.status(500).json({ error: "server error in getting drivers" });
     }
   }
 };
@@ -16,26 +19,26 @@ const getAllDrivers = async (req, res) => {
 const getOneDriver = async (req, res) => {
   const { driver_id } = req.params;
   try {
-    const data = await driverService.getOneDriver(driver_id);
-    if (!data.message) {
-      res.status(200).json({ data: data });
-    } else {
-      res.status(400).json({ message: "Driver not found:" });
-    }
+    const driver = await driverService.getOneDriver(driver_id);
+    if (driver.error) {
+      res.status(200).json({ error: driver.error });
+    } 
+      res.status(400).json({ driver });
+    
   } catch (err) {
-    return { message: `Error occurred getting driver: ${err}` };
+    return { error: `Error occurred getting driver: ${err}` };
   }
 };
-
-const addDriver = async (req, res) => {
-  const { user_id, vehicle_id } = req.body;
-  const driverAdd = await driverService.addDriver(user_id, vehicle_id);
-  if (driverAdd) {
-    res.status(200).json({ message: "driver added" });
-  } else {
-    res.status(400).json({ message: "driver not added" });
-  }
-};
+//DRIVER NOT ADDED BECAUSE RIDERS WILL BE ADDED THROUGH THE USER ROUTE
+// const addDriver = async (req, res) => {
+//   const { user_id, vehicle_id } = req.body;
+//   const driverAdd = await driverService.addDriver(user_id, vehicle_id);
+//   if (driverAdd) {
+//     res.status(200).json({ success: "driver added" });
+//   } else {
+//     res.status(400).json({ error: "driver not added" });
+//   }
+// };
 
 const updateDriver = async (req, res) => {
   const { driver_id } = req.params;
@@ -44,20 +47,20 @@ const updateDriver = async (req, res) => {
   const driverDetails = { driver_id, ...req.body };
 
   if (!driver_id && !vehicle_id) {
-    return res.status(401).json({ message: "driver id or vehicle id missing" });
+    return res.status(401).json({ error: "driver id or vehicle id missing" });
   }
 
   try {
     const driverUpdate = await driverService.updateDriver(driverDetails);
-    if (!driverUpdate.message) {
-      res.status(200).json({ message: driverUpdate });
+    if (!driverUpdate.error) {
+      res.status(200).json({ driver: driverUpdate });
     } else {
-      res.status(400).json({ message: "driver details not updated" });
+      res.status(400).json({ error: "driver details not updated" });
     }
   } catch (err) {
     return res
       .status(500)
-      .json({ message: `Error occurred in updating driver: ${err}` });
+      .json({ error: `Error occurred in updating driver: ${err}` });
   }
 };
 
@@ -65,15 +68,15 @@ const deleteDriver = async (req, res) => {
   const { driver_id } = req.params;
   const driverDelete = await driverService.deleteDriver(driver_id);
   if (driverDelete) {
-    res.status(200).json({ message: "driver deleted" });
+    res.status(200).json({ success: "driver deleted" });
   } else {
-    res.status(400).json({ message: "driver not deleted" });
+    res.status(400).json({ error: "driver not deleted" });
   }
 };
 module.exports = {
   getAllDrivers,
   getOneDriver,
-  addDriver,
+  // addDriver,
   updateDriver,
   deleteDriver,
 };

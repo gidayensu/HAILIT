@@ -35,8 +35,8 @@ export default function Feedback() {
           variant="outline"
           className="  bg-green-500  h-12 w-1/5 flex gap-4 text-white dark:bg-white dark:text-green-500 dark:border-none"
         >
-          {" "}
-          <FaWhatsapp className="text-2xl" />{" "}
+          
+          <FaWhatsapp className="text-2xl" />
         </Button>
       </div>
     </form>

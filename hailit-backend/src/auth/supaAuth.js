@@ -7,7 +7,7 @@ const supaAuth =  (req, res, next) => {
         const authHeader = req.headers.authorization;
         
         if (!authHeader) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ error: "Unauthorized - no authHeader" });
         }
 
         let token = authHeader;
@@ -17,23 +17,24 @@ const supaAuth =  (req, res, next) => {
             
         }
         if (token === '' || !token) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ error: "Unauthorized - no token" });
         }
 
         const user = jwt.verify(token, supaSecret);
         
         if (!user) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ error: "Unauthorized - token cannot be verified" });
         }
 
         req.user = user;
-        console.log('req.user::', req.user)
+        
         next();
 
     } catch (err) {
         // Handle token verification errors
+        
         console.error("Token verification failed:", err);
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ error: "Token verification failed" });
     }
 }
 

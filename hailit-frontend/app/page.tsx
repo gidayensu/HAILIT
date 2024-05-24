@@ -12,7 +12,7 @@ import TrackPackage from "@/components/Home/TrackPackage";
 import SendPackage from "@/components/Home/SendPackage";
 import OrderHistory from "@/components/Order/OrderHistory";
 
-type UserRole = "vendor" | "admin" | "client" | "dispatcher";
+type UserRole = "vendor" | "admin" | "customer" | "dispatcher";
 
 export type Deliveries = boolean;
 

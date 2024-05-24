@@ -10,7 +10,7 @@ const isUserRole = (role) => {
         const isRole = await userIsUserRole(jwtUserId, role);
         // for (let i = 0; i<role.length; i++) {
         //      isRole = await userIsUserRole(jwtUserId, role[i]);
-        //     console.log('isRole:', isRole)
+        
         //     if(isRole === true) {
         //         break;
         //     }
@@ -21,10 +21,10 @@ const isUserRole = (role) => {
             
              next ();
         } else {
-         return  res.status(401).json({message:`Unauthorized to access ${path}`})
+         return  res.status(401).json({error:`Unauthorized to access ${path}`})
         }
     } catch (err) {
-        return "Authorization Error"
+        return {error:"Authorization Error"}
     }}
 }
 

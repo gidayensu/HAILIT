@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SelectDate } from "@/components/Order/SelectDate";
-import { SelectDeliveryType } from "@/components/Order/SelectDeliveryType";
+
 import TopSectionContainer from "@/components/Shared/TopSectionContainer";
 import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 
@@ -41,10 +41,7 @@ export default function CustomOrder() {
               <h3 className="text-md font-medium">Pickup Date</h3>
               <SelectDate />
             </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <h3 className="text-md font-medium">Delivery Type</h3>
-              <SelectDeliveryType />
-            </div>
+            
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <h3 className="text-md font-medium">Pickup Location</h3>
               <Input

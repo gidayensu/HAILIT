@@ -6,7 +6,7 @@ const authenticateToken = async (req, res, next)=> {
     try {
     const authHeader =  req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).json({message: "unauthorized"})
+        return res.status(401).json({error: "unauthorized"})
     }
 
     const token =   authHeader.split(' ')[1];
@@ -14,8 +14,8 @@ const authenticateToken = async (req, res, next)=> {
     req.user = user;
     next();
     } catch (err) {
-        console.log(err)
-        return res.status(403).json({message: "Authentication Error"})
+        
+        return res.status(403).json({error: "Authentication Error"})
     }
 }
 
@@ -36,68 +36,15 @@ const isAdmin = async(req, res, next)=> {
     const {user_id} = req.user;
     try {const adminStatus = await userModel.isAdmin(user_id);
     if (!adminStatus) {
-        res.status(403).json({message: "Access denied"})
+        res.status(403).json({error: "Access denied"})
     }
 
     next();
     } catch (err) {
-        return {message: `Authorization error occurred: ${err}`}
+        return {error: `Authorization error occurred`}
     }
 }
 
 module.exports = authenticateToken
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const jwt = require('jsonwebtoken')
-
-// const authenticateToken = async (req, res, next)=> {
-//     try {
-//     const authHeader = req.headers.authorization;
-    
-//     if (!authHeader) {
-//       return res.status(401).json({message: "Unauthorized"})
-//     }
-  
-//     const token = authHeader.split(' ')[1];
-//      const user = jwt.verify(token, process.env.JWT_SECRET);
-//       req.user = user;
-//       next();
-    
-  
-//   } catch (err) {
-//     return res.status(400).json({message: "Authentication Error"});
-//   }
-  
-//   }
-
- module.exports = authenticateToken;

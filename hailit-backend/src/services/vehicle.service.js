@@ -4,10 +4,10 @@ const vehicleModel = require("../model/vehicle.model");
 const getAllVehicles = async () => {
   try {
     const allVehicles = await vehicleModel.getAllVehicles();
-    console.log("all", allVehicles);
+    
     return allVehicles;
   } catch (err) {
-    return { error: err, message: "server error" };
+    return { error:  "server error" };
   }
 };
 
@@ -16,11 +16,10 @@ const getOneVehicle = async (vehicle_id) => {
 
   if (getVehicle.vehicle_name) {
     return {
-      ...getVehicle,
-      message: "OK",
+      ...getVehicle
     };
   } else {
-    return { message: "Not Found" };
+    return { error: "Not Found" };
   }
 };
 
@@ -37,12 +36,15 @@ const addVehicle = async (vehicleDetails) => {
       completeVehicleDetails
     );
 
-    if (addVehicleResult) {
-      return addVehicleResult.message;
+    if (addVehicleResult.error) {
+      return {error: "Error occurred in adding vehicle"}
     }
+    
+      return addVehicleResult;
+    
   } catch (err) {
-    console.log(err);
-    return { message: "Error occurred. Vehicle not added" };
+    
+    return { error: "Error occurred. Vehicle not added" };
   }
 };
 
@@ -53,12 +55,12 @@ const updateVehicle = async (vehicle_id, vehicleUpdateDetails) => {
       vehicleUpdateDetails
     );
     if (updateVehicle) {
-      return { message: updateVehicle };
+      return { vehicle: updateVehicle };
     } else {
-      return { message: "not updated" };
+      return { error: "not updated" };
     }
   } catch (err) {
-    return { message: "Server Error" };
+    return { error: "Server Error" };
   }
 };
 
@@ -66,12 +68,12 @@ const deleteVehicle = async (vehicle_id) => {
   try {
     const deleteVehicle = await vehicleModel.deleteVehicle(vehicle_id);
     if (deleteVehicle) {
-      return { message: "vehicle deleted" };
+      return { success: "vehicle deleted" };
     } else {
-      return { message: "Vehicle does not exist. No vehicle deleted" };
+      return { error: "Vehicle does not exist. No vehicle deleted" };
     }
   } catch (err) {
-    return { error: err, message: "Vehicle not deleted. Server Error" };
+    return { error: "Vehicle not deleted. Server Error" };
   }
 };
 module.exports = {

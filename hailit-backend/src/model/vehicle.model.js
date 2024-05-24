@@ -16,7 +16,7 @@ const getAllVehicles = async () => {
     const allVehicles = await dbFunctions.getAll(tableName);
     return allVehicles;
   } catch (err) {
-    return { error: err, message: "server error" };
+    return { error: `Error occurred, ${err} ` };
   }
 };
 
@@ -29,13 +29,13 @@ const getOneVehicle = async (vehicleId) => {
       vehicleIdColumn,
       vehicle_id
     );
-    if (getVehicle.message) {
-      return "Vehicle does not exist";
+    if (getVehicle.error) {
+      return {error:"Vehicle does not exist"};
     }
 
     return getVehicle[0];
   } catch (err) {
-    return { error: err, message: "server error" };
+    return { error: `Error occurred, ${err} ` };
   }
 };
 
@@ -55,7 +55,7 @@ const addVehicle = async (completeVehicleDetails) => {
     );
 
     if (vehicleExists) {
-      return { message: "Vehicle exists. It has already been added" };
+      return { error: "Vehicle exists. It has already been added" };
     }
     const addResult = await dbFunctions.addOne(
       tableName,
@@ -67,12 +67,12 @@ const addVehicle = async (completeVehicleDetails) => {
       vehicle_type
     );
     if (addResult) {
-      return { message: "vehicle added" };
+      return { success: "vehicle added" };
     } else {
-      return { message: "Could not add vehicle" };
+      return { error: "Could not add vehicle" };
     }
   } catch (err) {
-    return { message: "Error occurred" };
+    return { error: "Error occurred" };
   }
 };
 
@@ -80,7 +80,7 @@ const updateVehicle = async (vehicle_id, vehicleUpdateDetails) => {
   const validColumnsForUpdate = Object.keys(vehicleUpdateDetails);
   const vehicleDetails = Object.values(vehicleUpdateDetails);
   const vehicleIdColumn = columnsForAdding[0];
-  console.log("vehicleUpdate:", vehicleDetails);
+  
 
   try {
     const vehicleUpdate = await dbFunctions.updateOne(
@@ -95,7 +95,7 @@ const updateVehicle = async (vehicle_id, vehicleUpdateDetails) => {
       return true;
     }
   } catch (err) {
-    return { error: err, message: "Server error, vehicle not updated" };
+    return { error: `Error occurred, ${err} ` };
   }
 };
 
@@ -109,7 +109,7 @@ const deleteVehicle = async (vehicle_id) => {
 
     return vehicleDeletion;
   } catch (err) {
-    return { error: err, message: "Server error, vehicle not deleted" };
+    return { error: `Error occurred, ${err} ` };
   }
 };
 

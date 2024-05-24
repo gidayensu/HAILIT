@@ -6,23 +6,27 @@ const userModel = require("../model/user.model");
 const { allowedPropertiesOnly } = require("../utils/util");
 
 const tripColumns = [
-  "trip_medium, trip_status, delivery_item, pickup_location, delivery_address, special_instructions, trip_request_date, trip_cost, payment_status, payment_method ",
+  "dispatcher_id, trip_medium, trip_status, package_type, pickup_location, drop_off_location, special_instructions, trip_request_date, trip_cost, payment_status, payment_method "
 ];
-// const allowedTripStatus = ['requested', 'in progress', 'completed', 'cancelled'];
+// const allowedTripStatus = ['new', 'in progress', 'completed', 'cancelled'];
 const allowedAddTripProperties = [
   "trip_medium",
-  "delivery_item",
+  "package_type",
   "pickup_location",
-  "delivery_address",
+  "drop_off_location",
   "special_instructions",
 ];
 
 const getAllTrips = async () => {
   try {
-    const allTrips = await tripModel.allTrips();
+    const allTrips = await tripModel.getAllTrips();
+    if(allTrips.error) {
+      return {error: "No trips found"}
+    }
     return allTrips;
   } catch (err) {
-    return "Error Occurred in getting Trips Detail";
+    console.log(err)
+    return {error:"Error Occurred  in getting Trips Detail"};
   }
 };
 
@@ -30,10 +34,12 @@ const getOneTrip = async (trip_id) => {
   try {
     const tripIdColumn = "trip_id";
     const oneTrip = await tripModel.getOneTrip(trip_id, tripIdColumn);
-
+    if(oneTrip.error) {
+      return {error: oneTrip.error}
+    }
     return oneTrip;
   } catch (err) {
-    return "Error Occurred in getting Trip Detail";
+    return {error:"Error Occurred in getting Trip Detail"};
   }
 };
 
@@ -41,54 +47,67 @@ const getUserTrips = async (user_id) => {
   //FIX THE ERROR. SINCE YOU ARE FETCHING ALL TRIPS, {driver_id} = driverTrips will not work
   try {
     const userData = await userModel.getOneUser(user_id);
-
-    if (userData.message === "detail does not exist") {
-      return "No Data";
+    
+    if (userData.error) {
+      return {error: userData.error};
     }
-    const user_role = userData[0].user_role;
-
-    if (user_role === "client") {
-      const idColumn = "user_id";
+    const { user_role } = userData;
+    
+    if (user_role === "customer") {
+      const idColumn = "customer_id";
+      
       const userTrips = await tripModel.getUserTrips(
         user_id,
         idColumn,
         tripColumns
       );
+      
+      if(userTrips.error) {
+        return {error: userTrips.error}
+      }
       return userTrips;
     }
-
+    
     if (user_role === "driver" || user_role === "rider") {
       const tripColumns = [
-        "trip_id, trip_medium, trip_status, delivery_address, delivery_item, trip_commencement_date, trip_completion_date",
+        "trip_id, trip_medium, trip_status, trip_type, drop_off_location, package_type, trip_commencement_date, trip_completion_date",
       ];
+      
+      //dispatcher is used to represent drivers and riders except user role
+      
+      let dispatcherData = {};
+      let dispatcher_id = '';
+      if (user_role === 'rider'){
+      dispatcherData = await riderModel.getRiderOnCondition("user_id", user_id );
+      const returnedDispatcherData = dispatcherData.rows[0];
+      dispatcher_id = returnedDispatcherData.rider_id;
+      }
+      
+      if (user_role === "driver") {
+        dispatcherData = await driverModel.getDriverDetailOnCondition(
+          "user_id",
+          user_id
+        );
+        
+        dispatcher_id = dispatcherData[0].driver_id;
+      }
+      console.log('dispatcher_id', dispatcher_id)
 
-      //driver is used to represent drivers and riders except user role
-      let driverData = await driverModel.getDriverDetailOnCondition(
-        "user_id",
-        user_id
-      );
-      let driver_id = driverData[0].driver_id;
-      user_role === "rider"
-        ? (driverData = await riderModel.getRiderOnCondition(
-            "user_id",
-            user_id
-          ))
-        : "";
-      user_role === "rider" ? (driver_id = driverData[0].rider_id) : "";
-
-      const idColumn = "driver_id"; //this is because driver is used to represent rider and driver in the trips table
-      const driverTrips = await tripModel.getUserTrips(
-        driver_id,
+      const idColumn = "dispatcher_id"; //this is because dispatcher is used to represent rider and driver in the trips table
+      const dispatcherTrips = await tripModel.getUserTrips(
+        dispatcher_id,
         idColumn,
         tripColumns
       );
-      return driverTrips;
+      return dispatcherTrips;
     }
   } catch (err) {
-    console.log(err);
-    return "Error occurred getting user trips details";
+    console.log(err)
+    return {error: "Error occurred getting user trips details"};
   }
 };
+
+
 const addTrip = async (user_id, tripDetails) => {
   try {
     const trip_id = crypto.randomBytes(4).toString("hex");
@@ -97,21 +116,32 @@ const addTrip = async (user_id, tripDetails) => {
       allowedAddTripProperties
     );
     const trip_cost = 89 - 45; //current destination - delivery destination
-    let driver_id = "";
+    let dispatcher_id = "";
 
     const availableDrivers = await driverModel.getSpecificDrivers(
       "driver_availability",
       "available"
     );
 
-    !availableDrivers
-      ? (driver_id = "no driver available")
-      : (driver_id = availableDrivers[0].driver_id);
+    const availableRiders = await riderModel.getSpecificRiders("rider_availability", "available");
+    if (tripDetails.trip_medium === "car" || tripDetails.trip_medium === "truck") {
+
+      !availableDrivers
+        ? (dispatcher_id = "no driver available")
+        : (dispatcher_id = availableDrivers[0].driver_id);
+    }
+
+    if (tripDetails.trip_medium === "motor") {
+      !availableRiders
+        ? (dispatcher_id = "no driver available")
+        : (dispatcher_id = availableRiders[0].rider_id);
+    }
+    
 
     const tripStatusDetails = {
-      trip_status: "requested",
+      trip_status: "new",
       trip_request_date: "now()",
-      driver_id: driver_id,
+      dispatcher_id,
       trip_cost: trip_cost,
       payment_status: false,
       payment_method: "payment on delivery",
@@ -119,17 +149,20 @@ const addTrip = async (user_id, tripDetails) => {
 
     const finalTripDetails = {
       trip_id,
-      user_id,
+      customer_id: user_id,
       ...validTripDetails,
       ...tripStatusDetails,
     };
     const newTrip = await tripModel.addTrip(finalTripDetails);
-    if (newTrip) {
-      return { message: "trip added" };
+    if(newTrip.error) {
+      return {error: newTrip.error}
     }
+
+    return newTrip;
+    
   } catch (err) {
-    console.log(err);
-    return "Server Error Occurred Adding  User Trip";
+    
+    return {error:"Server Error Occurred Adding  User Trip"};
   }
 };
 
@@ -138,15 +171,20 @@ const updateTrip = async (tripDetails) => {
     "trip_id",
     "trip_medium",
     "trip_status",
-    "delivery_item",
+    "trip_type",
+    "package_type",
+    "package_value",
     "pickup_location",
-    "delivery_address",
+    "drop_off_location",
     "special_instructions",
     "trip_commencement_date",
     "trip_completion_date",
     "payment_status",
     "payment_method",
-    "driver_id",
+    "dispatcher_id",
+    "recipient_number",
+    "sender_number"
+    
   ];
 
   try {
@@ -155,77 +193,84 @@ const updateTrip = async (tripDetails) => {
       allowedProperties
     );
     const tripUpdate = await tripModel.updateTrip(validTripDetails);
-
-    if (tripUpdate) {
-      return tripUpdate;
-    } else {
-      return "Trip not updated";
+    if(tripUpdate.error) {
+      return {error: tripUpdate.error}
     }
+      return tripUpdate;
+    
   } catch (err) {
-    return "Server Error Occurred Updating Trip";
+    return {error:"Server Error Occurred Updating Trip"};
   }
 };
 
 const rateTrip = async (ratingDetails) => {
   try {
-    const { trip_id, driver_id } = ratingDetails;
-    console.log("driver_id:::", driver_id);
-    const updateTrip = await tripModel.updateTrip(ratingDetails);
-    console.log("updateTrip::::", updateTrip);
-    if (updateTrip === "detail updated") {
-      const tripIdColumn = "trip_id";
-      const tripMediumColumn = "trip_medium";
-      const tripMedium = await tripModel.getSpecificDetailsUsingId(
-        trip_id,
-        tripIdColumn,
-        tripMediumColumn
-      );
+    const ratingDetailsWithRatingStatus = { ...ratingDetails, rated: true };
+    const allowedProperties = ["dispatcher_rating", "trip_id", "dispatcher_id", "rated"];
+    const validTripDetails = allowedPropertiesOnly(ratingDetailsWithRatingStatus, allowedProperties);
 
-      const averageRating = "AVG(driver_rating)";
-      const driverIdColumn = "driver_id";
-      const excludeZeroRating = 0;
-      const cumulative_driver_rating =
-        await tripModel.getSpecificDetailsUsingId(
-          driver_id,
-          driverIdColumn,
-          averageRating,
-          excludeZeroRating
-        );
-      console.log("cumulative_driver_rating:", cumulative_driver_rating);
-      if (tripMedium === "motor") {
-        const rider_id = driver_id;
-        const updateRiderRating = await riderModel.updateRider({
-          cumulative_driver_rating,
-          rider_id,
-        });
-
-        if (updateRiderRating) {
-          const driverRatingCountIncrease =
-            await tripModel.driverRateCouIntIncrease(driver_id, tripMedium);
-          driverRatingCountIncrease
-            ? "trip updated with rating"
-            : "trip not updated with rating";
-        } else {
-          return "Error occurred updating trip rate";
-        }
-      }
-
-      const updateDriverRating = await driverModel.updateDriver({
-        cumulative_driver_rating,
-        driver_id,
-      });
-
-      console.log("updateDriverRating:", updateDriverRating);
-      if (updateDriverRating) {
-        return "trip updated with rating";
-      } else {
-        return "trip not updated with rating";
-      }
+    const { trip_id, dispatcher_id } = validTripDetails;
+    const updateTrip = await tripModel.updateTrip(validTripDetails);
+    if (updateTrip.error) {
+      return { error: updateTrip.error };
     }
+
+    const tripMedium = await tripModel.getSpecificDetailsUsingId(trip_id, "trip_id", "trip_medium");
+    const cumulativeDispatcherRating = await tripModel.getSpecificDetailsUsingId(dispatcher_id, "dispatcher_id", "AVG(dispatcher_rating)");
+    const averageDispatcherRating = cumulativeDispatcherRating[0].avg;
+    const { trip_medium } = tripMedium[0];
+
+    const ratingUpdate = await updateDispatcherRating(trip_medium, dispatcher_id, averageDispatcherRating);
+    if (ratingUpdate.error) {
+      return { error: ratingUpdate.error };
+    }
+
+    const ratingCountUpdate = await increaseRatingCount(trip_medium, dispatcher_id);
+    if (ratingCountUpdate.error) {
+      return { error: ratingCountUpdate.error };
+    }
+
+    return { success: "trip updated with rating" };
   } catch (err) {
     console.log(err);
-    return "Server Error Occurred Adding Rating";
+    return { error: "Server Error Occurred Adding Rating" };
   }
+};
+
+const updateDispatcherRating = async (trip_medium, dispatcher_id, averageDispatcherRating) => {
+  if (trip_medium === "motor") {
+    const riderUpdate = await riderModel.updateRider({ cumulative_rider_rating: averageDispatcherRating, rider_id: dispatcher_id });
+    if (riderUpdate.error) {
+      return { error: riderUpdate.error };
+    }
+  } else if (trip_medium === "car" || trip_medium === "truck") {
+    const driverUpdate = await driverModel.updateDriver({ cumulative_driver_rating: averageDispatcherRating, driver_id: dispatcher_id });
+    if (driverUpdate.error) {
+      return { error: driverUpdate.error };
+    }
+  }
+  return { success: true };
+};
+
+const increaseRatingCount = async (trip_medium, dispatcher_id) => {
+  let tableName, idColumn, ratingCountColumn;
+  if (trip_medium === "motor") {
+    tableName = 'rider';
+    idColumn = 'rider_id';
+    ratingCountColumn = 'rider_rating_count';
+  } else if (trip_medium === "car" || trip_medium === "truck") {
+    tableName = 'driver';
+    idColumn = 'driver_id';
+    ratingCountColumn = 'driver_rating_count';
+  } else {
+    return { error: "Invalid trip medium" };
+  }
+
+  const countIncrease = await tripModel.dispatcherRateCouIntIncrease(tableName, dispatcher_id, idColumn, ratingCountColumn);
+  if (countIncrease.error) {
+    return { error: countIncrease.error };
+  }
+  return { success: true };
 };
 
 const deleteTrip = async (trip_id) => {
@@ -234,10 +279,10 @@ const deleteTrip = async (trip_id) => {
     if (tripDelete) {
       return tripDelete;
     } else {
-      return { message: "trip not deleted" };
+      return { error: "trip not deleted" };
     }
   } catch (err) {
-    return { message: "Error occurred deleting trip" };
+    return { error: "Error occurred deleting trip" };
   }
 };
 module.exports = {

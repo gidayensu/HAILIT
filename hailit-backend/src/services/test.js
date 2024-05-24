@@ -37,4 +37,3 @@ const getSpecificDetailsUsingId =  (
   }
 };
 
-console.log(getSpecificDetailsUsingId('tableName', 'theId', 'idColumn', 'powerful'))

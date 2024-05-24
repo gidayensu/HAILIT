@@ -136,7 +136,7 @@ export default function AccountAccess() {
                   variant="outline"
                   className="w-full border border-slate-300 h-12 flex gap-4"
                 >
-                  {" "}
+                  
                   <FcGoogle className="text-2xl" /> Continue with Google
                 </Button>
               </CardFooter>
@@ -187,7 +187,7 @@ export default function AccountAccess() {
                   variant="outline"
                   className="w-full border border-slate-300 h-12 flex gap-4"
                 >
-                  {" "}
+                  
                   <FcGoogle className="text-2xl" /> Continue with Google
                 </Button>
               </CardFooter>

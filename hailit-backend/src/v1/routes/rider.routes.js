@@ -6,14 +6,24 @@ const authenticateToken = require('../../auth/authToken');
 const isUserRole = require('../../auth/user-auth/isUserRole');
 const isAdminOrRider = require('../../auth/rider-auth/isAdminOrRider')
 
-router.get('/', authenticateToken, isUserRole, riderController.getAllRiders)
+router.get('/', riderController.getAllRiders)
 
-router.get('/:rider_id', authenticateToken, riderController.getOneRider)
+router.get('/:rider_id', riderController.getOneRider)
 
-router.post('/', riderController.addRider)
+// router.post('/', riderController.addRider)
 
-router.put('/:rider_id', authenticateToken, isAdminOrRider, riderController.updateRider)
+router.put('/:rider_id',  riderController.updateRider)
 
-router.delete('/:rider_id', authenticateToken, isUserRole, riderController.deleteRider);
+router.delete('/:rider_id',  riderController.deleteRider);
+
+// router.get('/', authenticateToken, isUserRole, riderController.getAllRiders)
+
+// router.get('/:rider_id', authenticateToken, riderController.getOneRider)
+
+// router.post('/', riderController.addRider)
+
+// router.put('/:rider_id', authenticateToken, isAdminOrRider, riderController.updateRider)
+
+// router.delete('/:rider_id', authenticateToken, isUserRole, riderController.deleteRider);
 
 module.exports = {router, }

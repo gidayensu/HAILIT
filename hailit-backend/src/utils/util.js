@@ -34,6 +34,7 @@ const PHONE_REGEX =  /^\d{10}$/;
  }
 
  const userIsUserRole = async (user_id, user_role) => {
+  
     return await userModel.isUserRole(user_id, user_role);
  } 
 

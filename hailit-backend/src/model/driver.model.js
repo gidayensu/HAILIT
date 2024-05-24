@@ -32,7 +32,7 @@ const driverTableColumns = ["driver_id", "user_id", "vehicle_id"];
 
 //   try {
 //     await db.query(createTriggerQuery);
-//     console.log('Trigger created successfully');
+
 //   } catch (error) {
 //     console.error('Error creating trigger:', error);
 //   }
@@ -43,23 +43,34 @@ const driverTableColumns = ["driver_id", "user_id", "vehicle_id"];
 
 const defaultVehicleId = "04daa784-1dab-4b04-842c-a9a3ff8ae016";
 
-const getAllDrivers = async () => dbFunctions.getAll(driverTableName);
+const getAllDrivers = async () =>{ 
+ try {
+
+   const allDrivers = dbFunctions.getAll(driverTableName);
+   if(!allDrivers) {
+    return {error: "No driver found"}
+   }
+   return allDrivers;
+ } catch(err) {
+  return {error: "server error occurred getting drivers"}
+ }
+}
 
 const getOneDriver = async (driver_id) => {
   try {
     const driverIdColumn = driverTableColumns[0];
-    const data = await dbFunctions.getOne(
+    const driver = await dbFunctions.getOne(
       driverTableName,
       driverIdColumn,
       driver_id
     );
-    if (data) {
-      return data;
-    } else {
-      return { message: "Driver not found" };
+    if(!driver) {
+      return {error: "Driver not found"}
     }
+
+    return driver[0];
   } catch (err) {
-    return { message: "Error occurred. Driver not fetched" };
+    return { error: "Error occurred. Driver not fetched" };
   }
 };
 
@@ -70,12 +81,16 @@ const getDriverDetailOnCondition = async (columnName, condition) => {
       columnName,
       condition
     );
+    
+    if(driverDetails.rowCount === 0) {
 
-    return driverDetails.rows;
+      return {error: "driver detail not found"};
+    }
+
+    return driverDetails.rows
   } catch (err) {
-    console.log(condition);
-    console.log(err);
-    return "No Driver Details Found";
+    
+    return {error:"Error occurred finding driver details"};
   }
 };
 const getSpecificDrivers = async (specificColumn, condition) => {
@@ -87,7 +102,7 @@ const getSpecificDrivers = async (specificColumn, condition) => {
     );
     return specificDrivers;
   } catch (err) {
-    return `Error occurred in retrieving drivers: ${err}`;
+    return {error:`Error occurred in retrieving drivers: ${err}`};
   }
 };
 
@@ -99,16 +114,16 @@ const addDriver = async (user_id, vehicle_id) => {
     : (driverVehicleId = defaultVehicleId);
   const driverDetails = [driver_id, user_id, driverVehicleId];
   try {
-    const addingDriver = await dbFunctions.addOne(
+    const addedDriver = await dbFunctions.addOne(
       driverTableName,
       driverTableColumns,
       driverDetails
     );
-    if (addingDriver) {
-      return true;
+    if (addedDriver) {
+      return addedDriver;
     }
   } catch (err) {
-    return { message: "error" };
+    return { error: "error" };
   }
 };
 
@@ -126,14 +141,13 @@ const updateDriver = async (driverDetails) => {
       idColumn,
       ...driverDetailsArray
     );
-    console.log("driverUpdate:", driverUpdate);
-    if (driverUpdate) {
-      return driverUpdate;
-    } else {
-      return { message: "Driver details not updated" };
-    }
+    
+    if (driverUpdate.rowCount === 0) {
+        return {error: "Driver details not updated"}  
+    } 
+    return driverUpdate.rows[0];
   } catch (err) {
-    return { err: `Error occurred in updating driver details ${err}` };
+    return { error: `Error occurred in updating driver details ${err}` };
   }
 };
 
@@ -146,7 +160,7 @@ const deleteDriver = async (driver_id) => {
   if (driverDelete) {
     return driverDelete;
   } else {
-    return { message: "driver not deleted" };
+    return { error: "driver not deleted" };
   }
 };
 

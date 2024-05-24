@@ -34,7 +34,7 @@ export default function SendPackage () {
           <>
             <div className="mt-5 flex flex-col items-center justify-center md:4/6 w-5/6 rounded-2xl gap-3">
               <h2 className="font-bold text-xl text-center my-2">
-                {" "}
+                
                 SELECT DELIVERY MODE
               </h2>
               <div className="flex w-full md:flex-row md:w-4/6 items-center justify-center gap-2 md:items-start">

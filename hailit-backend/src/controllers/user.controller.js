@@ -1,7 +1,5 @@
-
 const StatusCodes = require("http-status-codes");
 const userService = require("../services/user.service");
-
 
 const { emailValidator, phoneValidator } = require("../utils/util");
 require("dotenv").config({ path: "./../../.env" });
@@ -9,41 +7,33 @@ require("dotenv").config({ path: "./../../.env" });
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await userService.getAllUsers();
+    const user = { users: allUsers };
     if (res && res.status) {
-      res.status(200).json({ data: allUsers });
+      res.status(200).json({ users: allUsers });
       return;
     }
-  } catch (error) {
+  } catch (err) {
     if (res && res.status) {
-      res.status(500).json({ message: "server error" });
+      res.status(500).json({ error: "server error" });
     }
   }
 };
 
-
-
-
 const getOneUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    
-    
-    // const jwtUserId = req.user.user_id;
-    // const isAdmin = await userIsUserRole(jwtUserId, 'admin');
 
-    // if (jwtUserId === userId || isAdmin) {
     if (res && res.status) {
       const oneUser = await userService.getOneUser(userId);
       res.status(200).json({ user: oneUser });
     }
     // }
     else {
-      res.status(401).json({ message: "user not found" });
+      res.status(401).json({ error: "user not found" });
     }
   } catch (err) {
-    console.log(err);
     if (res && res.status) {
-      res.status(500).json({ message: "server error" });
+      res.status(500).json({ error: "server error" });
     }
   }
 };
@@ -51,67 +41,66 @@ const getOneUser = async (req, res) => {
 const getUserIdUsingEmail = async (req, res) => {
   try {
     const { email } = req.query;
-    
+
     const userDetails = await userService.getUserIdUsingEmail(email);
-    res.status(200).json({ data: userDetails });
+    res.status(200).json({ user: userDetails });
   } catch (err) {
-    return { message: "Wrong email" };
+    return { error: "Wrong email" };
   }
 };
 
 const addUser = async (req, res) => {
   try {
-    const { user_id,  email } = req.body;
-    
-    if (!user_id || !email ) {
-      return res.status(200).json({ message: "all fields are required" });
+    const { user_id, email } = req.body;
+
+    if (!user_id || !email) {
+      return res.status(200).json({ error: "all fields are required" });
     }
     if (!emailValidator(email)) {
-      return res.status(200).json({ message: "enter a correct email" });
+      return res.status(200).json({ error: "enter a correct email" });
     }
-
-    
 
     const userDetails = req.body;
     const addingUser = await userService.addUser(userDetails);
 
-    // res.setHeader('Set-Cookie', 'logged-in=true')
-    res.status(200).json({ message: addingUser });
+    if (addingUser.error) {
+      return res.status(403).json({ error: addingUser.error });
+    }
+    const response = { user: addingUser };
+
+    res.status(200).json({ user: addingUser });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Error occurred in adding user" });
+    res.status(400).json({ error: "Error occurred in adding user" });
   }
 };
 //updating user
 const updateUser = async (req, res) => {
   try {
     const {
-      first_name = "",
-      last_name = "",
+      first_name = "" | "unknown",
+      last_name = "" | "unknown",
       email = "",
       phone_number = "",
+      user_role = "",
     } = req.body;
-    if (!first_name && !last_name && !email && !phone_number) {
-      return res
-        .status(401)
-        .json({ message: "no information provided" });
-    }
-    const { userId } = req.params;
-    // const jwtUserId = req.user.user_id;
-    // const isAdmin = await userIsUserRole(jwtUserId, 'admin');
 
-    // if (userId === jwtUserId || isAdmin) {
+    
+    if (!first_name && !last_name && !email && !phone_number && !user_role) {
+      return res.status(401).json({ error: "no information provided" });
+    }
+
+    if (!phoneValidator(phone_number)) {
+      return res.status(200).json({ error: "enter a correct phone number" });
+    }
+
+    const { userId } = req.params;
 
     const userDetails = req.body;
-    //   if (userDetails.user_role === 'admin' && !isAdmin) {
-    //     return res.status(StatusCodes.BAD_REQUEST).json({message: "unauthorized"});
-    //   }
+
     const updateUser = await userService.updateUser(userId, userDetails);
-    res.status(200).json({ message: updateUser });
-    // }
+    res.status(200).json({user: updateUser});
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Server error: user not updated" });
+    res.status(500).json({ error: "Server error: user not updated" });
   }
 };
 //deleting user detail
@@ -119,12 +108,10 @@ const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const userDelete = await userService.deleteUser(userId);
-    // console.log(userDelete);
-    res.status(200).json({ message: userDelete });
-  } catch (err) {
-    // console.log("could not delete user");
 
-    res.status(500).json({ message: "user not deleted, server error" });
+    res.status(200).json(userDelete);
+  } catch (err) {
+    res.status(500).json({ error: "user not deleted, server error" });
   }
 };
 //exporting functions
@@ -135,5 +122,4 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserIdUsingEmail,
-  
 };

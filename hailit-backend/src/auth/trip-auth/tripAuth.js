@@ -11,31 +11,31 @@ const tripAuth = async (req, res, next)=> {
     const isAdmin = await userIsUserRole(user_id, 'admin');
         
     //in trips 'driver' represents both rider and driver
-    let role = 'client';
+    let role = 'customer';
     user_role === 'driver' || user_role === 'rider' ? role = 'driver' : role;
     
 
     if (path.includes('/rate-trip/') && role === 'driver') {
-        return res.status(401).json({message: 'You cannot access trip'});
+        return res.status(401).json({error: 'You cannot access trip'});
     }
      
     let tripAssociation= false;
     
     user_role === 'driver' ? tripAssociation = await associatedWithTrip(driver_id, trip_id, role) : tripAssociation = await associatedWithTrip(user_id, trip_id, role)
     
-    console.log('tripAssociation:', tripAssociation)
+    
     
     
     if(tripAssociation ===true || isAdmin) {
-        console.log('this is really running')
+        
         next();
         
     } else {
-        return res.status(401).json({message: 'You cannot access trip'});
+        return res.status(401).json({error: 'You cannot access trip'});
     }
     
 } catch (err) {
-    return "Trip Access Authorization Error"
+    return { error: `Trip Access Authorization error, ${err}` };
 }
 
 }

@@ -2,10 +2,10 @@ BEGIN;
 
 -- CREATE TABLE "driver" ---------------------------------------
 CREATE TABLE "public"."driver" ( 
-	"driver_rating_count" Double Precision DEFAULT 0 NOT NULL,
+	"dispatcher_rating_count" Double Precision DEFAULT 0 NOT NULL,
 	"driver_license_back" Bytea DEFAULT '\x'::bytea NOT NULL,
 	"driver_license_front" Bytea DEFAULT '\x'::bytea NOT NULL,
-	"cumulative_driver_rating" Numeric( 2, 1 ) DEFAULT '0' NOT NULL,
+	"cumulative_dispatcher_rating" Numeric( 2, 1 ) DEFAULT '0' NOT NULL,
 	"driver_id" Character Varying( 255 ) NOT NULL,
 	"user_id" Character Varying( 255 ),
 	"vehicle_id" Character Varying( 255 ),

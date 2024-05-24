@@ -3,9 +3,14 @@ const dbFunctions = require("./dBFunctions");
 const tripTableName = "trips";
 const getAllTrips = async () => {
   try {
-    dbFunctions.getAll(tripTableName);
+    const allTrips = await dbFunctions.getAll(tripTableName);
+    if(!allTrips) {
+      return {error: "No trip found"}
+    }
+
+    return allTrips;
   } catch (err) {
-    return "Server Error Occurred";
+    return {error:"Server Error Occurred"};
   }
 };
 const getOneTrip = async (trip_id, tripIdColumn) => {
@@ -15,27 +20,30 @@ const getOneTrip = async (trip_id, tripIdColumn) => {
       tripIdColumn,
       trip_id
     );
-    return oneTrip;
+    if(oneTrip.error) {
+      return {error: oneTrip.error}
+    }
+    return oneTrip[0];
   } catch (err) {
-    return "Server Error Occurred";
+    return {error: "Server Error Occurred"};
   }
 };
 
 const getUserTrips = async (id, idColumn, tripColumns) => {
   try {
-    // console.log('tripColumns:', tripColumns)
-
     const userTrips = await dbFunctions.getSpecificDetailsUsingId(
       tripTableName,
       id,
       idColumn,
       tripColumns
     );
-    console.log("userTrips:", userTrips);
+    if (userTrips.error || userTrips.length === 0) {
+      return {error: "No user Trip found"}
+    }
     return userTrips;
   } catch (err) {
-    console.log(err);
-    return "Server Error Occurred while getting user trips";
+    console.log(err)
+    return {error:"Server Error Occurred while getting user trips"};
   }
 };
 
@@ -51,9 +59,12 @@ const getSpecificDetailsUsingId = async (
       idColumn,
       returningColumn
     );
+    if(specificTripDetail.error) {
+      return {error: "Error occurred retrieving specific details"}
+    }
     return specificTripDetail;
   } catch (err) {
-    return "Server Error Occurred getting specific trip detail";
+    return {error:"Server Error Occurred getting specific trip detail"};
   }
 };
 
@@ -66,10 +77,10 @@ const addTrip = async (tripDetails) => {
       tripColumns,
       tripDetailsValues
     );
-    return newTrip;
+    return newTrip[0];
   } catch (err) {
-    console.log(err);
-    return "Server Error Occurred While Adding Trip";
+    
+    return {error:"Server Error Occurred While Adding Trip"};
   }
 };
 
@@ -88,17 +99,19 @@ const updateTrip = async (tripDetails) => {
         tripIdColumn,
         ...tripDetailsArray
       );
-      console.log("tripUpdate:", tripUpdate);
-      if (tripUpdate) {
-        return tripUpdate;
-      } else {
-        return { message: "Rider details not updated" };
+      const updatedTrip = tripUpdate.rows[0];
+      console.log('updatedTrip', updatedTrip)
+      if(updatedTrip.error) {
+        return { error: "Rider details not updated" };
       }
+      
+        return updatedTrip;
+      
     } catch (err) {
-      return { err: `Error occurred in updating rider details ${err}` };
+      return { error: `Error occurred in updating rider details ${err}` };
     }
   } catch (err) {
-    return "Server Error Occurred";
+    return {error:"Server Error Occurred"};
   }
 };
 
@@ -112,31 +125,28 @@ const deleteTrip = async (trip_id) => {
     if (tripDelete) {
       return tripDelete;
     } else {
-      return { message: "trip not deleted" };
+      return { error: "trip not deleted" };
     }
   } catch (err) {
-    return "Error Occurred Deleting Rider";
+    return {error:"Error Occurred Deleting Rider"};
   }
 };
 
-const driverRateCouIntIncrease = async (driver_id, tripMedium) => {
-  let idColumn = "driver_id";
-  let columnToBeIncreased = "driver_rating_count";
-  if (tripMedium === "motor") {
-    idColumn = "rider_id";
-    columnToBeIncreased = "rider_rating_count";
-  }
-  const increaseDriverRateCount = await dbFunctions.increaseByValue(
-    tripTableName,
-    driver_id,
+const dispatcherRateCouIntIncrease = async (tableName, dispatcher_id,  idColumn, columnToBeIncreased) => {
+  
+  
+  const increaseDispatcherRateCount = await dbFunctions.increaseByValue(
+    tableName,
+    dispatcher_id,
     idColumn,
     columnToBeIncreased
   );
-  if (increaseDriverRateCount === true) {
-    return increaseDriverRateCount;
-  } else {
-    return false;
+  if(increaseDispatcherRateCount.error) {
+    return {error: "Error occurred increasing driver rating count"}
   }
+    console.log('increaseDispatcherRateCount:', increaseDispatcherRateCount)
+    return increaseDispatcherRateCount;
+  
 };
 
 const associatedWithTrip = async (trip_id, roleIdColumn) => {
@@ -160,7 +170,7 @@ const associatedWithTrip = async (trip_id, roleIdColumn) => {
     //   return false;
     // }
   } catch (err) {
-    return "Error occurred while confirming user's relation to trip";
+    return {error:"Error occurred while confirming user's relation to trip"};
   }
 };
 
@@ -173,5 +183,5 @@ module.exports = {
   getUserTrips,
   getSpecificDetailsUsingId,
   associatedWithTrip,
-  driverRateCouIntIncrease,
+  dispatcherRateCouIntIncrease,
 };

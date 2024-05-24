@@ -5,9 +5,9 @@ import { ThemeToggle } from "@/components/Theme/ThemeToggle"
 
 export default function Dispatcher () {
     return (
-        <main className="flex flex-col gap-3 p-4 items-center w-full justify-center">
+        <main className="flex flex-col gap-3 p-4 items-center w-full justify-center mb-24">
             <div className="flex justify-between items-start md:justify-center gap-3 w-5/6 mb-2">
-                <div className="flex gap-2">
+                <div className="flex gap-2 ml-1">
                 <div className=" flex items-center justify-center w-16 h-16 bg-black text-white dark:bg-white dark:text-black rounded-md">
                     <p className="font-bold text-sm">RA</p>
                 </div>
@@ -28,7 +28,7 @@ export default function Dispatcher () {
             </div>
             <Container className="flex w-4/5 md:w-3/5 h-44 rounded-xl p-2 gap-2">
                 <div className="flex flex-col items-center justify-center gap-3 w-1/3">
-                        <span className="flex items-center justify-center text-[12px] w-full bg-amber-500 dark:text-black font-medium h-6 rounded-md"><p>Active Orders</p></span>
+                        <span className="flex items-center justify-center text-[12px] w-full bg-amber-500 dark:text-black font-medium h-6 rounded-md"><p>Active</p></span>
                         <p className="text-5xl font-bold">3</p>
                 </div>
                 <Separator orientation="vertical" className="dark:bg-slate-200 dark:opacity-10"/>

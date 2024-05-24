@@ -1,6 +1,4 @@
 const dbFunctions = require("./dBFunctions");
-const riderModel = require("./rider.model");
-const driverModel = require("./driver.model");
 
 const userTableName = "users";
 
@@ -11,22 +9,43 @@ const userColumnsForAdding = [
   "email",
   "phone_number",
 ];
-const getAllUsers = () => dbFunctions.getAll(userTableName);
+const getAllUsers = async () =>{ 
+  try {
+
+    const allUsers = await dbFunctions.getAll(userTableName);
+    if(!allUsers) {
+      return {error: "No user found"}
+    }
+    return allUsers;
+  } catch (err) {
+    return {error: "Server error occurred getting all users"}
+  }
+};
 
 
 const getOneUser = async (userId) => {
-  const userColumnName = userColumnsForAdding[0];
-  const data = await dbFunctions.getOne(userTableName, userColumnName, userId);
+  try {
 
-  return data;
+    const userColumnName = userColumnsForAdding[0];
+    const user = await dbFunctions.getOne(userTableName, userColumnName, userId);
+    if(user.error) {
+      return {error: "User does not exist"}
+    }
+    return user[0];
+  } catch (err) {
+    return {error: "error occurred getting user details"}
+  }
 };
 
 const isUserRole = async (userId, user_role) => {
   const data = await getOneUser(userId);
+
   
-  if (data[0].user_role === user_role) {
+  if (data.user_role === user_role) {
+    
     return true;
   } else {
+    
     return false;
   }
 };
@@ -39,8 +58,8 @@ const getUserIdUsingEmail = async (userEmail) => {
     userEmail
   );
 
-  if (userDetails.message) {
-    return userDetails;
+  if (userDetails.error) {
+    return {error: "user does not exist"};
   } else {
     const userId = { user_id: userDetails[0].user_id };
     return userId;
@@ -78,15 +97,16 @@ const addUser = async (userDetails) => {
         userDetailsArray
       );
     if (insertUserDetails) {
-      return insertUserDetails
+      const insertedDetails = insertUserDetails[0]
+      return insertedDetails;
     }
         
       
     } else {
-      return { message: "user email or number exists" };
+      return { error: "user email or number exists" };
     }
   } catch (err) {
-    throw err;
+    return { error: "Error occurred" };
   }
 };
 
@@ -95,6 +115,7 @@ const addUser = async (userDetails) => {
 //update user
 const updateUser = async (userId, userDetails) => {
   try {
+    
     const { email = "", phone_number = "" } = userDetails;
     const validColumnsForUpdate = Object.keys(userDetails);
     // const validColumnsForUpdate = excludeNonMatchingElements(columnsForUpdate, columnsFromUserDetails);
@@ -108,21 +129,24 @@ const updateUser = async (userId, userDetails) => {
       userId
     );
 
+    
+
     if (idValidation) {
       const userData = await dbFunctions.getOne(
         userTableName,
         idColumn,
         userId
+      
       );
 
-      const userDataValues = Object.values(userData[0] || []);
+      // const userDataValues = Object.values(userData[0] || []);
 
       if (email !== "") {
         const resultEmail = userData[0].email;
 
         const emailExist = await emailExists(email);
         if (emailExist && email !== resultEmail) {
-          return { message: "User not updated, use a different email" };
+          return { error: "User not updated, use a different email" };
         }
       }
 
@@ -131,13 +155,11 @@ const updateUser = async (userId, userDetails) => {
 
         const numberExist = await numberExists(phone_number);
         if (numberExist && phone_number !== resultPhoneNumber) {
-          return { message: "phone number is taken user not updated" };
+          return { error: "phone number is taken user not updated" };
         }
       }
 
-      const existingDetails = userDataValues.filter((value) =>
-        userDetailsArray.includes(value.toString())
-      );
+      
 
       const updateDate = "now()";
       userDetailsArray.splice(userDetailsArray.length - 1, 0, updateDate);
@@ -156,38 +178,15 @@ const updateUser = async (userId, userDetails) => {
         idColumn,
         ...userDetailsArray
       );
-      if (userDetails.user_role) {
-        //adding rider if rider role set
-        if (userDetails.user_role === "rider") {
-          const addMotorRider = await riderModel.addMotorRider(userId);
-          addMotorRider
-            ? { message: "motor rider added" }
-            : { message: "error occurred in adding motor rider" };
-        }
-        //adding driver if driver role set
-        if (userDetails.user_role === "driver") {
-          const addCarDriver = await driverModel.addDriver(userId);
-          addCarDriver
-            ? { message: "driver added" }
-            : { message: "error occurred in adding driver" };
-        }
-
-        return { message: "User added" };
-      } 
-      if (existingDetails.length > 0) {
-        update;
-        return {
-          detailsNotUpdated: existingDetails,
-          reason: "same as current details",
-        };
-      } else {
-        return update;
-      }
+      const updatedDetails = update.rows[0];
+        return updatedDetails;
+      
     } else {
-      return { message: "User Does Not Exist" };
+      return { error: "User Does Not Exist" };
     }
   } catch (err) {
-    return { message: `Error occurred, ${err}` };
+    
+    return { error: `Error occurred this error, ${err}` };
   }
 };
 
@@ -200,9 +199,9 @@ const deleteUser = async (userId) => {
   );
   if (userExists) {
     await dbFunctions.deleteOne(userTableName, columnName, userId);
-    return { message: "user deleted" };
+    return { success: "user deleted" };
   } else {
-    return { message: "no account associated with this email" };
+    return { error: "user does not exist" };
   }
 };
 module.exports = {

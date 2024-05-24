@@ -1,5 +1,4 @@
-//main components
-import { SelectDeliveryType } from "@/components/Order/SelectDeliveryType";
+
 //ui
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +23,7 @@ export default function NewOrderForm() {
   const iconTextClass = "text-[13px] group-hover:text-white";
 
   return (
-    <div className="flex flex-col gap-4 md:justify-center md:items-center">
+    <div className="flex flex-col gap-4 md:justify-center =-pmd:items-center">
       <div className=" grid w-full max-w-sm items-center gap-1.5 md:justify-center md:items-center">
         <span className="flex items-start justify-start">
 

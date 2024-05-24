@@ -14,7 +14,7 @@ import OrderSummary from "../../Order/OrderSummary";
 import OrderStatusElement from "./OrderStatusElement";
 
 // type OrderStatus = "New Order" | "Picked Up" | "In Transit" | "Delivered" | "Cancelled";
-export type OrderStatus = string;
+export type OrderStatus = "New" |  "Picked Up" | "In Transit" | "Delivered" | "Cancelled";
 
 export default function TrackOrder() {
 
@@ -24,15 +24,7 @@ export default function TrackOrder() {
 
   let currentOrderStage = 4;
 
-  currentOrderStatus === "New Order"
-    ? currentOrderStage
-    : currentOrderStatus === "Picked Up"
-    ? (currentOrderStage = 2)
-    : currentOrderStatus === "In Transit"
-    ? (currentOrderStage = 3)
-    : currentOrderStatus === "Delivered"
-    ? (currentOrderStage = 4)
-    : currentOrderStage;
+  
   return (
     <main className="flex flex-col gap-5">
       {/* HEADER */}
@@ -71,7 +63,7 @@ export default function TrackOrder() {
 
           <div className="flex">
             <OrderStatusElement
-              orderStatus="New Order"
+              orderStatus="New"
               currentOrderStage={currentOrderStage}
               orderStage={1}
             >

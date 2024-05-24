@@ -63,7 +63,7 @@ export function TopNavBar() {
       </Link>
 
       <Link href="/profile">
-        {" "}
+        
         <div className={divClass}>
           <Button
             variant={path.startsWith("/profile") ? "default" : "secondary"}
