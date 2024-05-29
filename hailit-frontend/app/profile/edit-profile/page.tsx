@@ -4,7 +4,7 @@ import { useAppSelector } from "@/lib/store/hooks";
 //main components
 import TopSectionContainer from "@/components/Shared/TopSectionContainer";
 import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
-import CustomerProfile from "@/components/Form/CustomerProfile";
+import CustomerProfile from "@/components/Form/EditCustomerProfile";
 //ui components
 import { Button } from "@/components/ui/button";
 

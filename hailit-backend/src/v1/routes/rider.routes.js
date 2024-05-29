@@ -1,29 +1,23 @@
-const express = require('express');
-const riderController = require('../../controllers/rider.controller');
-const router = express.Router();
-const authenticateToken = require('../../auth/authToken');
+import express from 'express';
+import { deleteRider, getAllRiders, getOneRider, updateRider } from '../../controllers/rider.controller.js';
+import { isUserRole } from '../../auth/user-auth/isUserRole.js';
+import { supaAuth } from '../../auth/supaAuth.js'
+import {isAdminOrRider} from '../../auth/rider-auth/isAdminOrRider.js';
 
-const isUserRole = require('../../auth/user-auth/isUserRole');
-const isAdminOrRider = require('../../auth/rider-auth/isAdminOrRider')
 
-router.get('/', riderController.getAllRiders)
+export const riderRouter = express.Router();
 
-router.get('/:rider_id', riderController.getOneRider)
 
-// router.post('/', riderController.addRider)
 
-router.put('/:rider_id',  riderController.updateRider)
 
-router.delete('/:rider_id',  riderController.deleteRider);
 
-// router.get('/', authenticateToken, isUserRole, riderController.getAllRiders)
+riderRouter.get('/', isUserRole, getAllRiders)
 
-// router.get('/:rider_id', authenticateToken, riderController.getOneRider)
+riderRouter.get('/:rider_id', getOneRider)
 
-// router.post('/', riderController.addRider)
+// riderRouter.post('/', addRider)
 
-// router.put('/:rider_id', authenticateToken, isAdminOrRider, riderController.updateRider)
+riderRouter.put('/:rider_id', isAdminOrRider, updateRider)
 
-// router.delete('/:rider_id', authenticateToken, isUserRole, riderController.deleteRider);
+riderRouter.delete('/:rider_id', isUserRole, deleteRider);
 
-module.exports = {router, }

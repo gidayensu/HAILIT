@@ -65,3 +65,25 @@ interface GeoData {
   longitude: number;
   displayName: string;
 }
+
+
+export const extractTimeFromDate = (dateString:string | any)=> {
+  if (dateString === null) {
+    return null
+  }
+const date = new Date(dateString)
+return date.toLocaleTimeString();
+
+}
+
+export const extractDateWithDayFomDate = (dateString:string | null | Date)=> {
+  if (dateString === null) {
+    return null
+  }
+  const date = new Date(dateString)
+  return date.toDateString();
+}
+
+export const copyToClipBoard = (element:string)=> {
+  navigator.clipboard.writeText(element);
+}

@@ -1,8 +1,9 @@
-const driverService = require("../services/driver.service");
 
-const getAllDrivers = async (req, res) => {
+import { deleteDriverService, getAllDriversService, getOneDriverService, updateDriverService} from "../services/driver.service.js";
+
+export const getAllDrivers = async (req, res) => {
   try {
-    const allDrivers = await driverService.getAllDrivers();
+    const allDrivers = await getAllDriversService();
     if (res && res.status) {
       if(allDrivers.error) {
         return res.status(200).json({error: allDrivers.error})
@@ -16,10 +17,10 @@ const getAllDrivers = async (req, res) => {
   }
 };
 
-const getOneDriver = async (req, res) => {
+export const getOneDriver = async (req, res) => {
   const { driver_id } = req.params;
   try {
-    const driver = await driverService.getOneDriver(driver_id);
+    const driver = await getOneDriverService(driver_id);
     if (driver.error) {
       res.status(200).json({ error: driver.error });
     } 
@@ -32,7 +33,7 @@ const getOneDriver = async (req, res) => {
 //DRIVER NOT ADDED BECAUSE RIDERS WILL BE ADDED THROUGH THE USER ROUTE
 // const addDriver = async (req, res) => {
 //   const { user_id, vehicle_id } = req.body;
-//   const driverAdd = await driverService.addDriver(user_id, vehicle_id);
+//   const driverAdd = await addDriverService(user_id, vehicle_id);
 //   if (driverAdd) {
 //     res.status(200).json({ success: "driver added" });
 //   } else {
@@ -40,7 +41,7 @@ const getOneDriver = async (req, res) => {
 //   }
 // };
 
-const updateDriver = async (req, res) => {
+export const updateDriver = async (req, res) => {
   const { driver_id } = req.params;
   const { vehicle_id } = req.body;
 
@@ -51,7 +52,7 @@ const updateDriver = async (req, res) => {
   }
 
   try {
-    const driverUpdate = await driverService.updateDriver(driverDetails);
+    const driverUpdate = await updateDriverService(driverDetails);
     if (!driverUpdate.error) {
       res.status(200).json({ driver: driverUpdate });
     } else {
@@ -64,19 +65,12 @@ const updateDriver = async (req, res) => {
   }
 };
 
-const deleteDriver = async (req, res) => {
+export const deleteDriver = async (req, res) => {
   const { driver_id } = req.params;
-  const driverDelete = await driverService.deleteDriver(driver_id);
+  const driverDelete = await deleteDriverService(driver_id);
   if (driverDelete) {
     res.status(200).json({ success: "driver deleted" });
   } else {
     res.status(400).json({ error: "driver not deleted" });
   }
-};
-module.exports = {
-  getAllDrivers,
-  getOneDriver,
-  // addDriver,
-  updateDriver,
-  deleteDriver,
 };

@@ -19,8 +19,8 @@ import { useRouter } from "next/navigation";
 
 //redux
 import { useAppDispatch } from "@/lib/store/hooks";
-import { setAuthState } from "@/lib/store/authSlice";
-import { setUserState } from "@/lib/store/userSlice";
+import { setAuthState } from "@/lib/store/slice/authSlice";
+import { setUserState } from "@/lib/store/slice/userSlice";
 
 //react
 import { useState, useEffect } from "react";

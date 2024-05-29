@@ -4,44 +4,49 @@ import Link from "next/link";
 //ui + icons
 import { Button } from "@/components/ui/button";
 import { FiArrowLeft } from "react-icons/fi";
+import Loader from "@/components/Shared/Loader";
+
 //main components
 import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 import TopSectionContainer from "@/components/Shared/TopSectionContainer";
-import PackageDestinationChoice from "@/components/NewDelivery/PackageDestinationChoice";
-import DeliveryDayChoice from "@/components/NewDelivery/DeliveryDayChoice";
-import DeliveryModeChoice from "@/components/NewDelivery/DeliveryModeChoice";
+import PackageDestinationChoice from "@/components/Order/NewDelivery/PackageDestinationChoice";
+import DeliveryDayChoice from "@/components/Order/NewDelivery/DeliveryDayChoice";
+import DeliveryMediumChoice from "@/components/Order/NewDelivery/DeliveryMediumChoice";
+import DeliveryChoicesBreadcrumb from "@/components/Order/NewDelivery/DeliveryChoicesBreadcrumb";
 
 
 interface DeliveryChoiceStage {
   destination: boolean;
   deliveryDay: boolean;
-  deliveryMode: boolean;
+  deliveryMedium: boolean;
 }
 export default function NewOrder() {
   const [deliveryChoicesStage, setDeliveryChoicesStage] =
     useState<DeliveryChoiceStage>({
       destination: true,
       deliveryDay: false,
-      deliveryMode: false,
+      deliveryMedium: false,
     });
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleDeliveryChoicesStage = (stage: number) => {
     stage === 2
       ? setDeliveryChoicesStage({
           destination: true,
           deliveryDay: true,
-          deliveryMode: false,
+          deliveryMedium: false,
         })
       : stage === 1
       ? setDeliveryChoicesStage({
           destination: true,
           deliveryDay: false,
-          deliveryMode: false,
+          deliveryMedium: false,
         })
       : setDeliveryChoicesStage({
           destination: true,
           deliveryDay: true,
-          deliveryMode: true,
+          deliveryMedium: true,
         });
   };
   return (
@@ -55,7 +60,7 @@ export default function NewOrder() {
         <MiddleSectionContainer className="flex flex-col justify-start items-center p-10 mb-20">
           {deliveryChoicesStage.destination &&
             !deliveryChoicesStage.deliveryDay &&
-            !deliveryChoicesStage.deliveryMode && (
+            !deliveryChoicesStage.deliveryMedium && (
               <div className="w-full flex flex-col items-center justify-center md:w-1/2 gap-4">
                 <h2 className="font-bold text-lg text-center mb-2">
                   
@@ -74,9 +79,11 @@ export default function NewOrder() {
             )}
 
           {deliveryChoicesStage.deliveryDay &&
-            !deliveryChoicesStage.deliveryMode && (
+            !deliveryChoicesStage.deliveryMedium && (
               <>
-                <div className="w-full flex flex-col items-center justify-center md:w-1/2 gap-4">
+              {/* Choices of user */}
+                <section className="w-full flex flex-col items-center justify-center md:w-1/2 gap-4">
+              <DeliveryChoicesBreadcrumb/>
                   <h2 className="font-bold text-lg text-center mb-2"> SELECT DELIVERY DAY </h2>
                   <div className="flex w-full md:flex-row  items-center justify-center gap-2 md:items-start">
                     <DeliveryDayChoice />
@@ -96,19 +103,20 @@ export default function NewOrder() {
                       Continue
                     </Button>
                   </div>
-                </div>
+                </section>
               </>
             )}
             {deliveryChoicesStage.deliveryDay &&
-            deliveryChoicesStage.deliveryMode && (
+            deliveryChoicesStage.deliveryMedium && (
               <>
                 <div className="w-full flex flex-col items-center justify-center md:w-1/2 gap-4">
+              <DeliveryChoicesBreadcrumb/>
                   <h2 className="font-bold text-lg text-center mb-2">
                     
                     SELECT DELIVERY DAY
                   </h2>
                   <div className="flex w-full md:flex-row  items-center justify-center gap-2 md:items-start">
-                    <DeliveryModeChoice />
+                    <DeliveryMediumChoice />
                   </div>
                   <div className="w-full flex gap-4">
                     <Button
@@ -118,9 +126,16 @@ export default function NewOrder() {
                     >
                       <FiArrowLeft />
                     </Button >
-                    <Link href={'/order/new'} className="w-3/4">
+                    {!isLoading &&
+                      <Link href={'/order/new'} className="w-3/4" onClick={()=>setIsLoading(true)}>
                     <Button className="w-full"> Continue </Button>
                     </Link>
+                    }
+
+                    {isLoading &&
+                      <Button className="w-3/4"> <Loader color="red"/> </Button>
+                    }
+
                   </div>
                 </div>
               </>

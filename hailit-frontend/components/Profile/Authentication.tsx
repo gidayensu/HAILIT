@@ -20,7 +20,7 @@ export default function Authentication () {
             <span className="text-7xl font-bold">Hello!</span>
             <p className="text-3xl">Welcome to HailIt</p>
             <p className="text-center mt-8">
-              Request for affordable <br /> but fast deliveries in Accra
+              Login or Sign Up to Request for affordable <br /> and fast deliveries in Accra and Kumasi
             </p>
           </div>
           <div className="">

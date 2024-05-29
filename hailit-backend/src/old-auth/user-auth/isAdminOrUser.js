@@ -1,6 +1,6 @@
 const {userIsUserRole} = require ('../../utils/util');
 
-const isAdminOrUserAuth = async (req, res, next) => {
+export const isAdminOrUserAuth = async (req, res, next) => {
     try {
         const { userId } = req.params;
         const jwtUserId = req.user.user_id;
@@ -41,6 +41,6 @@ const isAdminOrUserAuth = async (req, res, next) => {
     }
 }
 
-module.exports = isAdminOrUserAuth;
+
 
 

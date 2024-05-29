@@ -7,10 +7,11 @@ import { Input } from "../ui/input";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import Loader from "../Shared/Loader";
+
 //redux
 import { useAppDispatch } from "@/lib/store/hooks";
-import { setAuthState } from "@/lib/store/authSlice";
-import { setUserState } from "@/lib/store/userSlice";
+import { setAuthState } from "@/lib/store/slice/authSlice";
+import { setUserState } from "@/lib/store/slice/userSlice";
 
 //react
 import { useState, useEffect } from "react";
@@ -20,10 +21,10 @@ import {useForm, SubmitHandler} from 'react-hook-form';
 
 //supabase
 
-import type { Inputs } from "@/lib/supabaseAuth";
 
 import {   supabaseSignUp, supabaseSignIn, googleSupabaseSignIn  } from "@/lib/supabaseAuth";
-
+//types
+import type { Inputs } from "@/lib/supabaseAuth";
 
 export default function LoginSignUp () {
   
@@ -56,7 +57,7 @@ export default function LoginSignUp () {
       setFormSubmissionLoading(false)
       dispatch(setAuthState(true))
       
-      console.log('signUpData.user', signUpData.user)
+    
       dispatch(setUserState({
         user_id: signUpData.user.user_id,
         first_name: signUpData.user.first_name,
@@ -82,6 +83,8 @@ export default function LoginSignUp () {
     }
     
     if (signInData.user) {
+    
+      
       setFormSubmissionLoading(false)
       dispatch(setAuthState(true))
       
@@ -95,8 +98,9 @@ export default function LoginSignUp () {
       
         }))
         
+
       const onboard = signInData.user.onboard;
-        onboard ? router.push('/profile') : router.push('/onboarding')
+        onboard ? router.push('/') : router.push('/onboarding')
     }
     
   }

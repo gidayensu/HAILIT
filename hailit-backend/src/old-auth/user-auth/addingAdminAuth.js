@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { userIsUserRole } = require("../../utils/util");
-const addingAdminAuth = async (req, res, next) => {
+
+export const addingAdminAuth = async (req, res, next) => {
   try {
     if (req.body && req.body.user_role === "admin") {
       const authHeader = req.headers.authorization;
@@ -24,4 +25,4 @@ const addingAdminAuth = async (req, res, next) => {
   }
 };
 
-module.exports = addingAdminAuth;
+

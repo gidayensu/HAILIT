@@ -1,9 +1,13 @@
-const driverModel = require("../model/driver.model");
-const { allowedPropertiesOnly } = require("../utils/util");
+import {addDriverToDB, deleteDriverFromDB, getAllDriversFromDB, getOneDriverFromDB, updateDriverOnDB} from "../model/driver.model.js";
+import { getOneVehicleFromDB } from "../model/vehicle.model.js";
+import {getSpecificUserDetailsUsingId} from "../model/user.model.js";
 
-const getAllDrivers = async () => {
+import { allowedPropertiesOnly } from "../utils/util.js";
+
+
+export const getAllDriversService = async () => {
   try {
-    const drivers = await driverModel.getAllDrivers();
+    const drivers = await getAllDriversFromDB();
     if(drivers.error) {
       return {error: drivers.error}
     }
@@ -13,21 +17,38 @@ const getAllDrivers = async () => {
   }
 };
 
-const getOneDriver = async (driver_id) => {
+export  const getOneDriverService = async (driver_id) => {
   try {
-    const driver = await driverModel.getOneDriver(driver_id);
+    const driver = await getOneDriverFromDB(driver_id);
     if (driver.error) {
       return {error: driver.error}
     
     }
-    return driver;
+
+    let driverDetails = {...driver}
+    const {user_id} = driver;
+    const columns = ["first_name", "last_name", "phone_number"]
+    const driverNamePhone = await getSpecificUserDetailsUsingId(user_id, columns);
+    if(driverNamePhone.error) {
+      return {error: driverNamePhone.error}
+    }
+    driverDetails = {...driver, ...driverNamePhone[0]}
+    
+    const vehicle_id = driver.vehicle_id;
+    console.log('vehicle_id:', vehicle_id)
+    const vehicleDetails = await getOneVehicleFromDB(vehicle_id);
+    if(vehicleDetails.error) {
+      console.log('vehicleDetails.error', vehicleDetails.error)
+      return {...driver, vehicle: "No vehicle assigned"}
+    }
+      return {...driverDetails, vehicle: vehicleDetails};
   } catch (err) {
     return { error: `Error occurred getting driver: ${err}` };
   }
 };
 
-const addDriver = async (user_id, vehicle_id) => {
-  const driverAdd = await driverModel.addDriver(user_id, vehicle_id);
+export const addDriverService = async (user_id, vehicle_id) => {
+  const driverAdd = await addDriverToDB(user_id, vehicle_id);
   if (driverAdd) {
     return driverAdd;
   } else {
@@ -35,7 +56,7 @@ const addDriver = async (user_id, vehicle_id) => {
   }
 };
 
-const updateDriver = async (driverDetails) => {
+export const updateDriverService = async (driverDetails) => {
   const allowedProperties = [
     "driver_id",
     "vehicle_id",
@@ -43,11 +64,11 @@ const updateDriver = async (driverDetails) => {
     "driver_availability",
   ];
   try {
-    const validDriverDetails = await allowedPropertiesOnly(
+    const validDriverDetails = allowedPropertiesOnly(
       driverDetails,
       allowedProperties
     );
-    const driverUpdate = await driverModel.updateDriver(validDriverDetails);
+    const driverUpdate = await updateDriverOnDB(validDriverDetails);
     if (driverUpdate.error) {
       return { error: "driver details not updated" };
     } 
@@ -57,18 +78,11 @@ const updateDriver = async (driverDetails) => {
   }
 };
 
-const deleteDriver = async (driver_id) => {
-  const driverDelete = await driverModel.deleteDriver(driver_id);
+export const deleteDriverService = async (driver_id) => {
+  const driverDelete = await deleteDriverFromDB(driver_id);
   if (driverDelete) {
     return driverDelete;
   } else {
     return { error: "driver not deleted" };
   }
-};
-module.exports = {
-  getAllDrivers,
-  getOneDriver,
-  addDriver,
-  updateDriver,
-  deleteDriver,
 };

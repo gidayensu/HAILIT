@@ -1,6 +1,8 @@
 'use client'
-import { useState } from "react";
+
 import { DeliveryChoices } from "./DeliveryChoice"
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
+import { setDestinationCity } from "@/lib/store/slice/deliveryChoicesSlice"
 import { BsFillPinMapFill } from "react-icons/bs"
 
 import { RiMapPinRangeLine, RiTreasureMapFill } from "react-icons/ri"
@@ -9,10 +11,10 @@ import { FiCheck } from "react-icons/fi"
 
 
 export default function PackageDestinationChoice () {
-    const [deliveryDestination, setDeliveryDestination] = useState('');
-
-    const handleDeliveryDestination = (destination:string)=> {
-        setDeliveryDestination(destination)
+    const {destination_city} = useAppSelector(state=>state.deliveryChoices)
+    const dispatch = useAppDispatch();
+    const handleDeliveryDestination = (destination_city:string)=> {
+      dispatch(setDestinationCity(destination_city))
         
     }
 
@@ -21,7 +23,7 @@ export default function PackageDestinationChoice () {
             
             <DeliveryChoices
               handleDeliveryOption={handleDeliveryDestination}
-              deliveryOption={deliveryDestination}
+              deliveryOption={destination_city}
               CheckIcon={FiCheck}
               MainIcon={BsFillPinMapFill}
               elementOption="Accra"
@@ -34,7 +36,7 @@ export default function PackageDestinationChoice () {
             <div className="w-full md:w-2/3 flex gap-3">
               <DeliveryChoices
                 handleDeliveryOption={handleDeliveryDestination}
-                deliveryOption={deliveryDestination}
+                deliveryOption={destination_city}
                 CheckIcon={FiCheck}
                 MainIcon={RiMapPinRangeLine}
                 elementOption="Kumasi"
@@ -44,7 +46,7 @@ export default function PackageDestinationChoice () {
               
               <DeliveryChoices
                 handleDeliveryOption={handleDeliveryDestination}
-                deliveryOption={deliveryDestination}
+                deliveryOption={destination_city}
                 CheckIcon={FiCheck}
                 MainIcon={RiTreasureMapFill}
                 elementOption="Inter city"

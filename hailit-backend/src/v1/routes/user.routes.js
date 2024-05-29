@@ -1,40 +1,24 @@
-const express = require('express')
-
-const userController = require('../../controllers/user.controller')
-
-
-const addingAdminAuth = require('../../auth/user-auth/addingAdminAuth');
-const isUserRole = require('../../auth/user-auth/isUserRole');
-const supaAuth = require('../../auth/supaAuth')
-const userRoleValidation = require('../../validation/userRoleValidation')
-const router = express.Router()
+import express from 'express';
+import {isAdminOrUserAuth} from '../../auth/user-auth/isAdminOrUser.js';
+import { isUserRole } from '../../auth/user-auth/isUserRole.js';
+import { supaAuth } from '../../auth/supaAuth.js'
+import { addUser, deleteUser, getAllUsers, getOneUser, updateUser } from '../../controllers/user.controller.js';
+import {userRoleValidation} from '../../validation/userRoleValidation.js';
+import {addingAdminAuth} from '../../auth/user-auth/addingAdminAuth.js';
 
 
 
-router.get('/',  userController.getAllUsers)
 
-router.get('/find',  userController.getUserIdUsingEmail)
-
-
-router.get('/:userId',  userController.getOneUser)
-
-router.post('/register',  userController.addUser)
-
-router.put('/:userId',  userController.updateUser)
-
-router.delete('/:userId',  userController.deleteUser)
-
-router.get('/',  userController.getAllUsers)
-
-router.get('/find',  userController.getUserIdUsingEmail)
+export const userRouter = express.Router();
 
 
-// router.get('/:userId', supaAuth.supaAuth, userController.getOneUser)
+userRouter.get('/', getAllUsers)
 
-// router.post('/register', supaAuth.supaAuth, addingAdminAuth, userController.addUser)
+userRouter.get('/:userId', getOneUser)
 
-// router.put('/:userId', userRoleValidation, supaAuth.supaAuth, isUserRole, userController.updateUser)
+userRouter.post('/register', supaAuth, addingAdminAuth, addUser)
 
-// router.delete('/:userId', supaAuth.supaAuth, isUserRole, userController.deleteUser)
+userRouter.put('/:userId', userRoleValidation, supaAuth, isUserRole, updateUser)
 
-module.exports = {router, }
+userRouter.delete('/:userId', supaAuth, isUserRole, deleteUser)
+

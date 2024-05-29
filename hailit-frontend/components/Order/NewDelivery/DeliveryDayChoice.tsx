@@ -1,23 +1,23 @@
 'use client'
 import { useState } from "react"
 import { DeliveryChoices } from "./DeliveryChoice"
-
-
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks"
+import { setDeliveryDay } from "@/lib/store/slice/deliveryChoicesSlice"
 import {  RiTimerFlashFill, RiTimer2Fill, RiCalendarScheduleFill } from "react-icons/ri"
 import { FiCheck } from "react-icons/fi"
 
-export default function DeliveryDayChoice () {
-    const [deliveryDay, setDeliveryDay] = useState('');
-
+export default function   DeliveryDayChoice () {
+    const {trip_type} = useAppSelector(state=>state.deliveryChoices)
+    const dispatch = useAppDispatch();
     const handleDeliveryDay = (day:string)=> {
-        setDeliveryDay(day)
+      dispatch(setDeliveryDay(day))
         
     }
     return(
         <>
         <DeliveryChoices
                 handleDeliveryOption={handleDeliveryDay}
-                deliveryOption={deliveryDay}
+                deliveryOption={trip_type}
                 CheckIcon={FiCheck}
                 MainIcon={RiTimerFlashFill}
                 elementOption="Today"
@@ -27,7 +27,7 @@ export default function DeliveryDayChoice () {
                 
               <DeliveryChoices
                 handleDeliveryOption={handleDeliveryDay}
-                deliveryOption={deliveryDay}
+                deliveryOption={trip_type}
                 CheckIcon={FiCheck}
                 MainIcon={RiTimer2Fill}
                 elementOption="Tomorrow"
@@ -38,7 +38,7 @@ export default function DeliveryDayChoice () {
                 
               <DeliveryChoices
                 handleDeliveryOption={handleDeliveryDay}
-                deliveryOption={deliveryDay}
+                deliveryOption={trip_type}
                 CheckIcon={FiCheck}
                 MainIcon={RiCalendarScheduleFill}
                 elementOption="Schedule"

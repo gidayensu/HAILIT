@@ -1,4 +1,5 @@
-const dbFunctions = require("./dBFunctions");
+
+import { addOne, checkOneDetail, deleteOne, detailExists, getAll, getOne, getSpecificDetails, getSpecificDetailsUsingId, increaseByValue, updateOne} from "./dBFunctions.js"
 
 const userTableName = "users";
 
@@ -9,10 +10,10 @@ const userColumnsForAdding = [
   "email",
   "phone_number",
 ];
-const getAllUsers = async () =>{ 
+export const getAllUsersFromDB = async () =>{ 
   try {
 
-    const allUsers = await dbFunctions.getAll(userTableName);
+    const allUsers = await getAll(userTableName);
     if(!allUsers) {
       return {error: "No user found"}
     }
@@ -23,11 +24,11 @@ const getAllUsers = async () =>{
 };
 
 
-const getOneUser = async (userId) => {
+export const getOneUserFromDB = async (userId) => {
   try {
 
     const userColumnName = userColumnsForAdding[0];
-    const user = await dbFunctions.getOne(userTableName, userColumnName, userId);
+    const user = await getOne(userTableName, userColumnName, userId);
     if(user.error) {
       return {error: "User does not exist"}
     }
@@ -37,7 +38,7 @@ const getOneUser = async (userId) => {
   }
 };
 
-const isUserRole = async (userId, user_role) => {
+export const isUserRole = async (userId, user_role) => {
   const data = await getOneUser(userId);
 
   
@@ -50,9 +51,9 @@ const isUserRole = async (userId, user_role) => {
   }
 };
 
-const getUserIdUsingEmail = async (userEmail) => {
+export const getUserIdUsingEmail = async (userEmail) => {
   const emailColumnName = userColumnsForAdding[3];
-  const userDetails = await dbFunctions.getOne(
+  const userDetails = await getOne(
     userTableName,
     emailColumnName,
     userEmail
@@ -81,8 +82,8 @@ const numberExists = async (phoneNumber) => {
   );
 };
 
-//add user METHOD: POST
-const addUser = async (userDetails) => {
+
+export const addUserToDB = async (userDetails) => {
   const { email } = userDetails;
   const columnsForAdding = Object.keys(userDetails);
   const userDetailsArray = Object.values(userDetails);
@@ -91,7 +92,7 @@ const addUser = async (userDetails) => {
     const emailExist = await emailExists(email);
    
     if (!emailExist) {
-      const insertUserDetails = await dbFunctions.addOne(
+      const insertUserDetails = await addOne(
         userTableName,
         columnsForAdding,
         userDetailsArray
@@ -112,8 +113,8 @@ const addUser = async (userDetails) => {
 
 
 
-//update user
-const updateUser = async (userId, userDetails) => {
+
+export const updateUserOnDB = async (userId, userDetails) => {
   try {
     
     const { email = "", phone_number = "" } = userDetails;
@@ -132,7 +133,7 @@ const updateUser = async (userId, userDetails) => {
     
 
     if (idValidation) {
-      const userData = await dbFunctions.getOne(
+      const userData = await getOne(
         userTableName,
         idColumn,
         userId
@@ -171,7 +172,7 @@ const updateUser = async (userId, userDetails) => {
       );
 
       //change later. Existing details should not added to the elements to be updated;
-      const update = await dbFunctions.updateOne(
+      const update = await updateOne(
         userTableName,
         validColumnsForUpdate,
         userId,
@@ -190,7 +191,17 @@ const updateUser = async (userId, userDetails) => {
   }
 };
 
-const deleteUser = async (userId) => {
+export const getSpecificUserDetailsUsingId = async (userId, columns)=> {
+  const userIdColumn = 'user_id';
+  const specificDetails = await getSpecificDetailsUsingId(userTableName, userId, userIdColumn, columns);
+  if (specificDetails.error) {
+    return {error: `Error occurred: ${specificDetails.error}`}
+  }
+
+  return specificDetails
+}
+
+export const deleteUserFromDB = async (userId) => {
   const columnName = userColumnsForAdding[0];
   const userExists = await dbFunctions.detailExists(
     userTableName,
@@ -198,19 +209,10 @@ const deleteUser = async (userId) => {
     userId
   );
   if (userExists) {
-    await dbFunctions.deleteOne(userTableName, columnName, userId);
+    await deleteOne(userTableName, columnName, userId);
     return { success: "user deleted" };
   } else {
     return { error: "user does not exist" };
   }
 };
-module.exports = {
-  getAllUsers,
-  getOneUser,
-  addUser,
-  updateUser,
-  deleteUser,
-  emailExists,
-  getUserIdUsingEmail,
-  isUserRole,
-};
+

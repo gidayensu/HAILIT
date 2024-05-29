@@ -22,7 +22,8 @@ export const postFetch = async ({data, url, bearerToken}: {data:Object, url:stri
 }
 
 export const getFetch = async ({url, bearerToken}: {url:string, bearerToken: string})=> {
-    try {
+
+  try {
         const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -30,6 +31,8 @@ export const getFetch = async ({url, bearerToken}: {url:string, bearerToken: str
           authorization: bearerToken
         }
       });
+
+      console.log('response:', response)
     
       if (!response.ok) {
         
@@ -70,3 +73,5 @@ export const putFetch = async ({data, url, bearerToken}: {data:Object, url:strin
       return {error: `Error occurred updating data: ${err}`}  
     }
 }
+
+

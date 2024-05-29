@@ -1,38 +1,26 @@
-const express = require('express')
-const tripController = require('../../controllers/trip.controller')
-const authenticateToken = require('../../auth/authToken');
-const isAdminOrUser = require('../../auth/user-auth/isAdminOrUser');
-const isUserRole = require('../../auth/user-auth/isUserRole');
-const tripAuth = require('../../auth/trip-auth/tripAuth');
+import express from 'express';
+import {addTrip, deleteTrip, getAllTrips, getOneTrip, getUserTrips, rateTrip, updateTrip} from '../../controllers/trip.controller.js';
+import {isAdminOrUserAuth} from '../../auth/user-auth/isAdminOrUser.js';
+import { isUserRole } from '../../auth/user-auth/isUserRole.js';
+import { tripAuth } from '../../auth/trip-auth/tripAuth.js';
+import { supaAuth } from '../../auth/supaAuth.js'
 
 
-const router = express.Router()
 
-router.get('/',  tripController.getAllTrips);
+export const tripRouter = express.Router();
 
-router.get('/user-trip/:trip_id',  tripController.getOneTrip);
 
-router.get('/user-trips/:user_id',  tripController.getUserTrips)
+tripRouter.get('/', supaAuth, isUserRole, getAllTrips);
 
-router.post('/add',  tripController.addTrip)
+tripRouter.get('/user-trip/:trip_id',  getOneTrip);
 
-router.put('/:trip_id',  tripController.updateTrip)
+tripRouter.get('/user-trips/:user_id', supaAuth, tripAuth, getUserTrips)
 
-router.put('/rate-trip/:trip_id',  tripController.rateTrip)
+tripRouter.post('/add', addTrip)
 
-router.delete('/:trip_id',  tripController.deleteTrip)
-// router.get('/', authenticateToken, isUserRole, tripController.getAllTrips);
+tripRouter.put('/:trip_id', updateTrip)
 
-// router.get('/user-trip/:trip_id', authenticateToken, tripAuth, tripController.getOneTrip);
+tripRouter.put('/rate-trip/:trip_id', supaAuth, tripAuth, rateTrip)
 
-// router.get('/user-trips/:user_id', authenticateToken, tripAuth, tripController.getUserTrips)
+tripRouter.delete('/:trip_id', supaAuth, isUserRole, deleteTrip)
 
-// router.post('/add', authenticateToken, tripController.addTrip)
-
-// router.put('/:trip_id', authenticateToken, tripAuth, tripController.updateTrip)
-
-// router.put('/rate-trip/:trip_id', authenticateToken, tripAuth, tripController.rateTrip)
-
-// router.delete('/:trip_id', authenticateToken, isUserRole, tripController.deleteTrip)
-
-module.exports = {router, }

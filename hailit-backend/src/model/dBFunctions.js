@@ -1,7 +1,7 @@
-const crypto = require("crypto");
-const { DB } = require("./connectDb");
+import { DB } from './connectDb.js'
 
-const getAll = async (tableName) => {
+
+export const getAll = async (tableName) => {
   try {
     const allItems = await DB.query(`SELECT * FROM ${tableName}`);
     const data = allItems.rows;
@@ -12,22 +12,24 @@ const getAll = async (tableName) => {
 };
 
 //check if a detail exists
-const checkOneDetail = async (tableName, columnName, condition) => {
-  
+export const checkOneDetail = async (tableName, columnName, condition) => {
   try {
+    
     const queryText = `SELECT * FROM ${tableName} WHERE ${columnName} =$1`;
     const value = [condition];
     const result = await DB.query(queryText, value);
-
+    
+    
     return result;
   } catch (err) {
+    
     throw err;
   }
 };
 
 //check for only one detail and return boolean
 
-const detailExists = async (tableName, columnName, detail) => {
+export const detailExists = async (tableName, columnName, detail) => {
   try {
     const result = await checkOneDetail(tableName, columnName, detail);
     return result.rowCount > 0;
@@ -37,23 +39,26 @@ const detailExists = async (tableName, columnName, detail) => {
 };
 
 //get one item from the table. //consider using a better approach to limit repetition
-const getOne = async (tableName, columnName, entry) => {
+export const getOne = async (tableName, columnName, entry) => {
   
   try {
     const result = await checkOneDetail(tableName, columnName, entry);
 
     if (result.rowCount > 0) {
+      
       return result.rows;
     } else {
+      
       return { error: "detail does not exist" };
     }
   } catch (err) {
+    console.log('error56:', err)
     throw err;
   }
 };
 
 //...args changed to args
-const addOne = async (tableName, columns, values) => {
+export const addOne = async (tableName, columns, values) => {
   let valuesArray = values;
   if(typeof values === 'string') {
     valuesArray = [values]
@@ -74,7 +79,7 @@ const addOne = async (tableName, columns, values) => {
 };
 
 
-const updateOne = async (tableName, columns, id, idColumn, ...details) => {
+export const updateOne = async (tableName, columns, id, idColumn, ...details) => {
   try {
     await DB.query("BEGIN");
     for (let i = 0; i < details.length; i++) {
@@ -95,7 +100,7 @@ const updateOne = async (tableName, columns, id, idColumn, ...details) => {
   }
 };
 
-const getSpecificDetails = async (tableName, specificColumn, condition) => {
+export const getSpecificDetails = async (tableName, specificColumn, condition) => {
   try {
     await DB.query("BEGIN");
     const queryText = `SELECT * FROM ${tableName} WHERE ${specificColumn} = $1`;
@@ -109,7 +114,7 @@ const getSpecificDetails = async (tableName, specificColumn, condition) => {
   }
 };
 
-const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
+export const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
   
   try {
     await DB.query("BEGIN");  
@@ -124,13 +129,13 @@ const getSpecificDetailsUsingId = async (tableName, id, idColumn, columns) => {
     return rows;
 
   } catch (err) {
-    console.log(err)
+    
     await DB.query("ROLLBACK");
     return {error:"Server Error occurred, data not retrieved"};
   }
 };
 
-const deleteOne = async (tableName, columnName, id) => {
+export const deleteOne = async (tableName, columnName, id) => {
   try {
     await DB.query("BEGIN");
     const queryText = `delete from ${tableName} where ${columnName} = $1`;
@@ -144,13 +149,13 @@ const deleteOne = async (tableName, columnName, id) => {
   }
 };
 
-const increaseByValue = async (
+export const increaseByValue = async (
   tableName,
   id,
   idColumn,
   columnToBeIncreased
 ) => {
-  console.log('columnToBeIncrease:', columnToBeIncreased)
+  
   try {
     DB.query("BEGIN");
     const queryText = `UPDATE ${tableName} SET ${columnToBeIncreased} = ${
@@ -168,17 +173,3 @@ const increaseByValue = async (
 
 
 
-module.exports = {
-  getAll,
-  addOne,
-  updateOne,
-  deleteOne,
-  checkOneDetail,  
-  getOne,
-
-  detailExists,
-  
-  getSpecificDetails,
-  getSpecificDetailsUsingId,
-  increaseByValue,
-};

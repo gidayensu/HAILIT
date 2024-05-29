@@ -1,5 +1,5 @@
-import CustomerProfile from "../Form/CustomerProfile";
-import DispatcherProfile from "../Form/DispatcherProfile";
+import CustomerProfile from "../Form/EditCustomerProfile";
+import DispatcherProfile from "../Form/EditDispatcherProfile";
 import { useAppSelector } from "@/lib/store/hooks";
 
 export default function SecondStage () {

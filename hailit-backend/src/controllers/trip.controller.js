@@ -1,9 +1,8 @@
-const tripService = require("../services/trip.service");
-// const { userIsUserRole } = require("../utils/util");
+import {addTripService, deleteTripService, getAllTripsService, getUserTripsService, rateTripService, updateTripService, getOneTripService} from "../services/trip.service.js";
 
-const getAllTrips = async (req, res) => {
+export const getAllTrips = async (req, res) => {
   try {
-    const allTrips = await tripService.getAllTrips();
+    const allTrips = await getAllTripsService();
     if(allTrips.error) {
       return res.status(400).json({error: allTrips.error})
     }
@@ -12,31 +11,32 @@ const getAllTrips = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
-//FIX GETONETRIP AND make driver/rider be able to access it as well as the user
-const getOneTrip = async (req, res) => {
+
+export const getOneTrip = async (req, res) => {
+  
   try {
-    // const requesterId = req.user.user_id
-    
+        
     const { trip_id } = req.params;
-    // const oneTrip = await tripService.getOneTrip(trip_id, requesterId);
-    const oneTrip = await tripService.getOneTrip(trip_id);
+    
+    
+    const oneTrip = await getOneTripService(trip_id);
     if (oneTrip.error) {
       return res.status(400).json({error: oneTrip.error})
     }
     res.status(200).json({ trip: oneTrip });
   } catch (err) {
-    console.log(err)
+    
     return res
       .status(500)
       .json({ error: "Server Error Occurred Retrieving Trip Detail" });
   }
 };
 
-const getUserTrips = async (req, res) => {
+export const getUserTrips = async (req, res) => {
   try {
     const { user_id } = req.params;
     
-    const userTrips = await tripService.getUserTrips(user_id);
+    const userTrips = await getUserTripsService(user_id);
     if (userTrips.error) {
       return res.status(400).json({error: userTrips.error})
     }
@@ -48,47 +48,49 @@ const getUserTrips = async (req, res) => {
   }
 };
 
-const addTrip = async (req, res) => {
+export const addTrip = async (req, res) => {
   ///trip amount, trip_status, driver_id, trip_date, total amount, payment_status, delivery_time, payment_method, dispatcher_rating, rating_comment will be added in the service layer based on certain conditions
-
+  console.log('req.body:', req.body)
   try {
-    const { trip_medium, package_type, drop_off_location, pickup_location } =
+    console.log('this runs: ', req.body)
+    const { trip_medium, trip_type, package_type, drop_off_location, pickup_location } =
       req.body;
-    if (!trip_medium || !package_type || !drop_off_location || !pickup_location) {
+    if (!trip_medium || !trip_type || !package_type || !drop_off_location || !pickup_location) {
+      console.log('this also runs')
       return res.status(400).json({
         error:
-          "Provide all details: trip type, delivery item, and delivery address",
+          "Provide all details: trip type, trip medium, sender number, recipient number, and package type",
       });
     }
-
+    console.log(!trip_medium , !trip_type , !package_type , !drop_off_location, !pickup_location)
     if (trip_medium) {
-      const acceptedTripMediums = ["motor", "car", "truck"];
+      const acceptedTripMediums = ["Motor", "Car", "Truck"];
       const validTripMedium = acceptedTripMediums.includes(trip_medium);
       if (!validTripMedium) {
-        return res.status(403).json({ error: "Trip Type Invalid" });
+        return res.status(403).json({ error: "Trip Medium Invalid" });
       }
     }
     const tripDetails = req.body;
-    // const { user_id } = req.user;
-    console.log('REMEMBER TO REMOVE THIS')
-    const user_id = '92e6ff67-a1d0-4f56-830c-60d23a63913d';
-    const tripAdded = await tripService.addTrip(user_id, tripDetails);
+    const  user_id  = req.user?.user_id || '92e6ff67-a1d0-4f56-830c-60d23a63913d';
+    
+    const tripAdded = await addTripService(user_id, tripDetails);
     if (tripAdded.error) {
       return res.status(400).json({error: tripAdded.error} );
     }
     res.status(200).json({trip: tripAdded})
   } catch (err) {
+    
     return res
       .status(500)
       .json({ error: "Server Error Occurred Adding User Trip" });
   }
 };
 
-const updateTrip = async (req, res) => {
+export const updateTrip = async (req, res) => {
   try {
     const { trip_id } = req.params;
     const tripDetails = { trip_id, ...req.body };
-    const tripUpdate = await tripService.updateTrip(tripDetails);
+    const tripUpdate = await updateTripService(tripDetails);
     if(tripUpdate.error) {
       return res.status(403).json({error: tripUpdate.error})
     }
@@ -102,7 +104,7 @@ const updateTrip = async (req, res) => {
   }
 };
 
-const rateTrip = async (req, res) => {
+export const rateTrip = async (req, res) => {
   try {
     
     const ratingDetails = req.body;
@@ -116,7 +118,7 @@ const rateTrip = async (req, res) => {
       return res.status(403).json({ error: "Driver/rider details missing" });
     }
 
-    const tripRating = await tripService.rateTrip(detailsWithId);
+    const tripRating = await rateTripService(detailsWithId);
     if(tripRating.error) {
       return res.status(400).json({error: tripRating.error})
     }
@@ -130,10 +132,10 @@ const rateTrip = async (req, res) => {
   }
 };
 
-const deleteTrip = async (req, res) => {
+export const deleteTrip = async (req, res) => {
   try {
     const { trip_id } = req.params;
-    const tripDelete = await tripService.deleteTrip(trip_id);
+    const tripDelete = await deleteTripService(trip_id);
     if (tripDelete) {
       res.status(200).json({ success: "trip deleted" });
     } else {
@@ -142,13 +144,4 @@ const deleteTrip = async (req, res) => {
   } catch (err) {
     return {error:"Error Occurred; Rider Not Deleted"};
   }
-};
-module.exports = {
-  getAllTrips,
-  getOneTrip,
-  addTrip,
-  updateTrip,
-  deleteTrip,
-  getUserTrips,
-  rateTrip,
 };

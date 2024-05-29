@@ -1,6 +1,6 @@
 const allowedUserRoles = ['admin', 'driver', 'rider', 'customer', 'dispatcher'];
 
-const userRoleValidation = async (req, res, next)=> {
+export const userRoleValidation = async (req, res, next)=> {
     
     if(req.body.user_role || req.body.user_role === ''){
         
@@ -12,4 +12,3 @@ const userRoleValidation = async (req, res, next)=> {
     next();
 }
 
-module.exports = userRoleValidation;

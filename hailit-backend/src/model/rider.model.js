@@ -1,32 +1,33 @@
-const { v4: uuid } = require("uuid");
-
-const dbFunctions = require("./dBFunctions");
+import { v4 as uuid } from "uuid";
+import { addOne, checkOneDetail, deleteOne, getAll, getOne, getSpecificDetails, getSpecificDetailsUsingId, updateOne} from "./dBFunctions.js"
 
 const riderTableName = "rider";
 const riderColumnsForAdding = ["rider_id", "vehicle_id", "user_id"];
 
 const defaultVehicleId = "04daa784-1dab-4b04-842c-a9a3ff8ae016";
 
-const getAllRiders = async () => {
+export const getAllRiders = async () => {
   try {
 
-    const allRiders = await dbFunctions.getAll(riderTableName);
-    console.log('allRiders:', allRiders)
+    const allRiders = await getAll(riderTableName);
+    if (allRiders.error) {
+      return {error: allRiders.error}
+    }
     return allRiders;
   } catch (err) {
     return ({error: "Server error occurred getting all uses"})
   }
   ;}
 
-const getOneRider = async (rider_id) => {
+  export const getOneRiderFromDB = async (rider_id) => {
   try {
     const riderIdColumn = riderColumnsForAdding[0];
-    const rider = await dbFunctions.getOne(
+    const rider = await getOne(
       riderTableName,
       riderIdColumn,
       rider_id
     );
-    if(!rider) {
+    if(rider.error) {
       return { error: "Rider not found" };
     }
     
@@ -39,9 +40,9 @@ const getOneRider = async (rider_id) => {
   }
 };
 
-const getRiderOnCondition = async (columnName, condition) => {
+export const getRiderOnConditionFromDB = async (columnName, condition) => {
   try {
-    const riderDetails = await dbFunctions.checkOneDetail(
+    const riderDetails = await checkOneDetail(
       riderTableName,
       columnName,
       condition
@@ -52,9 +53,9 @@ const getRiderOnCondition = async (columnName, condition) => {
   }
 };
 
-const getSpecificRiders = async (specificColumn, condition) => {
+export const getSpecificRidersFromDB = async (specificColumn, condition) => {
   try {
-    const specificRiders = await dbFunctions.getSpecificDetails(
+    const specificRiders = await getSpecificDetails(
       riderTableName,
       specificColumn,
       condition
@@ -65,16 +66,16 @@ const getSpecificRiders = async (specificColumn, condition) => {
   }
 };
 
-const addRider = async (user_id) => {
+export const addRiderToDB = async (user_id) => {
   try {
 
-    const userIsRider = await dbFunctions.getSpecificDetailsUsingId(riderTableName, user_id, 'user_id', 'rider_id');
+    const userIsRider = await getSpecificDetailsUsingId(riderTableName, user_id, 'user_id', 'rider_id');
     if(userIsRider.length >= 1) {
       return {error: "User is rider"}
     }
     const rider_id = uuid();
     const riderDetails = [rider_id, defaultVehicleId, user_id];
-    const addingMotor = await dbFunctions.addOne(
+    const addingMotor = await addOne(
       riderTableName,
       riderColumnsForAdding,
       riderDetails
@@ -87,16 +88,16 @@ const addRider = async (user_id) => {
   }
 };
 
-const updateRider = async (riderDetails) => {
+export const updateRiderOnDB = async (riderDetails) => {
   const { rider_id } = riderDetails;
   const idColumn = riderColumnsForAdding[0];
   const tableColumns = Object.keys(riderDetails);
   const riderDetailsArray = Object.values(riderDetails);
 
-  console.log('riderDetailsArray:', riderDetails)
+  
 
   try {
-    const riderUpdate = await dbFunctions.updateOne(
+    const riderUpdate = await updateOne(
       riderTableName,
       tableColumns,
       rider_id,
@@ -113,9 +114,9 @@ const updateRider = async (riderDetails) => {
   }
 };
 
-const deleteRider = async (rider_id) => {
+export const deleteRiderFromDB = async (rider_id) => {
   try {
-    const riderDelete = await dbFunctions.deleteOne(
+    const riderDelete = await deleteOne(
       riderTableName,
       riderColumnsForAdding[0],
       rider_id
@@ -129,12 +130,4 @@ const deleteRider = async (rider_id) => {
     return {error:"Error Occurred Deleting Rider"};
   }
 };
-module.exports = {
-  getAllRiders,
-  getOneRider,
-  addRider,
-  updateRider,
-  deleteRider,
-  getSpecificRiders,
-  getRiderOnCondition,
-};
+

@@ -1,52 +1,16 @@
-const { v4: uuid } = require("uuid");
-const { DB } = require("./connectDb");
-const dbFunctions = require("./dBFunctions");
+import { v4 as uuid } from "uuid";
+import { addOne, checkOneDetail, deleteOne, detailExists, getAll, getOne, getSpecificDetails, getSpecificDetailsUsingId, increaseByValue, updateOne} from "./dBFunctions.js"
+
 
 const driverTableName = "driver";
 const driverTableColumns = ["driver_id", "user_id", "vehicle_id"];
 
-//CREATE TRIGGER TO DELETE FROM DATABASE WHEN SOMETHIG CHANGES
-
-//   const db = require('./db');
-
-// // Function to create trigger
-// async function createTrigger() {
-//   const createTriggerQuery = `
-//     CREATE OR REPLACE FUNCTION delete_driver_data()
-//     RETURNS TRIGGER AS
-//     $$
-//     BEGIN
-//         IF OLD.user_role = 'driver' AND NEW.user_role = 'motor_driver' THEN
-//             DELETE FROM driver WHERE user_id = OLD.user_id;
-//         END IF;
-//         RETURN NEW;
-//     END;
-//     $$
-//     LANGUAGE plpgsql;
-
-//     CREATE TRIGGER after_update_user_role
-//     AFTER UPDATE OF user_role ON user_table
-//     FOR EACH ROW
-//     EXECUTE FUNCTION delete_driver_data();
-//   `;
-
-//   try {
-//     await db.query(createTriggerQuery);
-
-//   } catch (error) {
-//     console.error('Error creating trigger:', error);
-//   }
-// }
-
-// // Call the function to create the trigger
-// createTrigger();
-
 const defaultVehicleId = "04daa784-1dab-4b04-842c-a9a3ff8ae016";
 
-const getAllDrivers = async () =>{ 
+export const getAllDriversFromDB = async () =>{ 
  try {
 
-   const allDrivers = dbFunctions.getAll(driverTableName);
+   const allDrivers = getAll(driverTableName);
    if(!allDrivers) {
     return {error: "No driver found"}
    }
@@ -56,10 +20,10 @@ const getAllDrivers = async () =>{
  }
 }
 
-const getOneDriver = async (driver_id) => {
+export const getOneDriverFromDB = async (driver_id) => {
   try {
     const driverIdColumn = driverTableColumns[0];
-    const driver = await dbFunctions.getOne(
+    const driver = await getOne(
       driverTableName,
       driverIdColumn,
       driver_id
@@ -74,9 +38,9 @@ const getOneDriver = async (driver_id) => {
   }
 };
 
-const getDriverDetailOnCondition = async (columnName, condition) => {
+export const getDriverDetailOnCondition = async (columnName, condition) => {
   try {
-    const driverDetails = await dbFunctions.checkOneDetail(
+    const driverDetails = await checkOneDetail(
       driverTableName,
       columnName,
       condition
@@ -93,9 +57,9 @@ const getDriverDetailOnCondition = async (columnName, condition) => {
     return {error:"Error occurred finding driver details"};
   }
 };
-const getSpecificDrivers = async (specificColumn, condition) => {
+export const getSpecificDriversFromDB = async (specificColumn, condition) => {
   try {
-    const specificDrivers = await dbFunctions.getSpecificDetails(
+    const specificDrivers = await getSpecificDetails(
       driverTableName,
       specificColumn,
       condition
@@ -106,7 +70,12 @@ const getSpecificDrivers = async (specificColumn, condition) => {
   }
 };
 
-const addDriver = async (user_id, vehicle_id) => {
+export const addDriverToDB = async (user_id, vehicle_id) => {
+  const userIsDriver = await getSpecificDetailsUsingId(driverTableName, user_id, 'user_id', 'driver_id');
+    if(userIsDriver.length >= 1) {
+      return {error: "User is driver"}
+    }
+  
   const driver_id = uuid();
   let driverVehicleId = "";
   vehicle_id
@@ -114,7 +83,7 @@ const addDriver = async (user_id, vehicle_id) => {
     : (driverVehicleId = defaultVehicleId);
   const driverDetails = [driver_id, user_id, driverVehicleId];
   try {
-    const addedDriver = await dbFunctions.addOne(
+    const addedDriver = await addOne(
       driverTableName,
       driverTableColumns,
       driverDetails
@@ -127,14 +96,14 @@ const addDriver = async (user_id, vehicle_id) => {
   }
 };
 
-const updateDriver = async (driverDetails) => {
+export const updateDriverOnDB = async (driverDetails) => {
   const { driver_id } = driverDetails;
   const idColumn = driverTableColumns[0];
   const tableColumns = Object.keys(driverDetails);
   const driverDetailsArray = Object.values(driverDetails);
 
   try {
-    const driverUpdate = await dbFunctions.updateOne(
+    const driverUpdate = await updateOne(
       driverTableName,
       tableColumns,
       driver_id,
@@ -151,8 +120,8 @@ const updateDriver = async (driverDetails) => {
   }
 };
 
-const deleteDriver = async (driver_id) => {
-  const driverDelete = await dbFunctions.deleteOne(
+export const deleteDriverFromDB = async (driver_id) => {
+  const driverDelete = await deleteOne(
     driverTableName,
     driverTableColumns[0],
     driver_id
@@ -164,12 +133,4 @@ const deleteDriver = async (driver_id) => {
   }
 };
 
-module.exports = {
-  getAllDrivers,
-  addDriver,
-  updateDriver,
-  getOneDriver,
-  deleteDriver,
-  getSpecificDrivers,
-  getDriverDetailOnCondition,
-};
+

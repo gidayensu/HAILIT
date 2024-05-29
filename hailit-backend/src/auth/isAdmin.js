@@ -1,6 +1,7 @@
-const { userIsUserRole } = require("../utils/util");
 
-const isAdmin = async (req, res, next) => {
+import { userIsUserRole } from "../utils/util.js";
+
+export const isAdmin = async (req, res, next) => {
   const { user_id } = req.user;
 
   try {
@@ -19,4 +20,4 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = isAdmin;
+

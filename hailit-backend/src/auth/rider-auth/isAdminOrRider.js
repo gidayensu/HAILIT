@@ -1,6 +1,7 @@
-const {userIsUserRole, riderUserId} = require ('../../utils/util');
+import { userIsUserRole, riderUserId } from '../../utils/util.js';
 
-const isAdminOrRider = async (req, res, next) => {
+
+export const isAdminOrRider = async (req, res, next) => {
     
     try {
         const path = req.path;
@@ -8,13 +9,7 @@ const isAdminOrRider = async (req, res, next) => {
         const jwtUserId = req.user.user_id;
         const isAdmin = await userIsUserRole(jwtUserId, 'admin');
         const rider_user_id = await riderUserId(rider_id);
-        // for (let i = 0; i<role.length; i++) {
-        //      isRole = await userIsUserRole(jwtUserId, role[i]);
         
-        //     if(isRole === true) {
-        //         break;
-        //     }
-        // }
         
         
         if (rider_user_id === jwtUserId || isAdmin) {
@@ -28,4 +23,3 @@ const isAdminOrRider = async (req, res, next) => {
 }
 
 
-module.exports = isAdminOrRider;

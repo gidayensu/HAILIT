@@ -1,7 +1,7 @@
-const {associatedWithTrip, userIsUserRole} = require ('../../utils/util')
+const {userAssociatedWithTrip, userIsUserRole} = require ('../../utils/util')
 
 
-const tripAuth = async (req, res, next)=> {
+export const tripAuth = async (req, res, next)=> {
     
     try {
     const path = req.path;
@@ -21,7 +21,7 @@ const tripAuth = async (req, res, next)=> {
      
     let tripAssociation= false;
     
-    user_role === 'driver' ? tripAssociation = await associatedWithTrip(driver_id, trip_id, role) : tripAssociation = await associatedWithTrip(user_id, trip_id, role)
+    user_role === 'driver' ? tripAssociation = await userAssociatedWithTrip(driver_id, trip_id, role) : tripAssociation = await userAssociatedWithTrip(user_id, trip_id, role)
     
     
     
@@ -41,4 +41,3 @@ const tripAuth = async (req, res, next)=> {
 
 
 
-module.exports = tripAuth;

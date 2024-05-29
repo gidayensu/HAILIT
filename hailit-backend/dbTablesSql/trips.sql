@@ -9,7 +9,7 @@ CREATE TABLE "public"."trips" (
 	"dispatcher_rating" Numeric( 2, 1 ),
 	"trip_cost" Numeric( 10, 2 ) NOT NULL,
 	"drop_off_location" Character Varying( 255 ) NOT NULL,
-	"special_instructions" Character Varying( 255 ) DEFAULT 'no instructions'::character varying NOT NULL,
+	"additional_information" Character Varying( 255 ) DEFAULT 'no instructions'::character varying NOT NULL,
 	"payment_method" Character Varying( 100 ) NOT NULL,
 	"promo_code" Character Varying( 255 ) DEFAULT 'no promo code'::character varying NOT NULL,
 	"driver_id" Character Varying( 255 ) NOT NULL,

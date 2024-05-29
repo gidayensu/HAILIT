@@ -17,20 +17,28 @@ type DeliveryStatus =
   | "Cancelled"
   | "Picked up"
   | "Delivering"
-  | "New Order"
+  | "New"
   |  "Yet to Book";
 
-type PackageType = | "Gadgets"
-| "Parcel"
+export type PackageType = | "Electronics"
 | "Food"
 | "Fragile"
+| "Clothes"
+| "Documents"
+| "Bulky Items"
 | "Others";
 export default function OrderSummaryMin({
+  tripId,
+  tripRequestDate,
   deliveryStatus,
-  packageType
+  packageType,
+  cost
 }: {
+  tripId: string,
+  tripRequestDate: string | null,
   deliveryStatus: DeliveryStatus,
-  packageType: PackageType
+  packageType: PackageType | string,
+  cost: string
 }) {
 
     //default icon gadgets
@@ -39,7 +47,7 @@ export default function OrderSummaryMin({
 
   //setting other icon colors
   switch (packageType) {
-    case("Gadgets"): {
+    case("Electronics"): {
       deliveryTypeIcon = <PiMonitorFill className="text-teal-400 dark:text-teal-500"/> 
       deliveryTypeIconBgClass = "bg-teal-100 dark:bg-teal-200" 
     }
@@ -74,8 +82,8 @@ export default function OrderSummaryMin({
             {deliveryTypeIcon}
           </span>
           <span >
-              <h3 className="ml-2 font-bold text-s">#PKG-1205-3</h3>
-            <p className="ml-2 text-[12px] text-slate-500">12th May, 2024</p>
+              <h3 className="ml-2 font-bold text-s">{tripId}</h3>
+            <p className="ml-2 text-[12px] text-slate-500">{tripRequestDate}</p>
           </span>
         </div>
           <div className="flex flex-col">
@@ -88,15 +96,15 @@ export default function OrderSummaryMin({
                 ? "  text-sky-600"
                 : deliveryStatus === "Delivering"
                 ? " text-amber-500 "
-                : deliveryStatus === "New Order"
-                ? " text-slate-600 dark:text-slate-50"
+                : deliveryStatus === "New"
+                ? " text-teal-600 dark:text-slate-50"
                 : " text-red-500"
             }  h-5 w-20 rounded-md    `}
           >
             <p>{deliveryStatus}</p>
           </span>
           
-            <p className="font-bold">GHS 50</p>
+            <p className="font-bold">GHS {cost}</p>
           
           </div>
         

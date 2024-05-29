@@ -39,7 +39,7 @@ export default function OrderHistory () {
               <div className="flex flex-col md:w-5/6 w-full mt-4 rounded-2xl gap-2 items-center justify-center">
                 <div className="flex flex-col md:w-5/6 w-full items-center justify-center gap-2 md:items-start md:p-3">
 
-                <OrderSummaryMin deliveryStatus="New Order" packageType="Gadgets"/>
+                <OrderSummaryMin deliveryStatus="New Order" packageType="Electronics"/>
                 <OrderSummaryMin deliveryStatus="Picked up" packageType="Parcel"/>
 
                 <OrderSummaryMin deliveryStatus="Delivering" packageType="Others"/>

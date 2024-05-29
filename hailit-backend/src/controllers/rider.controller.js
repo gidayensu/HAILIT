@@ -1,8 +1,8 @@
-const riderService = require("../services/rider.service");
+import {deleteRiderService, getAllRidersService, getOneRiderService, updateRiderService} from '../services/rider.service.js';
 
-const getAllRiders = async (req, res) => {
+export const getAllRiders = async (req, res) => {
   try {
-    const allRiders = await riderService.getAllRiders();
+    const allRiders = await getAllRidersService();
     if(allRiders.error) {
       return res.status(200).json({ error: allRiders.error });
     }
@@ -16,10 +16,10 @@ const getAllRiders = async (req, res) => {
   }
 };
 
-const getOneRider = async (req, res) => {
+export const getOneRider = async (req, res) => {
   const { rider_id } = req.params;
   try {
-    const rider = await riderService.getOneRider(rider_id);
+    const rider = await getOneRiderService(rider_id);
     
     if (rider.error) {
       res.status(200).json({ error: rider.error });
@@ -31,20 +31,9 @@ const getOneRider = async (req, res) => {
   }
 };
 
-//RIDER NOT ADDED BECAUSE RIDERS WILL BE ADDED THROUGH THE USER ROUTE
 
-// const addRider = async (req, res) => {
-//   const { user_id, vehicle_id } = req.body;
-//   const riderAdd = await riderService.addRider(user_id, vehicle_id);
-//   if (riderAdd.error) {
-//     return res.status(200).json({ error: riderAdd.error });
-//   }
-  
-//     res.status(200).json({ rider: "rider added" });
-  
-// };
 
-const updateRider = async (req, res) => {
+export const updateRider = async (req, res) => {
   const { rider_id } = req.params ;
   const { vehicle_id } = req.body ;
 
@@ -56,7 +45,7 @@ const updateRider = async (req, res) => {
   const riderDetails = {...reqBody, rider_id}
 
   try {
-    const riderUpdate = await riderService.updateRider(riderDetails);
+    const riderUpdate = await updateRiderService(riderDetails);
     if (!riderUpdate.error) {
       res.status(200).json({ rider: riderUpdate });
     } else {
@@ -69,10 +58,10 @@ const updateRider = async (req, res) => {
   }
 };
 
-const deleteRider = async (req, res) => {
+export const deleteRider = async (req, res) => {
   try {
     const { rider_id } = req.params;
-    const riderDelete = await riderService.deleteRider(rider_id);
+    const riderDelete = await deleteRiderService(rider_id);
     if (riderDelete) {
       res.status(200).json({ success: "rider deleted" });
     } else {
@@ -81,11 +70,4 @@ const deleteRider = async (req, res) => {
   } catch (err) {
     return {error:"Error Occurred; Rider Not Deleted"};
   }
-};
-module.exports = {
-  getAllRiders,
-  getOneRider,
-  // addRider,
-  updateRider,
-  deleteRider,
 };

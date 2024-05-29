@@ -1,6 +1,6 @@
-import PackageDestinationChoice from "../NewDelivery/PackageDestinationChoice"
-import DeliveryDayChoice from "../NewDelivery/DeliveryDayChoice"
-import DeliveryModeChoice from "../NewDelivery/DeliveryModeChoice"
+import PackageDestinationChoice from "../Order/NewDelivery/PackageDestinationChoice"
+import DeliveryDayChoice from "../Order/NewDelivery/DeliveryDayChoice"
+import DeliveryMediumChoice from "../Order/NewDelivery/DeliveryMediumChoice"
 export default function SendPackage () {
 
 
@@ -38,7 +38,7 @@ export default function SendPackage () {
                 SELECT DELIVERY MODE
               </h2>
               <div className="flex w-full md:flex-row md:w-4/6 items-center justify-center gap-2 md:items-start">
-              <DeliveryModeChoice/>  
+              <DeliveryMediumChoice/>  
               </div>
             </div>
           </>

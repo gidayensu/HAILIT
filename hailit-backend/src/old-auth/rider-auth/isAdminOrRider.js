@@ -1,6 +1,6 @@
 const {userIsUserRole, riderUserId} = require ('../../utils/util');
 
-const isAdminOrRider = async (req, res, next) => {
+export const isAdminOrRider = async (req, res, next) => {
     
     try {
         const path = req.path;
@@ -28,4 +28,3 @@ const isAdminOrRider = async (req, res, next) => {
 }
 
 
-module.exports = isAdminOrRider;

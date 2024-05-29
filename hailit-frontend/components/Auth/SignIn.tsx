@@ -2,8 +2,8 @@
 import { useRouter } from "next/router";
 
 import { useAppDispatch } from "@/lib/store/hooks"
-import { setUserState } from "@/lib/store/userSlice";
-import { setAuthState } from "@/lib/store/authSlice";
+import { setUserState } from "@/lib/store/slice/userSlice";
+import { setAuthState } from "@/lib/store/slice/authSlice";
 import { supabaseSignIn } from "@/lib/supabaseAuth";
 
 export const signIn = async ({data}:{data:any}) => {

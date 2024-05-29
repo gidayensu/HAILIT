@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const supaAuth =  (req, res, next) => {
+export const supaAuth =  (req, res, next) => {
     const supaSecret = process.env.SUPABASE_JWT_SECRET;
 
     try {
@@ -33,6 +33,3 @@ const supaAuth =  (req, res, next) => {
     }
 }
 
-module.exports = {
-    supaAuth,
-};

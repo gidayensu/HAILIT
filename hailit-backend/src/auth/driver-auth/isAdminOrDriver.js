@@ -1,6 +1,7 @@
-const {userIsUserRole, driverUserId} = require ('../../utils/util');
+import { userIsUserRole, driverUserId } from '../../utils/util.js';
 
-const isAdminOrRider = async (req, res, next) => {
+
+export const isAdminOrRider = async (req, res, next) => {
     
     try {
         const path = req.path;
@@ -28,4 +29,3 @@ const isAdminOrRider = async (req, res, next) => {
 }
 
 
-module.exports = isAdminOrRider;

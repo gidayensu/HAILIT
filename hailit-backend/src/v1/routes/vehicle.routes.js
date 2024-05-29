@@ -1,18 +1,24 @@
-const express = require('express')
-const {getAllVehicles, getOneVehicle, addVehicle, updateVehicle, deleteVehicle} = require('../../controllers/vehicle.controller')
-const router = express.Router()
+import express from 'express';
 
-const authenticateToken = require('../../auth/authToken');
-const isAdmin = require('../../auth/isAdmin');
+import {getAllVehicles, getOneVehicle, addVehicle, updateVehicle, deleteVehicle}  from '../../controllers/vehicle.controller.js';
 
-router.get('/', authenticateToken, isAdmin, getAllVehicles)
+import {isAdminOrUserAuth} from '../../auth/user-auth/isAdminOrUser.js';
+import { isUserRole } from '../../auth/user-auth/isUserRole.js';
+import { supaAuth } from '../../auth/supaAuth.js'
+import {isAdmin} from '../../auth/isAdmin.js';
 
-router.get('/:vehicle_id', authenticateToken, isAdmin, getOneVehicle)
 
-router.post('/add', authenticateToken, isAdmin, addVehicle)
 
-router.put('/:vehicle_id', authenticateToken, isAdmin, updateVehicle)
+export const vehicleRouter = express.Router()
 
-router.delete('/:vehicle_id', authenticateToken, isAdmin, deleteVehicle)
 
-module.exports = {router}
+vehicleRouter.get('/', supaAuth, isUserRole, getAllVehicles)
+
+vehicleRouter.get('/:vehicle_id', supaAuth, isUserRole, getOneVehicle)
+
+vehicleRouter.post('/add', supaAuth, isAdmin, addVehicle)
+
+vehicleRouter.put('/:vehicle_id', supaAuth, isAdmin, updateVehicle)
+
+vehicleRouter.delete('/:vehicle_id', supaAuth, isAdmin, deleteVehicle)
+

@@ -1,12 +1,14 @@
-const StatusCodes = require("http-status-codes");
-const userService = require("../services/user.service");
 
-const { emailValidator, phoneValidator } = require("../utils/util");
-require("dotenv").config({ path: "./../../.env" });
+import { addUserService, deleteUserService, getAllUsersService, getOneUserService, getUserIdUsingEmailService, updateUserService} from "../services/user.service.js";
+import { emailValidator, phoneValidator } from "../utils/util.js";
 
-const getAllUsers = async (req, res) => {
+import {config} from 'dotenv';
+
+config({ path: '../../../.env' });
+
+export const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await userService.getAllUsers();
+    const allUsers = await getAllUsersService();
     const user = { users: allUsers };
     if (res && res.status) {
       res.status(200).json({ users: allUsers });
@@ -19,18 +21,19 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const getOneUser = async (req, res) => {
+export const getOneUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
     if (res && res.status) {
-      const oneUser = await userService.getOneUser(userId);
+      const oneUser = await getOneUserService(userId);
+      if(oneUser.error) {
+        return res.status(403).json({error: oneUser.error})
+      }
       res.status(200).json({ user: oneUser });
     }
-    // }
-    else {
-      res.status(401).json({ error: "user not found" });
-    }
+    
+
   } catch (err) {
     if (res && res.status) {
       res.status(500).json({ error: "server error" });
@@ -38,18 +41,18 @@ const getOneUser = async (req, res) => {
   }
 };
 
-const getUserIdUsingEmail = async (req, res) => {
+export const getUserIdUsingEmail = async (req, res) => {
   try {
     const { email } = req.query;
 
-    const userDetails = await userService.getUserIdUsingEmail(email);
+    const userDetails = await getUserIdUsingEmailService(email);
     res.status(200).json({ user: userDetails });
   } catch (err) {
     return { error: "Wrong email" };
   }
 };
 
-const addUser = async (req, res) => {
+export const addUser = async (req, res) => {
   try {
     const { user_id, email } = req.body;
 
@@ -61,7 +64,7 @@ const addUser = async (req, res) => {
     }
 
     const userDetails = req.body;
-    const addingUser = await userService.addUser(userDetails);
+    const addingUser = await addUserService(userDetails);
 
     if (addingUser.error) {
       return res.status(403).json({ error: addingUser.error });
@@ -74,7 +77,7 @@ const addUser = async (req, res) => {
   }
 };
 //updating user
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const {
       first_name = "" | "unknown",
@@ -97,29 +100,20 @@ const updateUser = async (req, res) => {
 
     const userDetails = req.body;
 
-    const updateUser = await userService.updateUser(userId, userDetails);
+    const updateUser = await updateUserService(userId, userDetails);
     res.status(200).json({user: updateUser});
   } catch (err) {
     res.status(500).json({ error: "Server error: user not updated" });
   }
 };
 //deleting user detail
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const userDelete = await userService.deleteUser(userId);
+    const userDelete = await deleteUserService(userId);
 
     res.status(200).json(userDelete);
   } catch (err) {
     res.status(500).json({ error: "user not deleted, server error" });
   }
-};
-//exporting functions
-module.exports = {
-  getAllUsers,
-  getOneUser,
-  addUser,
-  updateUser,
-  deleteUser,
-  getUserIdUsingEmail,
 };

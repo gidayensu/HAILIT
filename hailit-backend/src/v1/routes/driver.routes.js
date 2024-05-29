@@ -1,30 +1,19 @@
-const express = require('express');
-const driverController = require('../../controllers/driver.controller');
-const authenticateToken = require('../../auth/authToken');
-const isUserRole = require('../../auth/user-auth/isUserRole');
+import express from 'express';
+import { deleteDriver, getAllDrivers, getOneDriver, updateDriver } from '../../controllers/driver.controller.js';
+import { isUserRole } from '../../auth/user-auth/isUserRole.js';
+import { supaAuth } from '../../auth/supaAuth.js'
 
 
-const router = express.Router();
+export const driverRouter = express.Router();
 
-router.get('/',  driverController.getAllDrivers);
+driverRouter.get('/', isUserRole, getAllDrivers);
 
-router.get('/:driver_id', driverController.getOneDriver);
+driverRouter.get('/:driver_id', getOneDriver);
 
-// router.post('/register', driverController.addDriver);
+// driverRouter.post('/register', addDriver);
 
-router.put('/:driver_id',  driverController.updateDriver);
-
-
-router.delete('/:driver_id',  driverController.deleteDriver);
-// router.get('/', authenticateToken, isUserRole, driverController.getAllDrivers);
-
-// router.get('/:driver_id', authenticateToken, driverController.getOneDriver);
-
-// router.post('/register', driverController.addDriver);
-
-// router.put('/:driver_id', authenticateToken, driverController.updateDriver);
+driverRouter.put('/:driver_id', updateDriver);
 
 
-// router.delete('/:driver_id', authenticateToken, isUserRole, driverController.deleteDriver);
+driverRouter.delete('/:driver_id', isUserRole, deleteDriver);
 
-module.exports = {router, }

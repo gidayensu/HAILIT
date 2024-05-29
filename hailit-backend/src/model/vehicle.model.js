@@ -1,5 +1,5 @@
-const { v4: uuid } = require("uuid");
-const dbFunctions = require("./dBFunctions");
+import { v4 as uuid } from "uuid";
+import { addOne, checkOneDetail, deleteOne, detailExists, getAll, getOne, getSpecificDetails, getSpecificDetailsUsingId, increaseByValue, updateOne} from "./dBFunctions.js"
 
 const tableName = "vehicle";
 const columnsForUpdate = [
@@ -9,27 +9,32 @@ const columnsForUpdate = [
   "vehicle_type",
 ];
 const columnsForAdding = ["vehicle_id", ...columnsForUpdate];
-const vehicleIdColumn = columnsForAdding[0];
+const vehicleIdColumn = 'vehicle_id';
 
-const getAllVehicles = async () => {
+export const getAllVehiclesFromDB = async () => {
   try {
-    const allVehicles = await dbFunctions.getAll(tableName);
+    const allVehicles = await getAll(tableName);
+    if(allVehicles.error) {
+      return {error: "Error occurred fetching vehicle"}
+    }
     return allVehicles;
   } catch (err) {
     return { error: `Error occurred, ${err} ` };
   }
 };
 
-const getOneVehicle = async (vehicleId) => {
+export const getOneVehicleFromDB = async (vehicle_id) => {
   try {
-    const { vehicle_id } = vehicleId;
+    
 
-    const getVehicle = await dbFunctions.getOne(
+    const getVehicle = await getOne(
       tableName,
       vehicleIdColumn,
       vehicle_id
     );
+    console.log('vehicle_id:', vehicle_id)
     if (getVehicle.error) {
+      console.log('getVehicle.error:', getVehicle.error)
       return {error:"Vehicle does not exist"};
     }
 
@@ -39,84 +44,79 @@ const getOneVehicle = async (vehicleId) => {
   }
 };
 
-const addVehicle = async (completeVehicleDetails) => {
-  const {
-    vehicle_id,
-    vehicle_name,
-    vehicle_model,
-    plate_number,
-    vehicle_type,
-  } = completeVehicleDetails;
+export const addVehicleToDB = async (completeVehicleDetails) => {
+  
+  const columnsForAdding = Object.keys(completeVehicleDetails);
+  const vehicleDetailsArray = Object.values(completeVehicleDetails);
+  const plate_number_column = 'plate_number';
+  const {plate_number} = completeVehicleDetails;
   try {
     const vehicleExists = await dbFunctions.detailExists(
       tableName,
-      columnsForAdding[3],
+      plate_number_column,
       plate_number
     );
 
     if (vehicleExists) {
       return { error: "Vehicle exists. It has already been added" };
     }
-    const addResult = await dbFunctions.addOne(
+    const addVehicleResult = await addOne(
       tableName,
       columnsForAdding,
-      vehicle_id,
-      vehicle_name,
-      vehicle_model,
-      plate_number,
-      vehicle_type
+      vehicleDetailsArray
     );
-    if (addResult) {
-      return { success: "vehicle added" };
-    } else {
-      return { error: "Could not add vehicle" };
+
+    if (addVehicleResult.error) {
+      return {error: `Error occurred adding vehicle: ${addVehicleResult.error}`}
     }
+
+    return addVehicleResult[0];
+    
   } catch (err) {
-    return { error: "Error occurred" };
+    return { error: `Error occurred: ${err}` };
   }
 };
 
-const updateVehicle = async (vehicle_id, vehicleUpdateDetails) => {
+export const updateVehicleOnDB = async (vehicle_id, vehicleUpdateDetails) => {
   const validColumnsForUpdate = Object.keys(vehicleUpdateDetails);
   const vehicleDetails = Object.values(vehicleUpdateDetails);
   const vehicleIdColumn = columnsForAdding[0];
   
 
   try {
-    const vehicleUpdate = await dbFunctions.updateOne(
+    const vehicleUpdate = await updateOne(
       tableName,
       validColumnsForUpdate,
       vehicle_id,
       vehicleIdColumn,
       ...vehicleDetails
     );
-
-    if (vehicleUpdate === "detail updated") {
-      return true;
+    if(vehicleUpdate.error) {
+      return {error: "Vehicle not updated"}
     }
+
+    return vehicleUpdate.rows[0];
+    
   } catch (err) {
     return { error: `Error occurred, ${err} ` };
   }
 };
 
-const deleteVehicle = async (vehicle_id) => {
+export const deleteVehicleFromDB = async (vehicle_id) => {
   try {
-    const vehicleDeletion = await dbFunctions.deleteOne(
+    const vehicleDeletion = await deleteOne(
       tableName,
       vehicleIdColumn,
       vehicle_id
-    );
+    ); 
 
+    if (vehicleDeletion.error) {
+      return {error: "Error occurred in deleting vehicle"}
+    }
     return vehicleDeletion;
   } catch (err) {
     return { error: `Error occurred, ${err} ` };
   }
 };
 
-module.exports = {
-  getAllVehicles,
-  getOneVehicle,
-  addVehicle,
-  updateVehicle,
-  deleteVehicle,
-};
+

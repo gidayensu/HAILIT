@@ -3,7 +3,7 @@ import { useState } from "react"
 import customerAnimation from "@/public/animations/customer-animation.json";
 import riderAnimation from "@/public/animations/rider-animation.json";
 import { useAppDispatch } from "@/lib/store/hooks";
-import { setChosenRole } from "@/lib/store/onBoardingSlice";
+import { setChosenRole } from "@/lib/store/slice/onBoardingSlice";
 import type { SelectedUserRole } from "./UserOption";
 import UserOption from "./UserOption";
   

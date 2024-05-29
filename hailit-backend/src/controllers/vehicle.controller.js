@@ -1,18 +1,17 @@
-const vehicleService = require("../services/vehicle.service");
-const StatusCodes = require("http-status-codes");
+import {addVehicleService, deleteVehicleService, getAllVehiclesService, getOneVehicleService, updateVehicleService} from "../services/vehicle.service.js";
 
-const getAllVehicles = async (req, res) => {
+export const getAllVehicles = async (req, res) => {
   try {
-    const allVehicles = await vehicleService.getAllVehicles();
+    const allVehicles = await getAllVehiclesService();
     res.status(200).json({ vehicles: allVehicles });
   } catch (err) {
     return { error:  "Server Error" };
   }
 };
 
-const getOneVehicle = async (req, res) => {
+export const getOneVehicle = async (req, res) => {
   const vehicle_id = req.params;
-  const getVehicle = await vehicleService.getOneVehicle(vehicle_id);
+  const getVehicle = await getOneVehicleService(vehicle_id);
   if (getVehicle.error) {
     return res
       .status(400)
@@ -23,7 +22,7 @@ const getOneVehicle = async (req, res) => {
   
 };
 
-const addVehicle = async (req, res) => {
+export const addVehicle = async (req, res) => {
   const { vehicle_name, vehicle_model, plate_number, vehicle_type } = req.body;
   if (!vehicle_name || !vehicle_model || !plate_number || !vehicle_type) {
     return res
@@ -31,17 +30,16 @@ const addVehicle = async (req, res) => {
       .json({ error: "all fields are required" });
   }
 
-  const addingVehicleResult = await vehicleService.addVehicle(req.body);
-  if (addingVehicleResult) {
-    res.status(200).json({ success: addingVehicleResult });
-  } else {
-    res
-      .status(403)
-      .json({ error: "could not add vehicle" });
+  const addingVehicleResult = await addVehicleService(req.body);
+  if (addingVehicleResult.error) {
+    return res.status(403).json({error: addingVehicleResult.error})
   }
+  
+    res.status(200).json({ vehicle: addingVehicleResult });
+  
 };
 
-const updateVehicle = async (req, res) => {
+export const updateVehicle = async (req, res) => {
   try {
     const { vehicle_id } = req.params;
     const { vehicle_name, vehicle_model, plate_number, vehicle_type } =
@@ -53,7 +51,7 @@ const updateVehicle = async (req, res) => {
         .json({ error: "Require at least one input" });
     }
 
-    const updatingVehicle = await vehicleService.updateVehicle(
+    const updatingVehicle = await updateVehicleService(
       vehicle_id,
       req.body
     );
@@ -68,11 +66,11 @@ const updateVehicle = async (req, res) => {
   }
 };
 
-const deleteVehicle = async (req, res) => {
+export const deleteVehicle = async (req, res) => {
   try {
     const { vehicle_id } = req.params;
     
-    const deleteVehicle = await vehicleService.deleteVehicle(vehicle_id);
+    const deleteVehicle = await deleteVehicleService(vehicle_id);
     
     if (deleteVehicle.error) {
       return res.status(200).json({error: "Error occurred deleting vehicle"});
@@ -82,11 +80,4 @@ const deleteVehicle = async (req, res) => {
   } catch (err) {
     return { error: "Server Error" };
   }
-};
-module.exports = {
-  getAllVehicles,
-  getOneVehicle,
-  addVehicle,
-  updateVehicle,
-  deleteVehicle,
 };

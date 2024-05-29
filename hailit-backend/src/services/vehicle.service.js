@@ -1,9 +1,12 @@
-const { v4: uuid } = require("uuid");
-const vehicleModel = require("../model/vehicle.model");
 
-const getAllVehicles = async () => {
+import { v4 as uuid } from "uuid";
+import { addVehicleToDB, deleteVehicleFromDB, getAllVehiclesFromDB, getOneVehicleFromDB, updateVehicleOnDB } from '../model/vehicle.model.js';
+import { allowedPropertiesOnly } from "../utils//util.js";
+
+
+export const getAllVehiclesService = async () => {
   try {
-    const allVehicles = await vehicleModel.getAllVehicles();
+    const allVehicles = await getAllVehiclesFromDB();
     
     return allVehicles;
   } catch (err) {
@@ -11,8 +14,8 @@ const getAllVehicles = async () => {
   }
 };
 
-const getOneVehicle = async (vehicle_id) => {
-  const getVehicle = await vehicleModel.getOneVehicle(vehicle_id);
+export const getOneVehicleService = async (vehicle_id) => {
+  const getVehicle = await getOneVehicleFromDB(vehicle_id);
 
   if (getVehicle.vehicle_name) {
     return {
@@ -23,21 +26,23 @@ const getOneVehicle = async (vehicle_id) => {
   }
 };
 
-const addVehicle = async (vehicleDetails) => {
-  const vehicle_id = await uuid();
-
+export const addVehicleService = async (vehicleDetails) => {
+  const vehicle_id =  uuid();
+  const allowedVehicleProperties = ["vehicle_name", "plate_number", "vehicle_type", "vehicle_model", "insurance_details", "road_worthy", "vehicle_id"]
   const completeVehicleDetails = {
-    ...vehicleDetails,
     vehicle_id,
+    ...vehicleDetails,
   };
 
+  const validVehicleDetails = allowedPropertiesOnly(completeVehicleDetails, allowedVehicleProperties)
+console.log('valid vehicle:', validVehicleDetails)
   try {
-    const addVehicleResult = await vehicleModel.addVehicle(
-      completeVehicleDetails
+    const addVehicleResult = await addVehicleToDB(
+      validVehicleDetails
     );
 
     if (addVehicleResult.error) {
-      return {error: "Error occurred in adding vehicle"}
+      return {error: addVehicleResult.error}
     }
     
       return addVehicleResult;
@@ -48,25 +53,25 @@ const addVehicle = async (vehicleDetails) => {
   }
 };
 
-const updateVehicle = async (vehicle_id, vehicleUpdateDetails) => {
+export const updateVehicleService = async (vehicle_id, vehicleUpdateDetails) => {
   try {
-    const updateVehicle = await vehicleModel.updateVehicle(
+    const updateVehicle = await updateVehicleOnDB(
       vehicle_id,
       vehicleUpdateDetails
     );
-    if (updateVehicle) {
-      return { vehicle: updateVehicle };
-    } else {
-      return { error: "not updated" };
-    }
+    if (updateVehicle.error) {
+      return { error: updateVehicle.error };
+    } 
+
+    return updateVehicle;
   } catch (err) {
     return { error: "Server Error" };
   }
 };
 
-const deleteVehicle = async (vehicle_id) => {
+export const deleteVehicleService = async (vehicle_id) => {
   try {
-    const deleteVehicle = await vehicleModel.deleteVehicle(vehicle_id);
+    const deleteVehicle = await deleteVehicleFromDB(vehicle_id);
     if (deleteVehicle) {
       return { success: "vehicle deleted" };
     } else {
@@ -76,10 +81,4 @@ const deleteVehicle = async (vehicle_id) => {
     return { error: "Vehicle not deleted. Server Error" };
   }
 };
-module.exports = {
-  getAllVehicles,
-  getOneVehicle,
-  addVehicle,
-  updateVehicle,
-  deleteVehicle,
-};
+

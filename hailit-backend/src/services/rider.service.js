@@ -1,30 +1,51 @@
-const riderModel = require("../model/rider.model");
-const { allowedPropertiesOnly } = require("../utils/util");
+import {addRiderToDB, deleteRiderFromDB, getAllRiders, getOneRiderFromDB, updateRiderOnDB} from "../model/rider.model.js";
+import { getOneVehicleFromDB } from "../model/vehicle.model.js";
+import { getSpecificUserDetailsUsingId } from "../model/user.model.js";
 
-const getAllRiders = async () => {
+import { allowedPropertiesOnly } from "../utils/util.js";
+
+
+
+export const getAllRidersService = async () => {
   try {
-    const riders = await riderModel.getAllRiders();
+    const riders = await getAllRiders();
     return riders;
   } catch (err) {
     return {error: "Error occurred getting all riders"}
   }
 };
 
-const getOneRider = async (rider_id) => {
+export const getOneRiderService = async (rider_id) => {
+  
   try {
-    const rider = await riderModel.getOneRider(rider_id);
+    const rider = await getOneRiderFromDB(rider_id);
     if (rider.error) {
       return {error: rider.error};
     } 
-      return rider;
+    let riderDetails = {...rider}
+    const {user_id} = rider;
+    const columns = ["first_name", "last_name", "phone_number"]
+    const riderNamePhone = await getSpecificUserDetailsUsingId(user_id, columns);
+    if(riderNamePhone.error) {
+      return {error: riderNamePhone.error}
+    }
+    riderDetails = {...rider, ...riderNamePhone[0]}
+
+    
+    const {vehicle_id} = rider;
+    const vehicleDetails = await getOneVehicleFromDB(vehicle_id);
+    if(vehicleDetails.error) {
+      return {...rider, vehicle: "No vehicle assigned"}
+    }
+      return {...riderDetails, vehicle: vehicleDetails};
     
   } catch (err) {
     return { error: `Error occurred getting rider: ${err}` };
   }
 };
 
-const addRider = async (user_id, vehicle_id) => {
-  const riderAdd = await riderModel.addRider(user_id, vehicle_id);
+export const addRiderService = async (user_id, vehicle_id) => {
+  const riderAdd = await addRiderToDB(user_id, vehicle_id);
   if (riderAdd) {
     return riderAdd;
   } else {
@@ -32,7 +53,7 @@ const addRider = async (user_id, vehicle_id) => {
   }
 };
 
-const updateRider = async (riderDetails) => {
+export const updateRiderService = async (riderDetails) => {
   
   const allowedProperties = ["rider_id", "vehicle_id", "license_number", "rider_availability"];
   try {
@@ -40,7 +61,7 @@ const updateRider = async (riderDetails) => {
       riderDetails,
       allowedProperties
     );
-    const riderUpdate = await riderModel.updateRider(validRiderDetails);
+    const riderUpdate = await updateRiderOnDB(validRiderDetails);
     
     if (riderUpdate) {
       return riderUpdate;
@@ -53,9 +74,9 @@ const updateRider = async (riderDetails) => {
   }
 };
 
-const deleteRider = async (rider_id) => {
+export const deleteRiderService = async (rider_id) => {
   try {
-    const riderDelete = await riderModel.deleteRider(rider_id);
+    const riderDelete = await deleteRiderFromDB(rider_id);
     if (riderDelete) {
       return riderDelete;
     } else {
@@ -65,10 +86,4 @@ const deleteRider = async (rider_id) => {
     return { error: "Error occurred deleting rider" };
   }
 };
-module.exports = {
-  getAllRiders,
-  getOneRider,
-  addRider,
-  updateRider,
-  deleteRider,
-};
+

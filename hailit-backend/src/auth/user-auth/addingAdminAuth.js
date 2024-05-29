@@ -1,6 +1,8 @@
-const jwt = require("jsonwebtoken");
-const { userIsUserRole } = require("../../utils/util");
-const addingAdminAuth = async (req, res, next) => {
+
+import jwt from "jsonwebtoken";
+import { userIsUserRole } from "../../utils/util.js";
+
+export const addingAdminAuth = async (req, res, next) => {
   try {
     const supaSecret = process.env.SUPABASE_JWT_SECRET;
     if (req.body && req.body.user_role === "admin") {
@@ -25,4 +27,4 @@ const addingAdminAuth = async (req, res, next) => {
   }
 };
 
-module.exports = addingAdminAuth;
+

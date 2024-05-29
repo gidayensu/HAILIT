@@ -1,6 +1,6 @@
 const {userIsUserRole} = require ('../../utils/util');
 
-const isUserRole = (role) => {
+export const isUserRole = (role) => {
     return async (req, res, next) => {
     try {
         const path = req.path;
@@ -28,4 +28,3 @@ const isUserRole = (role) => {
     }}
 }
 
-module.exports = isUserRole;

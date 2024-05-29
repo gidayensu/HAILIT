@@ -1,52 +1,69 @@
-const tripModel = require("../model/trip.model");
-const crypto = require('crypto')
-const driverModel = require("../model/driver.model");
-const riderModel = require("../model/rider.model");
-const userModel = require("../model/user.model");
-const { allowedPropertiesOnly } = require("../utils/util");
 
-const tripColumns = [
-  "dispatcher_id, trip_medium, trip_status, package_type, pickup_location, drop_off_location, special_instructions, trip_request_date, trip_cost, payment_status, payment_method "
+import {addTripToDB, deleteTripFromDB, getAllTripsFromDB, getOneTripFromDB, getUserTripsFromDB, ratingCouIntIncrease, updateTripOnDB } from '../model/trip.model.js';
+import crypto from 'crypto'
+import { getOneRiderService } from "./rider.service.js";
+import { getOneUserFromDB } from "../model/user.model.js";
+import {  getDriverDetailOnCondition, getSpecificDriversFromDB, updateDriverOnDB} from "../model/driver.model.js";
+import { getOneDriverService } from "./driver.service.js";
+import { getRiderOnConditionFromDB, getSpecificRidersFromDB, updateRiderOnDB } from "../model/rider.model.js";
+import { allowedPropertiesOnly } from '../utils/util.js';
+
+import {config} from 'dotenv';
+
+config({ path: '../../../.env' });
+
+export const tripFieldsToSelect = [
+  "dispatcher_id, trip_medium, trip_status, package_type, pickup_location, drop_off_location, additional_information, trip_request_date, trip_cost, payment_status, payment_method "
 ];
 // const allowedTripStatus = ['new', 'in progress', 'completed', 'cancelled'];
-const allowedAddTripProperties = [
+export const allowedAddTripProperties = [
   "trip_medium",
   "package_type",
   "pickup_location",
   "drop_off_location",
-  "special_instructions",
+  "additional_information",
 ];
 
-const getAllTrips = async () => {
+export const getAllTripsService = async () => {
   try {
-    const allTrips = await tripModel.getAllTrips();
+    const allTrips = await getAllTripsFromDB();
     if(allTrips.error) {
       return {error: "No trips found"}
     }
     return allTrips;
   } catch (err) {
-    console.log(err)
+    
     return {error:"Error Occurred  in getting Trips Detail"};
   }
 };
 
-const getOneTrip = async (trip_id) => {
+export const getOneTripService = async (trip_id) => {
+  
   try {
     const tripIdColumn = "trip_id";
-    const oneTrip = await tripModel.getOneTrip(trip_id, tripIdColumn);
+    const oneTrip = await getOneTripFromDB(trip_id, tripIdColumn);
+    console.log('OneTrip:', oneTrip)
     if(oneTrip.error) {
       return {error: oneTrip.error}
     }
-    return oneTrip;
+    const {dispatcher_id, trip_medium} = oneTrip;
+    let dispatcherDetails = {}
+      trip_medium == 'motor' ? dispatcherDetails = await getOneRiderService(dispatcher_id) : dispatcherDetails = await getOneDriverService(dispatcher_id);
+      if (dispatcherDetails.error) {
+        console.log('dispatcherDetails.error:', dispatcherDetails.error)
+        return {...oneTrip, dispatcher: 'Not assigned'}
+      }
+    
+    return {...oneTrip, dispatcher: dispatcherDetails};
   } catch (err) {
     return {error:"Error Occurred in getting Trip Detail"};
   }
 };
 
-const getUserTrips = async (user_id) => {
-  //FIX THE ERROR. SINCE YOU ARE FETCHING ALL TRIPS, {driver_id} = driverTrips will not work
+export const getUserTripsService = async (user_id) => {
+  
   try {
-    const userData = await userModel.getOneUser(user_id);
+    const userData = await getOneUserFromDB(user_id);
     
     if (userData.error) {
       return {error: userData.error};
@@ -54,89 +71,102 @@ const getUserTrips = async (user_id) => {
     const { user_role } = userData;
     
     if (user_role === "customer") {
-      const idColumn = "customer_id";
-      
-      const userTrips = await tripModel.getUserTrips(
-        user_id,
-        idColumn,
-        tripColumns
-      );
-      
-      if(userTrips.error) {
-        return {error: userTrips.error}
+      const allCustomerTrips = await getCustomerTrips (user_id);
+      if(customerTrips.error) {
+        return {error: customerTrips.error}
       }
-      return userTrips;
+      return allCustomerTrips;
+      
     }
     
     if (user_role === "driver" || user_role === "rider") {
-      const tripColumns = [
-        "trip_id, trip_medium, trip_status, trip_type, drop_off_location, package_type, trip_commencement_date, trip_completion_date",
-      ];
-      
-      //dispatcher is used to represent drivers and riders except user role
-      
-      let dispatcherData = {};
-      let dispatcher_id = '';
-      if (user_role === 'rider'){
-      dispatcherData = await riderModel.getRiderOnCondition("user_id", user_id );
-      const returnedDispatcherData = dispatcherData.rows[0];
-      dispatcher_id = returnedDispatcherData.rider_id;
+      const allDispatcherTrips = await dispatcherTrips (user_role);
+      if (allDispatcherTrips.error) {
+        return {error: allDispatcherTrips.error}
       }
+      return allDispatcherTrips;
       
-      if (user_role === "driver") {
-        dispatcherData = await driverModel.getDriverDetailOnCondition(
-          "user_id",
-          user_id
-        );
-        
-        dispatcher_id = dispatcherData[0].driver_id;
-      }
-      console.log('dispatcher_id', dispatcher_id)
-
-      const idColumn = "dispatcher_id"; //this is because dispatcher is used to represent rider and driver in the trips table
-      const dispatcherTrips = await tripModel.getUserTrips(
-        dispatcher_id,
-        idColumn,
-        tripColumns
-      );
-      return dispatcherTrips;
     }
   } catch (err) {
     console.log(err)
     return {error: "Error occurred getting user trips details"};
   }
 };
-
-
-const addTrip = async (user_id, tripDetails) => {
+ //CUSTOMER TRIPS (HELPER FUNCTION)
+ export const getCustomerTrips = async (user_id) => {
+  const idColumn = "customer_id";
   try {
-    const trip_id = crypto.randomBytes(4).toString("hex");
-    const validTripDetails = allowedPropertiesOnly(
-      tripDetails,
-      allowedAddTripProperties
+
+    const trips = await getUserTripsFromDB(
+      user_id,
+      idColumn,
+      tripFieldsToSelect
     );
-    const trip_cost = 89 - 45; //current destination - delivery destination
-    let dispatcher_id = "";
-
-    const availableDrivers = await driverModel.getSpecificDrivers(
-      "driver_availability",
-      "available"
-    );
-
-    const availableRiders = await riderModel.getSpecificRiders("rider_availability", "available");
-    if (tripDetails.trip_medium === "car" || tripDetails.trip_medium === "truck") {
-
-      !availableDrivers
-        ? (dispatcher_id = "no driver available")
-        : (dispatcher_id = availableDrivers[0].driver_id);
+    
+    if(trips.error) {
+      return {error: trips.error}
     }
-
-    if (tripDetails.trip_medium === "motor") {
-      !availableRiders
-        ? (dispatcher_id = "no driver available")
-        : (dispatcher_id = availableRiders[0].rider_id);
+    return trips;
+  } catch (err) {
+    return {error: `Error occurred getting customer trips: ${err}`}
+  }
+ }
+ //DISPATCHER TRIPS (HELPER FUNCTION)
+ export const dispatcherTrips = async (user_role)=> {
+  try {
+    const tripFieldsToSelect = [
+      "trip_id, trip_medium, trip_status, trip_type, drop_off_location, package_type, trip_commencement_date, trip_completion_date",
+    ];
+    
+    //dispatcher is used to represent drivers and riders except user role
+    
+    let dispatcherData = {};
+    let dispatcher_id = '';
+    if (user_role === 'rider'){
+    dispatcherData = await getRiderOnConditionFromDB("user_id", user_id );
+    if(dispatcherData.error) {
+      return {error: dispatcherData.error}
+    }
+    const returnedDispatcherData = dispatcherData.rows[0];
+    dispatcher_id = returnedDispatcherData.rider_id;
     }
     
+    if (user_role === "driver") {
+      dispatcherData = await getDriverDetailOnCondition(
+        "user_id",
+        user_id
+      );
+
+      if(dispatcherData.error) {
+        return {error: dispatcherData.error}
+      }
+      
+      dispatcher_id = dispatcherData[0].driver_id;
+    }
+    
+
+    const idColumn = "dispatcher_id"; //this is because dispatcher is used to represent rider and driver in the trips table
+    const dispatcherTrips = await getUserTripsFromDB(
+      dispatcher_id,
+      idColumn,
+      tripFieldsToSelect
+    );
+    if(dispatcherTrips.error) {
+      return {error: dispatcherTrips.error}
+    }
+    return dispatcherTrips;
+  } catch (err) {
+    return {error: `Error occurred getting dispatcher trips: ${err}`}
+  }
+}
+export const addTripService = async (user_id, tripDetails) => {
+  try {
+    const trip_id = crypto.randomBytes(4).toString("hex");
+    const validTripDetails = allowedPropertiesOnly(tripDetails, allowedAddTripProperties);
+    
+
+    const trip_cost = 89 - 45; // current destination - delivery destination
+    const dispatcher_id = await getDispatcherId(tripDetails.trip_medium);
 
     const tripStatusDetails = {
       trip_status: "new",
@@ -153,20 +183,39 @@ const addTrip = async (user_id, tripDetails) => {
       ...validTripDetails,
       ...tripStatusDetails,
     };
-    const newTrip = await tripModel.addTrip(finalTripDetails);
-    if(newTrip.error) {
-      return {error: newTrip.error}
+
+    const newTrip = await addTripToDB(finalTripDetails);
+    if (newTrip.error) {
+      return { error: newTrip.error };
     }
 
     return newTrip;
-    
   } catch (err) {
-    
-    return {error:"Server Error Occurred Adding  User Trip"};
+    return { error: "Server Error Occurred Adding User Trip" };
   }
 };
 
-const updateTrip = async (tripDetails) => {
+export const getDispatcherId = async (trip_medium) => {
+  let dispatcher_id = 'ff-12-53';
+
+  if (trip_medium === "car" || trip_medium === "truck") {
+    const availableDrivers = await getSpecificDriversFromDB("driver_availability", "available");
+    if (availableDrivers && availableDrivers.length > 0) {
+      dispatcher_id = availableDrivers[0].driver_id;
+    }
+  }
+
+  if (trip_medium === "motor") {
+    const availableRiders = await getSpecificRidersFromDB("rider_availability", "available");
+    if (availableRiders && availableRiders.length > 0) {
+      dispatcher_id = availableRiders[0].rider_id;
+    }
+  }
+
+  return dispatcher_id;
+};
+
+export const updateTripService = async (tripDetails) => {
   const allowedProperties = [
     "trip_id",
     "trip_medium",
@@ -176,7 +225,7 @@ const updateTrip = async (tripDetails) => {
     "package_value",
     "pickup_location",
     "drop_off_location",
-    "special_instructions",
+    "additional_information",
     "trip_commencement_date",
     "trip_completion_date",
     "payment_status",
@@ -192,7 +241,8 @@ const updateTrip = async (tripDetails) => {
       tripDetails,
       allowedProperties
     );
-    const tripUpdate = await tripModel.updateTrip(validTripDetails);
+
+    const tripUpdate = await updateTripOnDB(validTripDetails);
     if(tripUpdate.error) {
       return {error: tripUpdate.error}
     }
@@ -203,14 +253,14 @@ const updateTrip = async (tripDetails) => {
   }
 };
 
-const rateTrip = async (ratingDetails) => {
+export const rateTripService = async (ratingDetails) => {
   try {
     const ratingDetailsWithRatingStatus = { ...ratingDetails, rated: true };
     const allowedProperties = ["dispatcher_rating", "trip_id", "dispatcher_id", "rated"];
     const validTripDetails = allowedPropertiesOnly(ratingDetailsWithRatingStatus, allowedProperties);
 
     const { trip_id, dispatcher_id } = validTripDetails;
-    const updateTrip = await tripModel.updateTrip(validTripDetails);
+    const updateTrip = await updateTripOnDB(validTripDetails);
     if (updateTrip.error) {
       return { error: updateTrip.error };
     }
@@ -232,19 +282,19 @@ const rateTrip = async (ratingDetails) => {
 
     return { success: "trip updated with rating" };
   } catch (err) {
-    console.log(err);
     return { error: "Server Error Occurred Adding Rating" };
   }
 };
 
-const updateDispatcherRating = async (trip_medium, dispatcher_id, averageDispatcherRating) => {
+//UPDATE DISPATCHER RATING (HELPER FUNCTION)
+export const updateDispatcherRating = async (trip_medium, dispatcher_id, averageDispatcherRating) => {
   if (trip_medium === "motor") {
-    const riderUpdate = await riderModel.updateRider({ cumulative_rider_rating: averageDispatcherRating, rider_id: dispatcher_id });
+    const riderUpdate = await updateRiderOnDB({ cumulative_rider_rating: averageDispatcherRating, rider_id: dispatcher_id });
     if (riderUpdate.error) {
       return { error: riderUpdate.error };
     }
   } else if (trip_medium === "car" || trip_medium === "truck") {
-    const driverUpdate = await driverModel.updateDriver({ cumulative_driver_rating: averageDispatcherRating, driver_id: dispatcher_id });
+    const driverUpdate = await updateDriverOnDB({ cumulative_driver_rating: averageDispatcherRating, driver_id: dispatcher_id });
     if (driverUpdate.error) {
       return { error: driverUpdate.error };
     }
@@ -252,7 +302,8 @@ const updateDispatcherRating = async (trip_medium, dispatcher_id, averageDispatc
   return { success: true };
 };
 
-const increaseRatingCount = async (trip_medium, dispatcher_id) => {
+//INCREASE RATING COUNT (HELPER FUNCTION)
+export const increaseRatingCount = async (trip_medium, dispatcher_id) => {
   let tableName, idColumn, ratingCountColumn;
   if (trip_medium === "motor") {
     tableName = 'rider';
@@ -266,16 +317,16 @@ const increaseRatingCount = async (trip_medium, dispatcher_id) => {
     return { error: "Invalid trip medium" };
   }
 
-  const countIncrease = await tripModel.dispatcherRateCouIntIncrease(tableName, dispatcher_id, idColumn, ratingCountColumn);
+  const countIncrease = await ratingCouIntIncrease(tableName, dispatcher_id, idColumn, ratingCountColumn);
   if (countIncrease.error) {
     return { error: countIncrease.error };
   }
   return { success: true };
 };
 
-const deleteTrip = async (trip_id) => {
+export const deleteTripService = async (trip_id) => {
   try {
-    const tripDelete = await tripModel.deleteRider(trip_id);
+    const tripDelete = await deleteTripFromDB(trip_id);
     if (tripDelete) {
       return tripDelete;
     } else {
@@ -285,13 +336,3 @@ const deleteTrip = async (trip_id) => {
     return { error: "Error occurred deleting trip" };
   }
 };
-module.exports = {
-  getAllTrips,
-  getOneTrip,
-  addTrip,
-  updateTrip,
-  deleteTrip,
-  getUserTrips,
-  rateTrip,
-};
-

@@ -49,7 +49,7 @@ export default function AllOrders () {
 
             {currentDeliveries && (
               <>
-                <OrderSummaryMin deliveryStatus="New Order" packageType="Gadgets"/>
+                <OrderSummaryMin deliveryStatus="New Order" packageType="Electronics"/>
                 <OrderSummaryMin deliveryStatus="Picked up" packageType="Parcel"/>
 
                 <OrderSummaryMin deliveryStatus="Delivering" packageType="Others"/>

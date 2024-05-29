@@ -4,7 +4,7 @@ import TopSectionContainer from "@/components/Shared/TopSectionContainer";
 import MiddleSectionContainer from "@/components/Shared/MiddleSectionContainer";
 import OrderUpdates from "@/components/Order/OrderUpdates";
 import OrderSummary from "@/components/Order/OrderSummary";
-import TrackOrderContainer from "@/components/Order/TrackOrderContainer";
+import TrackOrderContainer from "@/components/Order/TrackOrder/TrackOrderContainer";
 import Container from "@/components/ui/container";
 import RecipientSenderCard from "@/components/Order/RecipientSenderCard";
 

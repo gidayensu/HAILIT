@@ -4,10 +4,10 @@
 import { useRouter } from "next/navigation";
 import { updateUserDetails } from "@/components/Form/FormSubmission";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import CustomerProfile from "@/components/Form/CustomerProfile";
-import { setBoardingCompletion, setOnboardingStages } from "@/lib/store/onBoardingSlice";
-import { setUserOnBoard } from "@/lib/store/userSlice";
-import { setAuthState } from "@/lib/store/authSlice";
+import CustomerProfile from "@/components/Form/EditCustomerProfile";
+import { setBoardingCompletion, setOnboardingStages } from "@/lib/store/slice/onBoardingSlice";
+import { setUserOnBoard } from "@/lib/store/slice/userSlice";
+import { setAuthState } from "@/lib/store/slice/authSlice";
 import { sessionAccessToken } from "@/lib/supabaseAuth";
 import { setFormSubmissionLoading, setFormSubmissionError} from "@/lib/store/formSlice"
 
@@ -23,7 +23,7 @@ import SecondStage from "@/components/Onboarding/SecondStage";
 import FirstStage from "@/components/Onboarding/FirstStage/FirstStage";
 import OnboardingStagesCheck from "@/components/Onboarding/OnboardingStagesCheck";
 
-import { CustomerDetails } from "@/lib/store/onBoardingSlice";
+import { CustomerDetails } from "@/lib/store/slice/onBoardingSlice";
 
 
 export default function Onboarding() {
